@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Energy Dashboard</title>
+<title>Energy Emission Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -18,8 +18,9 @@ body{
   border-radius:8px;
   margin:5px;
   display:inline-block;
-  min-width:150px;
-  text-align:center
+  min-width:160px;
+  text-align:center;
+  font-size:16px
 }
 </style>
 </head>
@@ -29,10 +30,10 @@ body{
 <h2>KPI Cards</h2>
 <div id="kpi-container"></div>
 
-<h2>Emission per Energy Type</h2>
+<h2>Stacked Chart: Emission per Energy Type</h2>
 <canvas id="stackedChart"></canvas>
 
-<h2>Emission Trend</h2>
+<h2>Trend Line: Total Emission per Month</h2>
 <canvas id="trendChart"></canvas>
 
 <script type="module">
@@ -47,7 +48,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 async function loadDashboard(){
 
-  const {data,error} = await supabase
+  const { data, error } = await supabase
   .from("dashboard_phase2_final_named")
   .select("*")
 
@@ -61,38 +62,45 @@ async function loadDashboard(){
   renderKPI(data)
   renderStack(data)
   renderTrend(data)
+
 }
 
 function renderKPI(data){
 
   const container = document.getElementById("kpi-container")
 
-  const totalEmission = data[0].total_emission_facility
-  const totalUsage = data[0].total_usage_facility
-  const totalCost = data[0].total_cost_facility
+  const totalUsage =
+    data.reduce((sum,r)=> sum + Number(r.total_usage),0)
+
+  const totalCost =
+    data.reduce((sum,r)=> sum + Number(r.total_cost),0)
+
+  const totalEmission =
+    data.reduce((sum,r)=> sum + Number(r.total_emission),0)
 
   container.innerHTML = `
     <div class="kpi-card">
-      <b>Total Usage</b><br>${totalUsage}
+      <b>Total Usage</b><br>${totalUsage.toFixed(2)}
     </div>
 
     <div class="kpi-card">
-      <b>Total Cost</b><br>${totalCost}
+      <b>Total Cost</b><br>${totalCost.toFixed(2)}
     </div>
 
     <div class="kpi-card">
-      <b>Total Emission</b><br>${totalEmission}
+      <b>Total Emission</b><br>${totalEmission.toFixed(2)}
     </div>
   `
 }
 
 function renderStack(data){
 
-  const labels = [...new Set(data.map(d => d.energy_type_record))]
+  const labels = [...new Set(data.map(d=>d.energy_type_record))]
 
-  const values = labels.map(type => {
-    const row = data.find(d => d.energy_type_record === type)
-    return Number(row.total_emission)
+  const values = labels.map(type=>{
+    return data
+    .filter(r=>r.energy_type_record===type)
+    .reduce((sum,r)=> sum + Number(r.total_emission),0)
   })
 
   new Chart(document.getElementById("stackedChart"),{
@@ -100,7 +108,7 @@ function renderStack(data){
     data:{
       labels:labels,
       datasets:[{
-        label:"Emission per Energy Type",
+        label:"Emission by Energy Type",
         data:values
       }]
     }
@@ -109,12 +117,13 @@ function renderStack(data){
 
 function renderTrend(data){
 
-  const months = [...new Set(data.map(d => d.month.substring(0,7)))]
+  const months =
+  [...new Set(data.map(d=>d.month.substring(0,7)))]
 
   const values = months.map(m=>{
     return data
-    .filter(d=>d.month.startsWith(m))
-    .reduce((sum,r)=>sum + Number(r.total_emission),0)
+    .filter(r=>r.month.startsWith(m))
+    .reduce((sum,r)=> sum + Number(r.total_emission),0)
   })
 
   new Chart(document.getElementById("trendChart"),{
