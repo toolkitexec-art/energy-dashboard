@@ -47,6 +47,9 @@ const {data,error} = await supabase
 .from("dashboard_phase2_final_named")
 .select("*")
 
+console.log("DATA:",data)
+console.log("ERROR:",error)
+
 if(error){
 console.error(error)
 return
@@ -64,17 +67,31 @@ let totalUsage=0
 let totalCost=0
 let totalEmission=0
 
-data.forEach(r=>{
-totalUsage+=r.usage||0
-totalCost+=r.cost||0
-totalEmission+=r.emission||0
+data.forEach(row=>{
+totalUsage+=row.usage || 0
+totalCost+=row.cost || 0
+totalEmission+=row.emission || 0
 })
 
-document.getElementById("kpi-container").innerHTML=`
-<div class="kpi-card"><b>Total Usage</b><br>${totalUsage}</div>
-<div class="kpi-card"><b>Total Cost</b><br>${totalCost}</div>
-<div class="kpi-card"><b>Total Emission</b><br>${totalEmission}</div>
+const container=document.getElementById("kpi-container")
+
+container.innerHTML=`
+<div class="kpi-card">
+<h3>Total Usage</h3>
+<p>${totalUsage.toFixed(2)}</p>
+</div>
+
+<div class="kpi-card">
+<h3>Total Cost</h3>
+<p>${totalCost.toFixed(2)}</p>
+</div>
+
+<div class="kpi-card">
+<h3>Total Emission</h3>
+<p>${totalEmission.toFixed(2)}</p>
+</div>
 `
+
 }
 
 function renderStack(data){
@@ -83,17 +100,20 @@ const energyTypes=[...new Set(data.map(r=>r.energy_type))]
 const months=[...new Set(data.map(r=>r.month))]
 
 const datasets=energyTypes.map(type=>{
+
 return{
 label:type,
 data:months.map(m=>{
 const row=data.find(r=>r.energy_type===type && r.month===m)
-return row?row.emission:0
-}),
-stack:"emission"
+return row ? row.emission : 0
+})
 }
+
 })
 
-new Chart(document.getElementById("stackedChart"),{
+new Chart(
+document.getElementById("stackedChart"),
+{
 type:"bar",
 data:{
 labels:months,
@@ -101,10 +121,14 @@ datasets:datasets
 },
 options:{
 responsive:true,
-plugins:{legend:{position:"top"}},
-scales:{x:{stacked:true},y:{stacked:true}}
+scales:{
+x:{stacked:true},
+y:{stacked:true}
 }
-})
+}
+}
+)
+
 }
 
 function renderTrend(data){
@@ -117,16 +141,22 @@ return data
 .reduce((sum,r)=>sum+(r.emission||0),0)
 })
 
-new Chart(document.getElementById("trendChart"),{
+new Chart(
+document.getElementById("trendChart"),
+{
 type:"line",
 data:{
 labels:months,
-datasets:[{
+datasets:[
+{
 label:"Total Emission",
 data:totals
-}]
 }
-})
+]
+}
+}
+)
+
 }
 
 loadDashboard()
