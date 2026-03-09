@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Phase 2 Live</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{font-family:Arial;margin:20px}
+.kpi-card{
+border:1px solid #ccc;
+padding:10px;
+border-radius:8px;
+margin:5px;
+display:inline-block;
+min-width:150px;
+text-align:center
+}
+</style>
+</head>
+
+<body>
+
+<h2>KPI Cards</h2>
+<div id="kpi-container"></div>
+
+<h2>Stacked Chart: Emission per Energy Type</h2>
+<canvas id="stackedChart"></canvas>
+
+<h2>Trend Line: Total Emission per Month</h2>
+<canvas id="trendChart"></canvas>
+
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+
+const SUPABASE_URL = "https://otzxkvdkpbsyrbiqtbjd.supabase.co"
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90enhrdmRrcGJzeXJiaXF0YmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTY3NDYsImV4cCI6MjA4NzEzMjc0Nn0.tmLk2MoEpRbAdZNT5tRZTRvH_laeRo5Y1t-ollBGNAQ"
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+async function loadDashboard(){
+
+const {data,error} = await supabase
+.from("dashboard_phase2_final_named")
+.select("*")
+
+if(error){
+console.error(error)
+return
+}
+
+renderKPI(data)
+renderStack(data)
+renderTrend(data)
+
+}
+
+function renderKPI(data){
+
+let totalUsage=0
+let totalCost=0
+let totalEmission=0
+
+data.forEach(r=>{
+totalUsage+=r.usage||0
+totalCost+=r.cost||0
+totalEmission+=r.emission||0
+})
+
+document.getElementById("kpi-container").innerHTML=`
+<div class="kpi-card"><b>Total Usage</b><br>${totalUsage}</div>
+<div class="kpi-card"><b>Total Cost</b><br>${totalCost}</div>
+<div class="kpi-card"><b>Total Emission</b><br>${totalEmission}</div>
+`
+}
+
+function renderStack(data){
+
+const energyTypes=[...new Set(data.map(r=>r.energy_type))]
+const months=[...new Set(data.map(r=>r.month))]
+
+const datasets=energyTypes.map(type=>{
+return{
+label:type,
+data:months.map(m=>{
+const row=data.find(r=>r.energy_type===type && r.month===m)
+return row?row.emission:0
+}),
+stack:"emission"
+}
+})
+
+new Chart(document.getElementById("stackedChart"),{
+type:"bar",
+data:{
+labels:months,
+datasets:datasets
+},
+options:{
+responsive:true,
+plugins:{legend:{position:"top"}},
+scales:{x:{stacked:true},y:{stacked:true}}
+}
+})
+}
+
+function renderTrend(data){
+
+const months=[...new Set(data.map(r=>r.month))]
+
+const totals=months.map(m=>{
+return data
+.filter(r=>r.month===m)
+.reduce((sum,r)=>sum+(r.emission||0),0)
+})
+
+new Chart(document.getElementById("trendChart"),{
+type:"line",
+data:{
+labels:months,
+datasets:[{
+label:"Total Emission",
+data:totals
+}]
+}
+})
+}
+
+loadDashboard()
+
+</script>
+
+</body>
+</html>
