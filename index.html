@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard Phase 2 Live</title>
+<title>Energy Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;margin:20px}
+body{
+  font-family:Arial;
+  margin:20px
+}
+
 .kpi-card{
-border:1px solid #ccc;
-padding:10px;
-border-radius:8px;
-margin:5px;
-display:inline-block;
-min-width:150px;
-text-align:center
+  border:1px solid #ccc;
+  padding:10px;
+  border-radius:8px;
+  margin:5px;
+  display:inline-block;
+  min-width:150px;
+  text-align:center
 }
 </style>
 </head>
@@ -25,10 +29,10 @@ text-align:center
 <h2>KPI Cards</h2>
 <div id="kpi-container"></div>
 
-<h2>Stacked Chart: Emission per Energy Type</h2>
+<h2>Emission per Energy Type</h2>
 <canvas id="stackedChart"></canvas>
 
-<h2>Trend Line: Total Emission per Month</h2>
+<h2>Emission Trend</h2>
 <canvas id="trendChart"></canvas>
 
 <script type="module">
@@ -43,120 +47,86 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 async function loadDashboard(){
 
-const {data,error} = await supabase
-.from("dashboard_phase2_final_named")
-.select("*")
+  const {data,error} = await supabase
+  .from("dashboard_phase2_final_named")
+  .select("*")
 
-console.log("DATA:",data)
-console.log("ERROR:",error)
+  if(error){
+    console.error(error)
+    return
+  }
 
-if(error){
-console.error(error)
-return
-}
+  console.log(data)
 
-renderKPI(data)
-renderStack(data)
-renderTrend(data)
-
+  renderKPI(data)
+  renderStack(data)
+  renderTrend(data)
 }
 
 function renderKPI(data){
 
-let totalUsage=0
-let totalCost=0
-let totalEmission=0
+  const container = document.getElementById("kpi-container")
 
-data.forEach(row=>{
-totalUsage+=row.usage || 0
-totalCost+=row.cost || 0
-totalEmission+=row.emission || 0
-})
+  const totalEmission = data[0].total_emission_facility
+  const totalUsage = data[0].total_usage_facility
+  const totalCost = data[0].total_cost_facility
 
-const container=document.getElementById("kpi-container")
+  container.innerHTML = `
+    <div class="kpi-card">
+      <b>Total Usage</b><br>${totalUsage}
+    </div>
 
-container.innerHTML=`
-<div class="kpi-card">
-<h3>Total Usage</h3>
-<p>${totalUsage.toFixed(2)}</p>
-</div>
+    <div class="kpi-card">
+      <b>Total Cost</b><br>${totalCost}
+    </div>
 
-<div class="kpi-card">
-<h3>Total Cost</h3>
-<p>${totalCost.toFixed(2)}</p>
-</div>
-
-<div class="kpi-card">
-<h3>Total Emission</h3>
-<p>${totalEmission.toFixed(2)}</p>
-</div>
-`
-
+    <div class="kpi-card">
+      <b>Total Emission</b><br>${totalEmission}
+    </div>
+  `
 }
 
 function renderStack(data){
 
-const energyTypes=[...new Set(data.map(r=>r.energy_type))]
-const months=[...new Set(data.map(r=>r.month))]
+  const labels = [...new Set(data.map(d => d.energy_type_record))]
 
-const datasets=energyTypes.map(type=>{
+  const values = labels.map(type => {
+    const row = data.find(d => d.energy_type_record === type)
+    return Number(row.total_emission)
+  })
 
-return{
-label:type,
-data:months.map(m=>{
-const row=data.find(r=>r.energy_type===type && r.month===m)
-return row ? row.emission : 0
-})
-}
-
-})
-
-new Chart(
-document.getElementById("stackedChart"),
-{
-type:"bar",
-data:{
-labels:months,
-datasets:datasets
-},
-options:{
-responsive:true,
-scales:{
-x:{stacked:true},
-y:{stacked:true}
-}
-}
-}
-)
-
+  new Chart(document.getElementById("stackedChart"),{
+    type:"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:"Emission per Energy Type",
+        data:values
+      }]
+    }
+  })
 }
 
 function renderTrend(data){
 
-const months=[...new Set(data.map(r=>r.month))]
+  const months = [...new Set(data.map(d => d.month.substring(0,7)))]
 
-const totals=months.map(m=>{
-return data
-.filter(r=>r.month===m)
-.reduce((sum,r)=>sum+(r.emission||0),0)
-})
+  const values = months.map(m=>{
+    return data
+    .filter(d=>d.month.startsWith(m))
+    .reduce((sum,r)=>sum + Number(r.total_emission),0)
+  })
 
-new Chart(
-document.getElementById("trendChart"),
-{
-type:"line",
-data:{
-labels:months,
-datasets:[
-{
-label:"Total Emission",
-data:totals
-}
-]
-}
-}
-)
-
+  new Chart(document.getElementById("trendChart"),{
+    type:"line",
+    data:{
+      labels:months,
+      datasets:[{
+        label:"Total Emission",
+        data:values
+      }]
+    }
+  })
 }
 
 loadDashboard()
