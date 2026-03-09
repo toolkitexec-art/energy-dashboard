@@ -3,33 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Energy Dashboard - Supabase</title>
+<title>Energy Dashboard - Enterprise</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/file-saver"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 1rem;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  .dark {
     background-color: #121212;
     color: #f0f0f0;
+    transition: background-color 0.3s, color 0.3s;
   }
+  header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;
+  }
+  header img { height:50px; }
   .controls { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
-  select, button { padding:0.5rem; border-radius:6px; border:1px solid #ccc; }
+  select, button { padding:0.5rem; border-radius:6px; border:1px solid #ccc; background:#1e1e1e; color:#f0f0f0; }
+  select option { background:#1e1e1e; color:#f0f0f0; }
   .kpi-container { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
-  .kpi-card { flex:1; min-width:150px; border-radius:8px; padding:1rem; text-align:center; background:#f8f8f8; transition: background 0.3s, color 0.3s; }
-  .dark .kpi-card { background:#1e1e1e; color:#f0f0f0; }
-  canvas { max-width:100%; height:auto; margin-bottom:1rem; }
+  .kpi-card { flex:1; min-width:150px; border-radius:8px; padding:1rem; text-align:center; background:#1e1e1e; transition: background 0.3s, color 0.3s; box-shadow:0 0 10px rgba(0,0,0,0.3); }
+  canvas { max-width:100%; height:auto; margin-bottom:1rem; background:#1e1e1e; border-radius:8px; padding:10px; }
 </style>
 </head>
 
 <body>
-
-<h1>Energy Emission Dashboard</h1>
+<header>
+  <h1>Energy Emission Dashboard</h1>
+  <img src="https://placehold.co/100x50?text=Logo" alt="Company Logo">
+</header>
 
 <div class="controls">
   <label>Facility:
@@ -203,7 +207,6 @@ document.getElementById('monthFilter').addEventListener('change', renderDashboar
 // --- Initial Load ---
 loadData()
 setInterval(loadData, 10000) // auto-refresh setiap 10 detik
-
 </script>
 </body>
 </html>
