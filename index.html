@@ -2,145 +2,148 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Energy Emission Dashboard</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Emission Dashboard - SaaS Premium</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-body{
-  font-family:Arial;
-  margin:20px
+:root {
+  --bg-color: #0f172a;
+  --text-color: #e5e7eb;
+  --card-bg: #1e293b;
+  --card-shadow: rgba(0,0,0,0.5);
+  --accent: #22c55e;
 }
-
-.kpi-card{
-  border:1px solid #ccc;
-  padding:10px;
-  border-radius:8px;
-  margin:5px;
-  display:inline-block;
-  min-width:160px;
-  text-align:center;
-  font-size:16px
+[data-theme="light"] {
+  --bg-color: #f8fafc;
+  --text-color: #1f2937;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0,0,0,0.15);
+  --accent: #3b82f6;
 }
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin:0; padding:20px;
+}
+h1 { margin-bottom:20px; font-weight:600; font-size:1.8rem; }
+h2 { margin-top:30px; font-weight:500; font-size:1.2rem; }
+.filters { display:flex; flex-wrap:wrap; gap:15px; margin-bottom:20px; }
+select { background: var(--card-bg); color: var(--text-color); border-radius:8px; padding:8px 12px; border:none; cursor:pointer; transition:0.3s; }
+select:hover { opacity:0.9; }
+.toggle-theme { margin-left:auto; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; background: var(--accent); color:#fff; font-weight:bold; }
+.dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:15px; margin-bottom:30px; }
+.kpi-card { background: var(--card-bg); border-radius:12px; padding:15px; box-shadow:0 8px 25px var(--card-shadow); text-align:center; transition:transform 0.3s, box-shadow 0.3s; position:relative; }
+.kpi-card:hover { transform:translateY(-5px); box-shadow:0 12px 30px var(--card-shadow); }
+.kpi-title { font-size:12px; opacity:0.7; margin-bottom:8px; }
+.kpi-value { font-size:26px; font-weight:bold; color:var(--accent); }
+.kpi-tooltip { display:none; position:absolute; top:-10px; left:50%; transform:translateX(-50%) translateY(-100%); background: #334155; padding:6px 10px; border-radius:6px; font-size:12px; color:#e5e7eb; white-space:nowrap; pointer-events:none; }
+.kpi-card:hover .kpi-tooltip { display:block; }
+.chart-card { background: var(--card-bg); border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 8px 25px var(--card-shadow); transition: background 0.3s; }
+canvas { width:100% !important; max-height:450px; }
+@media (max-width:600px){ h1{font-size:1.5rem;} .kpi-value{font-size:20px;} }
 </style>
 </head>
+<body data-theme="dark">
+<h1>Energy Emission Dashboard</h1>
 
-<body>
+<div class="filters">
+  <div>Facility: <select id="facilityFilter"><option value="all">All</option></select></div>
+  <div>Month: <select id="monthFilter"><option value="all">All</option></select></div>
+  <button class="toggle-theme" id="themeToggle">Toggle Theme</button>
+</div>
 
-<h2>KPI Cards</h2>
-<div id="kpi-container"></div>
+<div class="dashboard-grid" id="kpi-container"></div>
 
-<h2>Stacked Chart: Emission per Energy Type</h2>
-<canvas id="stackedChart"></canvas>
+<div class="chart-card">
+  <h2>Emission per Energy Type</h2>
+  <canvas id="stackedChart"></canvas>
+</div>
 
-<h2>Trend Line: Total Emission per Month</h2>
-<canvas id="trendChart"></canvas>
+<div class="chart-card">
+  <h2>Emission Trend</h2>
+  <canvas id="trendChart"></canvas>
+</div>
 
 <script type="module">
-
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
 const SUPABASE_URL = "https://otzxkvdkpbsyrbiqtbjd.supabase.co"
-
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90enhrdmRrcGJzeXJiaXF0YmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTY3NDYsImV4cCI6MjA4NzEzMjc0Nn0.tmLk2MoEpRbAdZNT5tRZTRvH_laeRo5Y1t-ollBGNAQ"
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-async function loadDashboard(){
+let stackedChart, trendChart, allData=[]
 
-  const { data, error } = await supabase
-  .from("dashboard_phase2_final_named")
-  .select("*")
+document.getElementById('themeToggle').onclick = ()=>{
+  const theme = document.body.getAttribute('data-theme')
+  document.body.setAttribute('data-theme', theme==='dark'?'light':'dark')
+  updateDashboard()
+}
 
-  if(error){
-    console.error(error)
-    return
-  }
+async function loadDashboard() {
+  const { data, error } = await supabase.from("dashboard_phase2_final_named").select("*")
+  if(error){ console.error(error); return }
+  allData = data
+  populateFilters()
+  updateDashboard()
+}
 
-  console.log(data)
+function populateFilters(){
+  const fSel=document.getElementById("facilityFilter"), mSel=document.getElementById("monthFilter")
+  const facilities=[...new Set(allData.map(d=>d.facility_name_display))]
+  const months=[...new Set(allData.map(d=>d.month.substring(0,7)))]
+  fSel.innerHTML='<option value="all">All</option>'; facilities.forEach(f=>fSel.innerHTML+=`<option value="${f}">${f}</option>`)
+  mSel.innerHTML='<option value="all">All</option>'; months.forEach(m=>mSel.innerHTML+=`<option value="${m}">${m}</option>`)
+  fSel.onchange=mSel.onchange=updateDashboard
+}
 
-  renderKPI(data)
-  renderStack(data)
-  renderTrend(data)
-
+function updateDashboard(){
+  const fF=document.getElementById("facilityFilter").value, mF=document.getElementById("monthFilter").value
+  let filtered=allData; if(fF!=="all") filtered=filtered.filter(d=>d.facility_name_display===fF)
+  if(mF!=="all") filtered=filtered.filter(d=>d.month.startsWith(mF))
+  renderKPI(filtered); renderStack(filtered); renderTrend(filtered)
 }
 
 function renderKPI(data){
-
-  const container = document.getElementById("kpi-container")
-
-  const totalUsage =
-    data.reduce((sum,r)=> sum + Number(r.total_usage),0)
-
-  const totalCost =
-    data.reduce((sum,r)=> sum + Number(r.total_cost),0)
-
-  const totalEmission =
-    data.reduce((sum,r)=> sum + Number(r.total_emission),0)
-
-  container.innerHTML = `
-    <div class="kpi-card">
-      <b>Total Usage</b><br>${totalUsage.toFixed(2)}
-    </div>
-
-    <div class="kpi-card">
-      <b>Total Cost</b><br>${totalCost.toFixed(2)}
-    </div>
-
-    <div class="kpi-card">
-      <b>Total Emission</b><br>${totalEmission.toFixed(2)}
-    </div>
+  const container=document.getElementById("kpi-container")
+  const totalUsage=data.reduce((s,r)=>s+Number(r.total_usage_facility||0),0)
+  const totalCost=data.reduce((s,r)=>s+Number(r.total_cost_facility||0),0)
+  const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission_facility||0),0)
+  container.innerHTML=`
+    <div class="kpi-card"><div class="kpi-title">Total Usage</div><div class="kpi-value">${totalUsage.toLocaleString()}</div></div>
+    <div class="kpi-card"><div class="kpi-title">Total Cost</div><div class="kpi-value">$${totalCost.toLocaleString()}</div></div>
+    <div class="kpi-card"><div class="kpi-title">Total Emission</div><div class="kpi-value">${totalEmission.toLocaleString()}</div></div>
   `
 }
 
 function renderStack(data){
-
-  const labels = [...new Set(data.map(d=>d.energy_type_record))]
-
-  const values = labels.map(type=>{
-    return data
-    .filter(r=>r.energy_type_record===type)
-    .reduce((sum,r)=> sum + Number(r.total_emission),0)
-  })
-
-  new Chart(document.getElementById("stackedChart"),{
+  const types=[...new Set(data.map(d=>d.energy_type_record))]
+  const values=types.map(t=>data.filter(r=>r.energy_type_record===t).reduce((s,r)=>s+Number(r.total_emission||0),0))
+  const theme=document.body.getAttribute('data-theme')
+  const colors=theme==='dark'?["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#14b8a6","#e11d48"]:["#10b981","#2563eb","#fbbf24","#f87171","#8b5cf6","#0d9488","#be123c"]
+  if(stackedChart) stackedChart.destroy()
+  stackedChart=new Chart(document.getElementById("stackedChart"),{
     type:"bar",
-    data:{
-      labels:labels,
-      datasets:[{
-        label:"Emission by Energy Type",
-        data:values
-      }]
-    }
+    data:{labels:types,datasets:[{label:"Emission",data:values,backgroundColor:colors,borderRadius:6}]},
+    options:{responsive:true,plugins:{legend:{position:"top"},tooltip:{mode:"index",intersect:false}},scales:{x:{stacked:true,grid:{color:"rgba(255,255,255,0.1)"}},y:{stacked:true,grid:{color:"rgba(255,255,255,0.1)"}}}}
   })
 }
 
 function renderTrend(data){
-
-  const months =
-  [...new Set(data.map(d=>d.month.substring(0,7)))]
-
-  const values = months.map(m=>{
-    return data
-    .filter(r=>r.month.startsWith(m))
-    .reduce((sum,r)=> sum + Number(r.total_emission),0)
-  })
-
-  new Chart(document.getElementById("trendChart"),{
+  const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
+  const values=months.map(m=>data.filter(r=>r.month.startsWith(m)).reduce((s,r)=>s+Number(r.total_emission||0),0))
+  const theme=document.body.getAttribute('data-theme')
+  const color=theme==='dark'?"#22c55e":"#3b82f6"
+  if(trendChart) trendChart.destroy()
+  trendChart=new Chart(document.getElementById("trendChart"),{
     type:"line",
-    data:{
-      labels:months,
-      datasets:[{
-        label:"Total Emission",
-        data:values
-      }]
-    }
+    data:{labels:months,datasets:[{label:"Total Emission",data:values,borderColor:color,backgroundColor:color+"33",tension:0.4,fill:true,pointRadius:5,pointHoverRadius:8,pointBackgroundColor:color}]},
+    options:{responsive:true,plugins:{legend:{labels:{color:theme==='dark'?'#e5e7eb':'#1f2937'}},tooltip:{mode:"index",intersect:false}},scales:{x:{ticks:{color:theme==='dark'?'#e5e7eb':'#1f2937'},grid:{color:"rgba(0,0,0,0.1)"}},y:{ticks:{color:theme==='dark'?'#e5e7eb':'#1f2937'},grid:{color:"rgba(0,0,0,0.1)"}}}}
   })
 }
 
 loadDashboard()
-
+setInterval(loadDashboard,5000)
 </script>
-
 </body>
 </html>
