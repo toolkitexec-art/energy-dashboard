@@ -3,217 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Energy Dashboard</title>
-
-<!-- Chart.js -->
+<title>Energy Dashboard SaaS</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-/* Reset & body */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#0f1419; color:#fff; padding:20px; }
-
-/* Container */
-.dashboard-container { max-width:1200px; margin:0 auto; background:#1e293b; border-radius:20px; padding:30px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); }
-
-/* Header */
-.header { display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px; margin-bottom:30px; }
-.header h1 { font-size:24px; color:#f1f5f9; font-weight:600; }
-.controls { display:flex; gap:10px; flex-wrap:wrap; }
-.btn { background:#334155; border:none; color:#cbd5e1; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:14px; transition:all 0.3s ease; }
-.btn:hover { background:#475569; }
-.btn-primary { background:#10b981; color:#fff; }
-.btn-primary:hover { background:#059669; }
-
-/* Metrics */
-.metrics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:30px; }
-.metric-card { background:#0f172a; border-radius:16px; padding:24px; border:1px solid #334155; transition:transform 0.3s ease; }
-.metric-card:hover { transform:translateY(-5px); border-color:#10b981; }
-.metric-label { color:#94a3b8; font-size:14px; margin-bottom:8px; text-transform:uppercase; }
-.metric-value { font-size:32px; font-weight:700; color:#fff; }
-.metric-unit { font-size:16px; color:#64748b; font-weight:500; }
-.metric-trend { display:inline-flex; align-items:center; gap:4px; color:#10b981; font-size:14px; margin-top:8px; }
-
-/* Charts */
-.charts-grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
-.chart-card { background:#0f172a; border-radius:16px; padding:24px; border:1px solid #334155; }
-.chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.chart-title { font-size:18px; font-weight:600; }
-.line-chart-container, .bar-chart-container { position:relative; height:300px; width:100%; }
-.chart-legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; font-size:14px; }
-
-/* Responsive */
-@media(max-width:768px) { .charts-grid { grid-template-columns:1fr; } .metrics-grid { grid-template-columns:1fr; } }
-
-/* Animation */
-@keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-.metric-card, .chart-card { animation:fadeIn 0.6s ease forwards; }
-.metric-card:nth-child(1){animation-delay:0.1s;} .metric-card:nth-child(2){animation-delay:0.2s;} .metric-card:nth-child(3){animation-delay:0.3s;} .metric-card:nth-child(4){animation-delay:0.4s;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#0f1419;color:#fff;padding:20px;}
+.dashboard-container{max-width:1200px;margin:0 auto;background:#1e293b;border-radius:20px;padding:30px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px;}
+.header h1{font-size:24px;color:#f1f5f9;}
+.controls{display:flex;gap:10px;align-items:center;}
+.btn{background:#334155;border:none;color:#cbd5e1;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;transition:all 0.3s;}
+.btn:hover{background:#475569;}
+.btn-primary{background:#10b981;color:white;}
+.btn-primary:hover{background:#059669;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px;}
+.metric-card{background:#0f172a;border-radius:16px;padding:24px;border:1px solid #334155;transition:transform 0.3s;}
+.metric-card:hover{transform:translateY(-5px);border-color:#10b981;}
+.metric-label{color:#94a3b8;font-size:14px;margin-bottom:8px;text-transform:uppercase;}
+.metric-value{font-size:32px;font-weight:700;color:#fff;}
+.metric-unit{font-size:16px;color:#64748b;font-weight:500;}
+.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+.chart-card{background:#0f172a;border-radius:16px;padding:24px;border:1px solid #334155;}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.chart-title{font-size:18px;font-weight:600;color:#f1f5f9;}
+.chart-btn{background:#1e293b;border:1px solid #475569;color:#94a3b8;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+@media(max-width:768px){.charts-grid{grid-template-columns:1fr;}.metrics-grid{grid-template-columns:1fr;}}
+#stackedValues{display:flex;justify-content:space-around;margin-top:10px;color:#cbd5e1;font-size:14px;}
 </style>
 </head>
-
 <body>
 <div class="dashboard-container">
-    <!-- Header -->
     <div class="header">
         <h1>Energy Dashboard</h1>
         <div class="controls">
-            <button id="facilityBtn" class="btn btn-primary">All Facilities ▼</button>
-            <button id="monthBtn" class="btn btn-primary">All Months ▼</button>
-            <button id="refreshBtn" class="btn">Refresh</button>
-            <button id="exportCsvBtn" class="btn">Export CSV</button>
-            <button id="exportPdfBtn" class="btn">Export PDF</button>
+            <button class="btn" id="facilityBtn">All Facilities ▼</button>
+            <button class="btn" id="monthBtn">All Months ▼</button>
+            <button class="btn" id="refreshBtn">Refresh</button>
+            <button class="btn btn-primary" id="exportCSVBtn">Export CSV</button>
+            <button class="btn btn-primary" id="exportPDFBtn">Export PDF</button>
         </div>
     </div>
 
-    <!-- Metrics -->
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="metric-label">Total Usage</div>
-            <div class="metric-value" id="kpiUsage">0</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Total Cost</div>
-            <div class="metric-value" id="kpiCost">0</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Total Emission</div>
-            <div class="metric-value" id="kpiEmission">0</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Efficiency</div>
-            <div class="metric-value" id="kpiEfficiency">0%</div>
-        </div>
-    </div>
+    <div class="metrics-grid" id="kpi-container"></div>
 
-    <!-- Charts -->
     <div class="charts-grid">
         <div class="chart-card">
-            <div class="chart-header"><div class="chart-title">Stacked Emission by Energy Type</div></div>
-            <div class="bar-chart-container">
-                <canvas id="stackedChart"></canvas>
+            <div class="chart-header">
+                <h3 class="chart-title">Emission per Energy Type</h3>
             </div>
+            <canvas id="stackedChart"></canvas>
+            <div id="stackedValues"></div>
         </div>
+
         <div class="chart-card">
-            <div class="chart-header"><div class="chart-title">Trend Emission per Month</div></div>
-            <div class="line-chart-container">
-                <canvas id="trendChart"></canvas>
+            <div class="chart-header">
+                <h3 class="chart-title">Total Emission per Month</h3>
             </div>
+            <canvas id="trendChart"></canvas>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-// Supabase connection
 const SUPABASE_URL = 'https://otzxkvdkpbsyrbiqtbjd.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90enhrdmRrcGJzeXJiaXF0YmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTY3NDYsImV4cCI6MjA4NzEzMjc0Nn0.tmLk2MoEpRbAdZNT5tRZTRvH_laeRo5Y1t-ollBGNAQ'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJzdXBhYmFzZSIsInJlZiI6Im90enhrdmRrcGJzeXJiaXF0YmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTY3NDYsImV4cCI6MjA4NzEzMjc0Nn0.tmLk2MoEpRbAdZNT5tRZTRvH_laeRo5Y1t-ollBGNAQ'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-let facilityFilter = null
-let monthFilter = null
-let stackedChart, trendChart
+let selectedFacility = null
+let selectedMonth = null
+let stackedChart, trendChart, lastData=[]
 
-// Elements
-const facilityBtn = document.getElementById('facilityBtn')
-const monthBtn = document.getElementById('monthBtn')
-const refreshBtn = document.getElementById('refreshBtn')
-const exportCsvBtn = document.getElementById('exportCsvBtn')
-const exportPdfBtn = document.getElementById('exportPdfBtn')
-
-// Helpers
-const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-
-function formatMonth(iso){ return monthNames[new Date(iso).getMonth()] }
-
-// Load Dashboard
-async function loadDashboard(){
+async function loadDashboard() {
     let query = supabase.from('dashboard_phase2_final_named').select('*')
-    if(facilityFilter) query = query.eq('facility_name_display', facilityFilter)
-    if(monthFilter) query = query.eq('month', monthFilter)
-    const { data, error } = await query
+    if(selectedFacility) query = query.eq('facility_name_display', selectedFacility)
+    if(selectedMonth) query = query.eq('month', selectedMonth)
+    const { data, error } = await query.order('month',{ascending:true})
     if(error){ console.error(error); return }
-    
-    // KPI
-    const totalUsage = data.reduce((acc,d)=>acc+d.total_usage_facility,0)
-    const totalCost = data.reduce((acc,d)=>acc+d.total_cost_facility,0)
-    const totalEmission = data.reduce((acc,d)=>acc+d.total_emission_facility,0)
-    const efficiency = totalUsage?Math.round((totalEmission/totalUsage)*100):0
+    lastData = data
+    renderKPI(data)
+    renderStack(data)
+    renderTrend(data)
+}
 
-    document.getElementById('kpiUsage').textContent = totalUsage.toLocaleString()
-    document.getElementById('kpiCost').textContent = totalCost.toLocaleString()
-    document.getElementById('kpiEmission').textContent = totalEmission.toFixed(2)
-    document.getElementById('kpiEfficiency').textContent = efficiency + '%'
+function renderKPI(data){
+    const container = document.getElementById('kpi-container')
+    if(!data.length){ container.innerHTML='<div>No data</div>'; return }
+    const totalUsage = data[0].total_usage_facility
+    const totalCost = data[0].total_cost_facility
+    const totalEmission = data[0].total_emission_facility
+    container.innerHTML = `
+        <div class="metric-card"><div class="metric-label">Total Usage</div><div class="metric-value">${totalUsage.toLocaleString()} <span class="metric-unit">kWh</span></div></div>
+        <div class="metric-card"><div class="metric-label">Total Cost</div><div class="metric-value">$${totalCost.toLocaleString()}</div></div>
+        <div class="metric-card"><div class="metric-label">Total Emission</div><div class="metric-value">${totalEmission.toLocaleString()} <span class="metric-unit">ton</span></div></div>
+    `
+}
 
-    // Stacked Chart
-    const energyTypes = [...new Set(data.map(d=>d.energy_type_record))]
-    const values = energyTypes.map(type=> {
-        const row = data.find(d=>d.energy_type_record===type)
-        return row ? row.total_emission : 0
-    })
-
+function renderStack(data){
+    const labels = [...new Set(data.map(d=>d.energy_type_record))]
+    const values = labels.map(type=>{ const row = data.find(d=>d.energy_type_record===type); return row?row.total_emission:0 })
+    const colors = ['#10b981','#64748b','#475569','#0ea5e9','#334155','#f59e0b','#8b5cf6']
     if(stackedChart) stackedChart.destroy()
-    stackedChart = new Chart(document.getElementById('stackedChart'), {
+    stackedChart = new Chart(document.getElementById('stackedChart'),{
         type:'bar',
-        data:{ labels: energyTypes, datasets:[{ label:'Emission', data:values, backgroundColor:'#10b981' }] },
-        options:{ responsive:true, plugins:{ legend:{ display:false } } }
+        data:{labels,datasets:[{label:'Emission',data:values,backgroundColor:colors}]},
+        options:{responsive:true,plugins:{legend:{display:false}}}
     })
+    const valDiv = document.getElementById('stackedValues')
+    valDiv.innerHTML = labels.map((l,i)=>`${l}: ${values[i]}`).join(' | ')
+}
 
-    // Trend Chart
-    const months = [...new Set(data.map(d=>d.month))].sort()
-    const trendValues = months.map(m=>{
-        return data.filter(d=>d.month===m).reduce((sum,r)=>sum+r.total_emission,0)
+function renderTrend(data){
+    const months = [...new Set(data.map(d=>new Date(d.month).toLocaleString('default',{month:'short'})))]
+    const values = months.map(m=>{
+        return data.filter(d=>new Date(d.month).toLocaleString('default',{month:'short'})===m)
+                   .reduce((sum,r)=>sum+r.total_emission,0)
     })
-
     if(trendChart) trendChart.destroy()
     trendChart = new Chart(document.getElementById('trendChart'),{
         type:'line',
-        data:{ labels:months.map(formatMonth), datasets:[{ label:'Total Emission', data:trendValues, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.2)', fill:true, tension:0.3 }] },
-        options:{ responsive:true, plugins:{ legend:{ display:false } } }
+        data:{labels:months,datasets:[{label:'Total Emission',data:values,borderColor:'#10b981',fill:false}]},
+        options:{responsive:true}
     })
 }
 
-// Filters
-facilityBtn.addEventListener('click', ()=> {
-    const allFacilities = ['Main Facility','All Facilities']
-    const current = facilityFilter || 'All Facilities'
-    const next = current==='All Facilities'?'Main Facility':'All Facilities'
-    facilityFilter = next==='All Facilities'?null:next
-    facilityBtn.textContent = next+' ▼'
+// Facility & Month Selection
+document.getElementById('facilityBtn').addEventListener('click',()=>{
+    const facilities = ['Main Facility','Facility 2','All Facilities']
+    const current = selectedFacility||'All Facilities'
+    const next = facilities[(facilities.indexOf(current)+1)%facilities.length]
+    selectedFacility = next==='All Facilities'?null:next
+    document.getElementById('facilityBtn').innerText = selectedFacility||'All Facilities ▼'
     loadDashboard()
 })
-
-monthBtn.addEventListener('click', ()=>{
-    const allMonths = ['2026-02-01','2026-03-01','All Months']
-    const current = monthFilter || 'All Months'
-    const next = current==='All Months'?'2026-02-01':'All Months'
-    monthFilter = next==='All Months'?null:next
-    monthBtn.textContent = next==='All Months'?'All Months ▼':formatMonth(next)+' ▼'
+document.getElementById('monthBtn').addEventListener('click',()=>{
+    const months = [...new Set(lastData.map(d=>new Date(d.month).toLocaleString('default',{month:'short'})))].concat(['All Months'])
+    const current = selectedMonth?new Date(selectedMonth).toLocaleString('default',{month:'short'}):'All Months'
+    let idx = months.indexOf(current)
+    const next = months[(idx+1)%months.length]
+    selectedMonth = next==='All Months'?null:new Date(lastData.find(d=>new Date(d.month).toLocaleString('default',{month:'short'})===next).month)
+    document.getElementById('monthBtn').innerText = selectedMonth?next+' ▼':'All Months ▼'
     loadDashboard()
 })
-
-refreshBtn.addEventListener('click', ()=> loadDashboard())
+document.getElementById('refreshBtn').addEventListener('click',()=>loadDashboard())
 
 // Export CSV
-exportCsvBtn.addEventListener('click', ()=>{
-    supabase.from('dashboard_phase2_final_named').select('*').then(r=>{
-        const csv = r.data.map(d=>Object.values(d).join(',')).join('\n')
-        const blob = new Blob([csv], {type:'text/csv'})
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href=url; a.download='dashboard.csv'; a.click(); URL.revokeObjectURL(url)
-    })
+document.getElementById('exportCSVBtn').addEventListener('click',()=>{
+    if(!lastData.length) return
+    const ws = XLSX.utils.json_to_sheet(lastData)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb,ws,'Dashboard')
+    XLSX.writeFile(wb,'energy_dashboard.xlsx')
 })
-
 // Export PDF
-exportPdfBtn.addEventListener('click', ()=>{
+document.getElementById('exportPDFBtn').addEventListener('click',()=>{
+    if(!lastData.length) return
     const { jsPDF } = window.jspdf
     const doc = new jsPDF()
-    doc.text('Energy Dashboard', 10, 10)
-    doc.save('dashboard.pdf')
+    doc.text('Energy Dashboard',10,10)
+    doc.text('KPI:',10,20)
+    lastData.slice(0,1).forEach(d=>{
+        doc.text(`Total Usage: ${d.total_usage_facility} kWh`,10,30)
+        doc.text(`Total Cost: $${d.total_cost_facility}`,10,40)
+        doc.text(`Total Emission: ${d.total_emission_facility} ton`,10,50)
+    })
+    doc.save('energy_dashboard.pdf')
 })
 
 loadDashboard()
