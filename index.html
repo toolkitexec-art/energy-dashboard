@@ -2,33 +2,86 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Energy Emission Dashboard</title>
+<title>Energy Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
-font-family:Arial;
-background:#0f172a;
-color:white;
-padding:20px
+margin:0;
+font-family:Inter,Arial;
+background:#07131d;
+color:#e6f1f5;
+display:flex;
+}
+
+.sidebar{
+width:70px;
+background:#0b1a25;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding-top:20px;
+gap:25px
+}
+
+.sidebar div{
+width:36px;
+height:36px;
+background:#0f2b3a;
+border-radius:10px
+}
+
+.main{
+flex:1;
+padding:25px
+}
+
+.header{
+font-size:22px;
+font-weight:600;
+margin-bottom:20px
+}
+
+.kpi-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+margin-bottom:20px
 }
 
 .kpi-card{
-background:#1e293b;
-padding:15px;
-border-radius:10px;
-display:inline-block;
-margin:10px;
-min-width:160px;
-text-align:center
+background:#0f2330;
+border-radius:14px;
+padding:18px
+}
+
+.kpi-title{
+font-size:13px;
+opacity:.7
+}
+
+.kpi-value{
+font-size:28px;
+margin-top:5px
+}
+
+.chart-grid{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:18px
+}
+
+.chart-card{
+background:#0f2330;
+border-radius:16px;
+padding:18px
 }
 
 canvas{
-background:white;
-border-radius:10px;
-margin-top:20px
+background:#0c1c27;
+border-radius:10px
 }
 
 </style>
@@ -36,17 +89,37 @@ margin-top:20px
 
 <body>
 
-<h2>Energy Dashboard</h2>
+<div class="sidebar">
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+</div>
+
+<div class="main">
+
+<div class="header">Energy Dashboard</div>
 
 <div id="loading">Loading data...</div>
 
-<div id="kpi-container"></div>
+<div id="kpi-container" class="kpi-grid"></div>
 
-<h3>Emission by Energy Type</h3>
-<canvas id="stackedChart"></canvas>
+<div class="chart-grid">
 
-<h3>Emission Trend</h3>
+<div class="chart-card">
+<h3>Monthly Usage</h3>
 <canvas id="trendChart"></canvas>
+</div>
+
+<div class="chart-card">
+<h3>Energy Mix</h3>
+<canvas id="mixChart"></canvas>
+</div>
+
+</div>
+
+</div>
 
 <script type="module" src="script.js"></script>
 
