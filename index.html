@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Energy Dashboard</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -11,14 +10,14 @@
 body{
 margin:0;
 font-family:Inter,Arial;
-background:#07131d;
+background:#061823;
 color:#e6f1f5;
-display:flex;
+display:flex
 }
 
 .sidebar{
 width:70px;
-background:#0b1a25;
+background:#081e2b;
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -26,11 +25,11 @@ padding-top:20px;
 gap:25px
 }
 
-.sidebar div{
+.icon{
 width:36px;
 height:36px;
-background:#0f2b3a;
-border-radius:10px
+border-radius:10px;
+background:#0f2f40
 }
 
 .main{
@@ -38,7 +37,7 @@ flex:1;
 padding:25px
 }
 
-.header{
+.title{
 font-size:22px;
 font-weight:600;
 margin-bottom:20px
@@ -47,41 +46,40 @@ margin-bottom:20px
 .kpi-grid{
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:18px;
+gap:15px;
 margin-bottom:20px
 }
 
 .kpi-card{
-background:#0f2330;
-border-radius:14px;
+background:#0e2a3a;
+border-radius:12px;
 padding:18px
 }
 
 .kpi-title{
-font-size:13px;
+font-size:12px;
 opacity:.7
 }
 
 .kpi-value{
-font-size:28px;
+font-size:26px;
 margin-top:5px
 }
 
-.chart-grid{
+.grid{
 display:grid;
 grid-template-columns:2fr 1fr;
 gap:18px
 }
 
-.chart-card{
-background:#0f2330;
-border-radius:16px;
+.card{
+background:#0e2a3a;
+border-radius:14px;
 padding:18px
 }
 
 canvas{
-background:#0c1c27;
-border-radius:10px
+margin-top:10px
 }
 
 </style>
@@ -90,29 +88,29 @@ border-radius:10px
 <body>
 
 <div class="sidebar">
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
+<div class="icon"></div>
+<div class="icon"></div>
+<div class="icon"></div>
+<div class="icon"></div>
+<div class="icon"></div>
 </div>
 
 <div class="main">
 
-<div class="header">Energy Dashboard</div>
+<div class="title">Energy Dashboard</div>
 
 <div id="loading">Loading data...</div>
 
 <div id="kpi-container" class="kpi-grid"></div>
 
-<div class="chart-grid">
+<div class="grid">
 
-<div class="chart-card">
+<div class="card">
 <h3>Monthly Usage</h3>
 <canvas id="trendChart"></canvas>
 </div>
 
-<div class="chart-card">
+<div class="card">
 <h3>Energy Mix</h3>
 <canvas id="mixChart"></canvas>
 </div>
