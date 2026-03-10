@@ -1,40 +1,39 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
-<title>Energy Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Energy Dashboard</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
 
-<style>
+*{box-sizing:border-box}
 
 body{
 margin:0;
 font-family:Inter,Arial;
-background:#061823;
+background:radial-gradient(circle at top,#0b2b3c,#020b14);
 color:#e6f1f5;
-display:flex
+display:flex;
+height:100vh
 }
 
 .sidebar{
 width:70px;
-background:#081e2b;
+background:#061d2a;
 display:flex;
 flex-direction:column;
 align-items:center;
-padding-top:20px;
+padding-top:25px;
 gap:25px
 }
 
-.icon{
+.sideicon{
 width:36px;
 height:36px;
-border-radius:10px;
-background:#0f2f40
+background:#0d2f40;
+border-radius:10px
 }
 
 .main{
 flex:1;
-padding:25px
+padding:28px
 }
 
 .title{
@@ -43,83 +42,174 @@ font-weight:600;
 margin-bottom:20px
 }
 
-.kpi-grid{
+.kpi{
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:15px;
+gap:18px;
 margin-bottom:20px
 }
 
-.kpi-card{
-background:#0e2a3a;
-border-radius:12px;
-padding:18px
+.card{
+background:linear-gradient(145deg,#0e2a3a,#0a1f2b);
+border-radius:14px;
+padding:18px;
+box-shadow:0 0 25px rgba(0,255,200,0.06)
 }
 
-.kpi-title{
-font-size:12px;
+.card small{
 opacity:.7
 }
 
-.kpi-value{
-font-size:26px;
-margin-top:5px
+.value{
+font-size:28px;
+margin-top:6px;
+font-weight:600
 }
 
 .grid{
 display:grid;
 grid-template-columns:2fr 1fr;
-gap:18px
+gap:20px
 }
 
-.card{
-background:#0e2a3a;
-border-radius:14px;
-padding:18px
+.chartbox{
+background:linear-gradient(145deg,#0e2a3a,#0a1f2b);
+border-radius:16px;
+padding:20px;
+box-shadow:0 0 30px rgba(0,255,200,0.05)
 }
 
 canvas{
 margin-top:10px
 }
 
-</style>
-</head>
-
-<body>
-
-<div class="sidebar">
-<div class="icon"></div>
-<div class="icon"></div>
-<div class="icon"></div>
-<div class="icon"></div>
-<div class="icon"></div>
-</div>
-
-<div class="main">
-
-<div class="title">Energy Dashboard</div>
-
-<div id="loading">Loading data...</div>
-
-<div id="kpi-container" class="kpi-grid"></div>
-
-<div class="grid">
-
-<div class="card">
+</style></head><body><div class="sidebar">
+<div class="sideicon"></div>
+<div class="sideicon"></div>
+<div class="sideicon"></div>
+<div class="sideicon"></div>
+<div class="sideicon"></div>
+</div><div class="main"><div class="title">Energy Dashboard</div><div class="kpi"><div class="card">
+<small>Total Consumption</small>
+<div id="usage" class="value">0</div>
+</div><div class="card">
+<small>Cost</small>
+<div id="cost" class="value">$0</div>
+</div><div class="card">
+<small>CO₂ Emission</small>
+<div id="co2" class="value">0</div>
+</div><div class="card">
+<small>Efficiency</small>
+<div class="value">87%</div>
+</div></div><div class="grid"><div class="chartbox">
 <h3>Monthly Usage</h3>
 <canvas id="trendChart"></canvas>
-</div>
-
-<div class="card">
+</div><div class="chartbox">
 <h3>Energy Mix</h3>
 <canvas id="mixChart"></canvas>
-</div>
+</div></div></div><script type="module">
 
-</div>
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
-</div>
+const supabase=createClient(
+"https://otzxkvdkpbsyrbiqtbjd.supabase.co",
+"sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
+)
 
-<script type="module" src="script.js"></script>
+async function load(){
 
-</body>
+const {data,error}=await supabase
+.from("dashboard_phase2_final_named")
+.select("*")
+
+if(error){
+console.log(error)
+return
+}
+
+render(data)
+
+}
+
+function render(data){
+
+const totalUsage=data.reduce((a,b)=>a+Number(b.total_usage),0)
+const totalCost=data.reduce((a,b)=>a+Number(b.total_cost),0)
+const totalEmission=data.reduce((a,b)=>a+Number(b.total_emission),0)
+
+document.getElementById("usage").innerText=totalUsage
+document.getElementById("cost").innerText="$"+totalCost
+document.getElementById("co2").innerText=totalEmission
+
+const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
+
+const values=months.map(m=>
+data
+.filter(x=>x.month.startsWith(m))
+.reduce((s,r)=>s+Number(r.total_usage),0)
+)
+
+new Chart(document.getElementById("trendChart"),{
+
+type:"line",
+
+data:{
+labels:months,
+datasets:[{
+data:values,
+borderColor:"#2df5c4",
+backgroundColor:"rgba(45,245,196,0.25)",
+fill:true,
+tension:0.4
+}]
+},
+
+options:{
+plugins:{legend:{display:false}},
+scales:{
+x:{ticks:{color:"#9fb3c8"}},
+y:{ticks:{color:"#9fb3c8"}}
+}
+}
+
+})
+
+const types=[...new Set(data.map(d=>d.energy_type_record))]
+
+const mix=types.map(t=>
+data
+.filter(x=>x.energy_type_record==t)
+.reduce((s,r)=>s+Number(r.total_usage),0)
+)
+
+new Chart(document.getElementById("mixChart"),{
+
+type:"doughnut",
+
+data:{
+labels:types,
+datasets:[{
+data:mix,
+backgroundColor:[
+"#2ec4ff",
+"#ff7a7a",
+"#ffd166",
+"#00ffd0",
+"#8e7dff",
+"#f72585"
+]
+}]
+},
+
+options:{
+cutout:"70%"
+}
+
+})
+
+}
+
+load()
+
+</script></body>
 </html>
