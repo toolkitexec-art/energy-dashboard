@@ -3,40 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Energy Dashboard SaaS</title>
+<title>Energy Dashboard SaaS Premium</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#0f1419;color:#fff;padding:20px;}
-.dashboard-container{max-width:1200px;margin:0 auto;background:#1e293b;border-radius:20px;padding:30px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);}
+.dashboard-container{max-width:1400px;margin:0 auto;background:#1e293b;border-radius:24px;padding:30px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px;}
-.header h1{font-size:24px;color:#f1f5f9;}
+.header h1{font-size:28px;font-weight:600;color:#f1f5f9;}
 .controls{display:flex;gap:10px;align-items:center;}
-.btn{background:#334155;border:none;color:#cbd5e1;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;transition:all 0.3s;}
+.btn{background:#334155;border:none;color:#cbd5e1;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:14px;transition:all 0.3s;}
 .btn:hover{background:#475569;}
 .btn-primary{background:#10b981;color:white;}
 .btn-primary:hover{background:#059669;}
-.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px;}
-.metric-card{background:#0f172a;border-radius:16px;padding:24px;border:1px solid #334155;transition:transform 0.3s;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:30px;}
+.metric-card{background:#0f172a;border-radius:20px;padding:28px;border:1px solid #334155;transition:transform 0.3s, border-color 0.3s;box-shadow:0 5px 15px rgba(16,185,129,0.2);}
 .metric-card:hover{transform:translateY(-5px);border-color:#10b981;}
-.metric-label{color:#94a3b8;font-size:14px;margin-bottom:8px;text-transform:uppercase;}
-.metric-value{font-size:32px;font-weight:700;color:#fff;}
+.metric-label{color:#94a3b8;font-size:14px;margin-bottom:10px;text-transform:uppercase;}
+.metric-value{font-size:36px;font-weight:700;color:#ffffff;display:flex;align-items:center;gap:8px;}
 .metric-unit{font-size:16px;color:#64748b;font-weight:500;}
-.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
-.chart-card{background:#0f172a;border-radius:16px;padding:24px;border:1px solid #334155;}
+.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
+.chart-card{background:#0f172a;border-radius:20px;padding:28px;border:1px solid #334155;transition:transform 0.3s, box-shadow 0.3s;box-shadow:0 5px 15px rgba(16,185,129,0.1);}
+.chart-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(16,185,129,0.25);}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-.chart-title{font-size:18px;font-weight:600;color:#f1f5f9;}
-.chart-btn{background:#1e293b;border:1px solid #475569;color:#94a3b8;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+.chart-title{font-size:20px;font-weight:600;color:#f1f5f9;}
+.chart-btn{background:#1e293b;border:1px solid #475569;color:#94a3b8;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;}
+#stackedValues{display:flex;justify-content:space-around;margin-top:12px;color:#cbd5e1;font-size:14px;flex-wrap:wrap;gap:10px;}
 @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}.metrics-grid{grid-template-columns:1fr;}}
-#stackedValues{display:flex;justify-content:space-around;margin-top:10px;color:#cbd5e1;font-size:14px;}
 </style>
 </head>
 <body>
 <div class="dashboard-container">
     <div class="header">
-        <h1>Energy Dashboard</h1>
+        <h1>Energy Dashboard Premium</h1>
         <div class="controls">
             <button class="btn" id="facilityBtn">All Facilities ▼</button>
             <button class="btn" id="monthBtn">All Months ▼</button>
@@ -50,17 +51,13 @@ body{font-family:'Segoe UI',sans-serif;background:#0f1419;color:#fff;padding:20p
 
     <div class="charts-grid">
         <div class="chart-card">
-            <div class="chart-header">
-                <h3 class="chart-title">Emission per Energy Type</h3>
-            </div>
+            <div class="chart-header"><h3 class="chart-title">Emission per Energy Type</h3></div>
             <canvas id="stackedChart"></canvas>
             <div id="stackedValues"></div>
         </div>
 
         <div class="chart-card">
-            <div class="chart-header">
-                <h3 class="chart-title">Total Emission per Month</h3>
-            </div>
+            <div class="chart-header"><h3 class="chart-title">Total Emission per Month</h3></div>
             <canvas id="trendChart"></canvas>
         </div>
     </div>
@@ -68,14 +65,12 @@ body{font-family:'Segoe UI',sans-serif;background:#0f1419;color:#fff;padding:20p
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
 const SUPABASE_URL = 'https://otzxkvdkpbsyrbiqtbjd.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJzdXBhYmFzZSIsInJlZiI6Im90enhrdmRrcGJzeXJiaXF0YmpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTY3NDYsImV4cCI6MjA4NzEzMjc0Nn0.tmLk2MoEpRbAdZNT5tRZTRvH_laeRo5Y1t-ollBGNAQ'
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-let selectedFacility = null
-let selectedMonth = null
-let stackedChart, trendChart, lastData=[]
+let selectedFacility = null, selectedMonth = null, stackedChart, trendChart, lastData=[]
 
 async function loadDashboard() {
     let query = supabase.from('dashboard_phase2_final_named').select('*')
@@ -109,11 +104,10 @@ function renderStack(data){
     if(stackedChart) stackedChart.destroy()
     stackedChart = new Chart(document.getElementById('stackedChart'),{
         type:'bar',
-        data:{labels,datasets:[{label:'Emission',data:values,backgroundColor:colors}]},
-        options:{responsive:true,plugins:{legend:{display:false}}}
+        data:{labels,datasets:[{label:'Emission',data:values,backgroundColor:colors,hoverOffset:8}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     })
-    const valDiv = document.getElementById('stackedValues')
-    valDiv.innerHTML = labels.map((l,i)=>`${l}: ${values[i]}`).join(' | ')
+    document.getElementById('stackedValues').innerHTML = labels.map((l,i)=>`${l}: ${values[i]}`).join(' | ')
 }
 
 function renderTrend(data){
@@ -125,16 +119,17 @@ function renderTrend(data){
     if(trendChart) trendChart.destroy()
     trendChart = new Chart(document.getElementById('trendChart'),{
         type:'line',
-        data:{labels:months,datasets:[{label:'Total Emission',data:values,borderColor:'#10b981',fill:false}]},
-        options:{responsive:true}
+        data:{labels:months,datasets:[{label:'Total Emission',data:values,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.2)',fill:true,tension:0.3,pointRadius:6,pointHoverRadius:8}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     })
 }
 
 // Facility & Month Selection
 document.getElementById('facilityBtn').addEventListener('click',()=>{
-    const facilities = ['Main Facility','Facility 2','All Facilities']
-    const current = selectedFacility||'All Facilities'
-    const next = facilities[(facilities.indexOf(current)+1)%facilities.length]
+    const facilities = ['All Facilities','Main Facility','Facility 2']
+    const current = selectedFacility?'Main Facility':'All Facilities'
+    const idx = facilities.indexOf(current)
+    const next = facilities[(idx+1)%facilities.length]
     selectedFacility = next==='All Facilities'?null:next
     document.getElementById('facilityBtn').innerText = selectedFacility||'All Facilities ▼'
     loadDashboard()
@@ -142,7 +137,7 @@ document.getElementById('facilityBtn').addEventListener('click',()=>{
 document.getElementById('monthBtn').addEventListener('click',()=>{
     const months = [...new Set(lastData.map(d=>new Date(d.month).toLocaleString('default',{month:'short'})))].concat(['All Months'])
     const current = selectedMonth?new Date(selectedMonth).toLocaleString('default',{month:'short'}):'All Months'
-    let idx = months.indexOf(current)
+    const idx = months.indexOf(current)
     const next = months[(idx+1)%months.length]
     selectedMonth = next==='All Months'?null:new Date(lastData.find(d=>new Date(d.month).toLocaleString('default',{month:'short'})===next).month)
     document.getElementById('monthBtn').innerText = selectedMonth?next+' ▼':'All Months ▼'
