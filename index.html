@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Energy Emission Premium Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>Energy Emission Dashboard</h1>
+
+<div class="debug-panel" id="debugPanel"><p>Loading data...</p></div>
+
+<div class="filters">
+  <select id="facilityFilter"><option value="all">All Facilities</option></select>
+  <select id="energyFilter"><option value="all">All Energy Types</option></select>
+</div>
+
+<div class="kpi-grid" id="kpiGrid"></div>
+
+<div class="chart-container"><canvas id="stackedChart"></canvas></div>
+<div class="chart-container"><canvas id="trendChart"></canvas></div>
+<div class="chart-container"><canvas id="donutChart"></canvas></div>
+
+<button class="export-btn" id="exportBtn">Export CSV</button>
+
+<table class="matrix-table" id="matrixTable">
+  <thead>
+    <tr>
+      <th>Facility</th>
+      <th>Electricity</th>
+      <th>Gas</th>
+      <th>Diesel</th>
+      <th>Renewables</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
