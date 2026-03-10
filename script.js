@@ -1,106 +1,118 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
 const SUPABASE_URL = "https://otzxkvdkpbsyrbiqtbjd.supabase.co"
-
 const SUPABASE_KEY = "sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-async function loadDashboard() {
+async function loadDashboard(){
 
-  const { data, error } = await supabase
-    .from("dashboard_phase2_final_named")
-    .select("*")
+const {data,error} = await supabase
+.from("dashboard_phase2_final_named")
+.select("*")
 
-  if (error) {
-    console.log(error)
-    document.getElementById("loading").innerText = "Error loading data"
-    return
-  }
+if(error){
+console.log(error)
+document.getElementById("loading").innerText="Error loading data"
+return
+}
 
-  if (!data || data.length === 0) {
-    document.getElementById("loading").innerText = "No data found"
-    return
-  }
+if(!data || data.length===0){
+document.getElementById("loading").innerText="No data found"
+return
+}
 
-  document.getElementById("loading").style.display = "none"
+document.getElementById("loading").style.display="none"
 
-  renderKPI(data)
-  renderStack(data)
-  renderTrend(data)
+renderKPI(data)
+renderTrend(data)
+renderMix(data)
 
 }
 
 function renderKPI(data){
 
-  const totalUsage =
-    data.reduce((sum,r)=> sum + Number(r.total_usage),0)
+const totalUsage=data.reduce((s,r)=>s+Number(r.total_usage),0)
+const totalCost=data.reduce((s,r)=>s+Number(r.total_cost),0)
+const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission),0)
 
-  const totalCost =
-    data.reduce((sum,r)=> sum + Number(r.total_cost),0)
+const container=document.getElementById("kpi-container")
 
-  const totalEmission =
-    data.reduce((sum,r)=> sum + Number(r.total_emission),0)
+container.innerHTML=`
 
-  document.getElementById("kpi-container").innerHTML = `
-    <div class="kpi-card">
-      <b>Total Usage</b><br>${totalUsage.toFixed(2)}
-    </div>
+<div class="kpi-card">
+<div class="kpi-title">Total Consumption</div>
+<div class="kpi-value">${totalUsage.toFixed(0)}</div>
+</div>
 
-    <div class="kpi-card">
-      <b>Total Cost</b><br>${totalCost.toFixed(2)}
-    </div>
+<div class="kpi-card">
+<div class="kpi-title">Cost</div>
+<div class="kpi-value">$${totalCost.toFixed(0)}</div>
+</div>
 
-    <div class="kpi-card">
-      <b>Total Emission</b><br>${totalEmission.toFixed(2)}
-    </div>
-  `
-}
+<div class="kpi-card">
+<div class="kpi-title">CO₂ Emission</div>
+<div class="kpi-value">${totalEmission.toFixed(2)}</div>
+</div>
 
-function renderStack(data){
+<div class="kpi-card">
+<div class="kpi-title">Efficiency</div>
+<div class="kpi-value">87%</div>
+</div>
 
-  const labels = [...new Set(data.map(d=>d.energy_type_record))]
-
-  const values = labels.map(type=>{
-    return data
-      .filter(r=>r.energy_type_record===type)
-      .reduce((sum,r)=> sum + Number(r.total_emission),0)
-  })
-
-  new Chart(document.getElementById("stackedChart"),{
-    type:"bar",
-    data:{
-      labels:labels,
-      datasets:[{
-        label:"Emission by Energy Type",
-        data:values
-      }]
-    }
-  })
-
+`
 }
 
 function renderTrend(data){
 
-  const months =
-  [...new Set(data.map(d=>d.month.substring(0,7)))]
+const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
 
-  const values = months.map(m=>{
-    return data
-      .filter(r=>r.month.startsWith(m))
-      .reduce((sum,r)=> sum + Number(r.total_emission),0)
-  })
+const values=months.map(m=>
+data
+.filter(r=>r.month.startsWith(m))
+.reduce((s,r)=>s+Number(r.total_usage),0)
+)
 
-  new Chart(document.getElementById("trendChart"),{
-    type:"line",
-    data:{
-      labels:months,
-      datasets:[{
-        label:"Total Emission",
-        data:values
-      }]
-    }
-  })
+new Chart(document.getElementById("trendChart"),{
+
+type:"line",
+
+data:{
+labels:months,
+datasets:[{
+label:"Monthly Usage",
+data:values,
+tension:0.4,
+fill:true
+}]
+}
+
+})
+
+}
+
+function renderMix(data){
+
+const types=[...new Set(data.map(d=>d.energy_type_record))]
+
+const values=types.map(t=>
+data
+.filter(r=>r.energy_type_record===t)
+.reduce((s,r)=>s+Number(r.total_usage),0)
+)
+
+new Chart(document.getElementById("mixChart"),{
+
+type:"doughnut",
+
+data:{
+labels:types,
+datasets:[{
+data:values
+}]
+}
+
+})
 
 }
 
