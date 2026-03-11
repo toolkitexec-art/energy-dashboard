@@ -36,11 +36,8 @@ return
 document.getElementById("loading").style.display="none"
 
 renderKPI(data)
-
 renderStack(data)
-
 renderTrend(data)
-
 renderAI(data)
 
 }
@@ -95,7 +92,6 @@ const gradient =
 ctx.createLinearGradient(0,0,0,400)
 
 gradient.addColorStop(0,"#22c55e")
-
 gradient.addColorStop(1,"#3b82f6")
 
 new Chart(ctx,{
@@ -109,6 +105,35 @@ label:"Emission by Energy Type",
 data:values,
 backgroundColor:gradient
 }]
+},
+
+plugins:[ChartDataLabels],
+
+options:{
+
+plugins:{
+
+datalabels:{
+color:"#ffffff",
+anchor:"end",
+align:"top",
+font:{
+weight:"bold",
+size:12
+},
+formatter:(value)=>{
+return value.toFixed(2)
+}
+}
+
+},
+
+scales:{
+y:{
+beginAtZero:true
+}
+}
+
 }
 
 })
@@ -136,7 +161,6 @@ const gradient =
 ctx.createLinearGradient(0,0,0,400)
 
 gradient.addColorStop(0,"#60a5fa")
-
 gradient.addColorStop(1,"#1e293b")
 
 new Chart(ctx,{
