@@ -1,86 +1,100 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
-const SUPABASE_URL="https://otzxkvdkpbsyrbiqtbjd.supabase.co"
-const SUPABASE_KEY="sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
+const supabase = createClient(
+"https://otzxkvdkpbsyrbiqtbjd.supabase.co",
+"sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
+)
 
-const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
+let dataset=[]
 
-async function loadDashboard(){
+async function loadData(){
 
-const {data,error}=await supabase
+const {data,error} = await supabase
 .from("dashboard_phase2_final_named")
 .select("*")
 
 if(error){
 console.log(error)
-document.getElementById("loading").innerText="Error loading data"
 return
 }
 
-document.getElementById("loading").style.display="none"
+dataset=data
 
-renderKPI(data)
-renderTrend(data)
-renderMix(data)
+populateFacilityFilter()
+
+updateDashboard()
 
 }
 
-function renderKPI(data){
+function populateFacilityFilter(){
 
-const totalUsage=data.reduce((s,r)=>s+Number(r.total_usage),0)
+const facilities=[...new Set(dataset.map(d=>d.facility_id))]
+
+const select=document.getElementById("facilityFilter")
+
+select.innerHTML='<option value="all">All Facilities</option>'
+
+facilities.forEach(f=>{
+select.innerHTML+="<option value="${f}">${f}</option>"
+})
+
+}
+
+function getFilteredData(){
+
+const facility=document.getElementById("facilityFilter").value
+const energy=document.getElementById("energyFilter").value
+
+return dataset.filter(d=>{
+return (facility==="all"||d.facility_id==facility) &&
+(energy==="all"||d.energy_type_record==energy)
+})
+
+}
+
+function updateDashboard(){
+
+const data=getFilteredData()
+
+const totalEnergy=data.reduce((s,r)=>s+Number(r.total_usage),0)
 const totalCost=data.reduce((s,r)=>s+Number(r.total_cost),0)
-const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const totalCO2=data.reduce((s,r)=>s+Number(r.total_emission),0)
 
-const container=document.getElementById("kpi-container")
+document.getElementById("kpiEnergy").innerText=Math.round(totalEnergy)
+document.getElementById("kpiCost").innerText="$"+Math.round(totalCost)
+document.getElementById("kpiCO2").innerText=Math.round(totalCO2)
 
-container.innerHTML=`
+const efficiency=Math.round((totalEnergy/(totalEnergy+totalCO2))*100)
 
-<div class="kpi-card">
-<div class="kpi-title">Total Consumption</div>
-<div class="kpi-value">${totalUsage.toFixed(0)}</div>
-</div>
+document.getElementById("kpiEfficiency").innerText=efficiency+"%"
 
-<div class="kpi-card">
-<div class="kpi-title">Cost</div>
-<div class="kpi-value">$${totalCost.toFixed(0)}</div>
-</div>
+renderTrend(data)
+renderMix(data)
+renderCost(data)
+renderCarbon(data)
 
-<div class="kpi-card">
-<div class="kpi-title">CO₂ Emission</div>
-<div class="kpi-value">${totalEmission.toFixed(2)}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Efficiency</div>
-<div class="kpi-value">87%</div>
-</div>
-
-`
 }
 
 function renderTrend(data){
 
 const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
 
-const values=months.map(m=>
-data
-.filter(r=>r.month.startsWith(m))
+const values=months.map(m=>{
+return data
+.filter(x=>x.month.startsWith(m))
 .reduce((s,r)=>s+Number(r.total_usage),0)
-)
+})
 
 new Chart(document.getElementById("trendChart"),{
 
-type:"line",
+type:'line',
 
 data:{
 labels:months,
 datasets:[{
-label:"Monthly Usage",
 data:values,
-borderColor:"#4cc9f0",
-backgroundColor:"rgba(76,201,240,0.2)",
-fill:true,
-tension:0.4
+borderColor:'#24E0C7',
+tension:.4
 }]
 }
 
@@ -92,37 +106,80 @@ function renderMix(data){
 
 const types=[...new Set(data.map(d=>d.energy_type_record))]
 
-const values=types.map(t=>
-data
-.filter(r=>r.energy_type_record===t)
+const values=types.map(t=>{
+return data
+.filter(x=>x.energy_type_record===t)
 .reduce((s,r)=>s+Number(r.total_usage),0)
-)
+})
 
 new Chart(document.getElementById("mixChart"),{
 
-type:"doughnut",
+type:'doughnut',
 
 data:{
 labels:types,
 datasets:[{
-data:values,
-backgroundColor:[
-"#4cc9f0",
-"#ff6b6b",
-"#ffd166",
-"#06d6a0",
-"#9b5de5",
-"#f72585"
-]
+data:values
 }]
-},
-
-options:{
-cutout:"60%"
 }
 
 })
 
 }
 
-loadDashboard()
+function renderCost(data){
+
+const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
+
+const values=months.map(m=>{
+return data
+.filter(x=>x.month.startsWith(m))
+.reduce((s,r)=>s+Number(r.total_cost),0)
+})
+
+new Chart(document.getElementById("costChart"),{
+
+type:'bar',
+
+data:{
+labels:months,
+datasets:[{
+data:values,
+backgroundColor:'#FF8C2B'
+}]
+}
+
+})
+
+}
+
+function renderCarbon(data){
+
+const months=[...new Set(data.map(d=>d.month.substring(0,7)))]
+
+const values=months.map(m=>{
+return data
+.filter(x=>x.month.startsWith(m))
+.reduce((s,r)=>s+Number(r.total_emission),0)
+})
+
+new Chart(document.getElementById("carbonChart"),{
+
+type:'line',
+
+data:{
+labels:months,
+datasets:[{
+data:values,
+borderColor:'#FF4D6D'
+}]
+}
+
+})
+
+}
+
+document.getElementById("facilityFilter").onchange=updateDashboard
+document.getElementById("energyFilter").onchange=updateDashboard
+
+loadData()
