@@ -4,179 +4,107 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Helixon Energy Intelligence</title>
+<title>Helixon Energy Intelligence Dashboard</title>
 
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- GOOGLE FONT -->
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-
-
-<!-- CSS FILE -->
-
-<link rel="stylesheet" href="style.css">
-
-
-<!-- CHART JS -->
-
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family: 'Montserrat', sans-serif;
+background:#0f172a;
+color:white;
+margin:0;
+padding:20px;
+}
+
+h1{
+font-size:24px;
+margin-bottom:20px;
+}
+
+#loading{
+font-size:18px;
+margin-bottom:20px;
+}
+
+#kpi-container{
+display:grid;
+grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+margin-bottom:30px;
+}
+
+.kpi-card{
+background:linear-gradient(145deg,#1e293b,#111827);
+padding:20px;
+border-radius:10px;
+font-size:18px;
+}
+
+.dashboard-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+.chart-card{
+background:#111827;
+padding:20px;
+border-radius:10px;
+}
+
+canvas{
+width:100% !important;
+height:350px !important;
+}
+
+@media(max-width:900px){
+
+.dashboard-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
 
 </head>
 
 <body>
 
-<div class="dashboard">
-
-<!-- HEADER -->
-
-<div class="logo">HELIXON</div>
-
-<div class="subtitle">
-Energy Intelligence Platform
-</div>
-
-
-
-<!-- FILTER -->
-
-<div class="filters">
-
-<select id="facilityFilter">
-
-<option value="all">
-All Facilities
-</option>
-
-</select>
-
-
-<select id="energyFilter">
-
-<option value="all">
-All Energy Types
-</option>
-
-</select>
-
-</div>
-
-
-
-<!-- KPI -->
-
-<section
-id="kpi-container"
-class="kpi-grid"
->
-
-</section>
-
-
-
-<!-- CHART GRID -->
-
-<section
-class="charts-grid"
->
-
-<div class="panel">
-
-<h3>
-Energy Emission Mix
-</h3>
-
-<canvas id="mixChart"></canvas>
-
-</div>
-
-
-<div class="panel">
-
-<h3>
-Emission Trend
-</h3>
-
-<canvas id="trendChart"></canvas>
-
-</div>
-
-
-<div class="panel">
-
-<h3>
-Energy Type Comparison
-</h3>
-
-<canvas id="energyCompareChart"></canvas>
-
-</div>
-
-
-<div class="panel">
-
-<h3>
-Carbon Price Tracker
-</h3>
-
-<div id="carbonPrice"></div>
-
-</div>
-
-
-<div class="panel">
-
-<h3>
-AI Energy Recommendation
-</h3>
-
-<div
-id="aiPanel"
-class="ai-box"
-></div>
-
-</div>
-
-
-<div class="panel">
-
-<h3>
-Generate ESG Report
-</h3>
-
-<button onclick="generateESG()">
-Generate ESG Summary
-</button>
-
-<pre id="esgOutput"></pre>
-
-</div>
-
-
-</section>
-
-
-
-<!-- LOADING -->
+<h1>Helixon Energy Intelligence</h1>
 
 <div id="loading">
-
 Loading data...
+</div>
+
+<!-- KPI -->
+<div id="kpi-container"></div>
+
+<!-- Charts -->
+<div class="dashboard-grid">
+
+<div class="chart-card">
+<h3>Energy Type Comparison</h3>
+<canvas id="energyChart"></canvas>
+</div>
+
+<div class="chart-card">
+<h3>Emission Trend</h3>
+<canvas id="trendChart"></canvas>
+</div>
 
 </div>
 
-
-
-</div>
-
-
-
-<!-- SCRIPT -->
-
+<!-- Dashboard Script -->
 <script type="module" src="script.js"></script>
-
 
 </body>
 </html>
