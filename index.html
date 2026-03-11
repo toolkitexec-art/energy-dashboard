@@ -20,7 +20,7 @@ color:white;
 
 .dashboard{
 padding:30px;
-max-width:1400px;
+max-width:1500px;
 margin:auto;
 }
 
@@ -35,6 +35,8 @@ margin-bottom:20px;
 }
 
 .filters{
+display:flex;
+gap:10px;
 margin-bottom:20px;
 }
 
@@ -123,7 +125,13 @@ margin-top:20px;
 <div class="subtitle">Energy Intelligence Platform</div>
 
 <div class="filters">
+
 <select id="facilityFilter"></select>
+
+<select id="energyFilter">
+<option value="all">All Energy Types</option>
+</select>
+
 </div>
 
 <section id="kpi-container" class="kpi-grid"></section>
@@ -153,6 +161,11 @@ margin-top:20px;
 <div class="panel">
 <h3>Facility Emission Comparison</h3>
 <canvas id="facilityChart"></canvas>
+</div>
+
+<div class="panel">
+<h3>Energy Type Comparison</h3>
+<canvas id="energyCompareChart"></canvas>
 </div>
 
 <div class="panel">
@@ -193,6 +206,7 @@ const SUPABASE_KEY="sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 
 let charts={}
+let rawData=[]
 
 async function loadDashboard(){
 
@@ -211,7 +225,10 @@ document.getElementById("loading").innerText="No data found"
 return
 }
 
+rawData=data
+
 initFacilityFilter(data)
+initEnergyFilter(data)
 
 updateDashboard(data)
 
@@ -231,17 +248,40 @@ facilities.forEach(f=>{
 select.innerHTML+=`<option value="${f}">${f}</option>`
 })
 
-select.addEventListener("change",()=>{
+select.addEventListener("change",applyFilters)
 
-let filtered=data
+}
 
-if(select.value!=="all"){
-filtered=data.filter(d=>d.facility_name_display===select.value)
+function initEnergyFilter(data){
+
+const types=[...new Set(data.map(d=>d.energy_type_record))]
+
+const select=document.getElementById("energyFilter")
+
+types.forEach(t=>{
+select.innerHTML+=`<option value="${t}">${t}</option>`
+})
+
+select.addEventListener("change",applyFilters)
+
+}
+
+function applyFilters(){
+
+let filtered=rawData
+
+const facility=document.getElementById("facilityFilter").value
+const energy=document.getElementById("energyFilter").value
+
+if(facility!=="all"){
+filtered=filtered.filter(d=>d.facility_name_display===facility)
+}
+
+if(energy!=="all"){
+filtered=filtered.filter(d=>d.energy_type_record===energy)
 }
 
 updateDashboard(filtered)
-
-})
 
 }
 
@@ -253,6 +293,7 @@ renderTrend(data)
 renderCost(data)
 renderIntensity(data)
 renderFacility(data)
+renderEnergyCompare(data)
 renderAnomaly(data)
 renderForecast(data)
 renderInvestor(data)
@@ -264,7 +305,6 @@ function renderKPI(data){
 const totalUsage=data.reduce((s,r)=>s+Number(r.total_usage),0)
 const totalCost=data.reduce((s,r)=>s+Number(r.total_cost),0)
 const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission),0)
-const intensity=totalEmission/totalUsage
 
 document.getElementById("kpi-container").innerHTML=`
 
@@ -281,11 +321,6 @@ document.getElementById("kpi-container").innerHTML=`
 <div class="kpi-card">
 <div class="kpi-title">Carbon Emission</div>
 <div class="kpi-value">${totalEmission.toFixed(2)}</div>
-</div>
-
-<div class="kpi-card">
-<div class="kpi-title">Carbon Intensity</div>
-<div class="kpi-value">${intensity.toFixed(3)}</div>
 </div>
 
 `
@@ -389,6 +424,35 @@ data:{labels:facilities,datasets:[{label:"Emission",data:values}]}
 
 }
 
+function renderEnergyCompare(data){
+
+if(charts.compare) charts.compare.destroy()
+
+const types=[...new Set(data.map(d=>d.energy_type_record))]
+
+const usage=types.map(type=>{
+return data.filter(r=>r.energy_type_record===type)
+.reduce((s,r)=>s+Number(r.total_usage),0)
+})
+
+const emission=types.map(type=>{
+return data.filter(r=>r.energy_type_record===type)
+.reduce((s,r)=>s+Number(r.total_emission),0)
+})
+
+charts.compare=new Chart(document.getElementById("energyCompareChart"),{
+type:"bar",
+data:{
+labels:types,
+datasets:[
+{label:"Usage",data:usage},
+{label:"Emission",data:emission}
+]
+}
+})
+
+}
+
 function renderAnomaly(data){
 
 if(charts.anomaly) charts.anomaly.destroy()
@@ -455,17 +519,11 @@ function renderInvestor(data){
 
 const totalCost=data.reduce((s,r)=>s+Number(r.total_cost),0)
 const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission),0)
-const totalUsage=data.reduce((s,r)=>s+Number(r.total_usage),0)
-
-const efficiency=totalUsage/totalCost
 
 document.getElementById("investorPanel").innerHTML=`
 
-Energy ROI Efficiency : ${efficiency.toFixed(3)}<br><br>
-
-Carbon Liability Estimate : ${(totalEmission*50).toFixed(0)} USD<br><br>
-
-Energy Intensity Score : ${(totalEmission/totalUsage).toFixed(3)}
+Energy Spend : $${totalCost.toFixed(0)}<br><br>
+Carbon Liability Estimate : ${(totalEmission*50).toFixed(0)} USD
 
 `
 
@@ -495,4 +553,4 @@ loadDashboard()
 </script>
 
 </body>
-  </html>
+</html>
