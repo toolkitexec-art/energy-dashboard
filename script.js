@@ -1,122 +1,143 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
-const supabase = createClient(
-"https://otzxkvdkpbsyrbiqtbjd.supabase.co",
+const SUPABASE_URL =
+"https://otzxkvdkpbsyrbiqtbjd.supabase.co"
+
+const SUPABASE_KEY =
 "sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
-)
 
-let dataset = []
+const supabase =
+createClient(SUPABASE_URL, SUPABASE_KEY)
 
-async function loadData(){
+async function loadDashboard(){
 
-const { data, error } = await supabase
-.from("energy_consumption")
+const { data, error } =
+await supabase
+.from("dashboard_phase2_final_named")
 .select("*")
 
 if(error){
+
 console.log(error)
+
+document.getElementById("loading").innerText =
+"Database error"
+
 return
-}
-
-dataset = data
-
-populateDepartmentFilter()
-
-updateDashboard()
 
 }
 
-function populateDepartmentFilter(){
+if(!data || data.length===0){
 
-const departments=[...new Set(dataset.map(d=>d.department))]
+document.getElementById("loading").innerText =
+"No data found"
 
-const select=document.getElementById("facilityFilter")
-
-select.innerHTML='<option value="all">All Departments</option>'
-
-departments.forEach(f=>{
-select.innerHTML+="<option value="${f}">${f}</option>"
-})
+return
 
 }
 
-function getFilteredData(){
+document.getElementById("loading").style.display =
+"none"
 
-const department=document.getElementById("facilityFilter").value
+renderKPI(data)
 
-return dataset.filter(d=>{
-return department==="all" || d.department==department
-})
-
-}
-
-function updateDashboard(){
-
-const data=getFilteredData()
-
-const totalEnergy=data.reduce((s,r)=>s+Number(r.quantity||0),0)
-const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
-
-document.getElementById("kpiEnergy").innerText=Math.round(totalEnergy)
-document.getElementById("kpiCO2").innerText=Math.round(totalEmission)
+renderEnergyMix(data)
 
 renderTrend(data)
-renderMix(data)
+
+}
+
+function renderKPI(data){
+
+const totalUsage =
+data.reduce(
+(sum,r)=> sum + Number(r.total_usage||0),0)
+
+const totalCost =
+data.reduce(
+(sum,r)=> sum + Number(r.total_cost||0),0)
+
+const totalEmission =
+data.reduce(
+(sum,r)=> sum + Number(r.total_emission||0),0)
+
+document.getElementById("kpi-container").innerHTML =
+`
+
+<div class="kpi-card">
+<b>Total Energy</b><br>
+${totalUsage.toFixed(2)}
+</div><div class="kpi-card">
+<b>Total Cost</b><br>
+$${totalCost.toFixed(2)}
+</div><div class="kpi-card">
+<b>Total CO₂</b><br>
+${totalEmission.toFixed(2)}
+</div>
+`}
+
+function renderEnergyMix(data){
+
+const labels =
+[...new Set(
+data.map(d=>d.energy_type_record)
+)]
+
+const values =
+labels.map(type=>{
+
+return data
+.filter(r=>r.energy_type_record===type)
+.reduce(
+(sum,r)=> sum + Number(r.total_usage||0),0)
+
+})
+
+new Chart(
+document.getElementById("mixChart"),
+{
+type:"doughnut",
+data:{
+labels:labels,
+datasets:[{
+label:"Energy Mix",
+data:values
+}]
+}
+})
 
 }
 
 function renderTrend(data){
 
-const months=[...new Set(data.map(d=>d.date.substring(0,7)))]
+const months =
+[...new Set(
+data.map(d=>d.month.substring(0,7))
+)]
 
-const values=months.map(m=>{
+const values =
+months.map(m=>{
+
 return data
-.filter(x=>x.date.startsWith(m))
-.reduce((s,r)=>s+Number(r.quantity||0),0)
+.filter(r=>r.month.startsWith(m))
+.reduce(
+(sum,r)=> sum + Number(r.total_usage||0),0)
+
 })
 
-new Chart(document.getElementById("trendChart"),{
-
-type:'line',
-
+new Chart(
+document.getElementById("trendChart"),
+{
+type:"line",
 data:{
 labels:months,
 datasets:[{
-data:values,
-borderColor:'#24E0C7',
-tension:.4
-}]
-}
-
-})
-
-}
-
-function renderMix(data){
-
-const types=[...new Set(data.map(d=>d.energy_type))]
-
-const values=types.map(t=>{
-return data
-.filter(x=>x.energy_type===t)
-.reduce((s,r)=>s+Number(r.quantity||0),0)
-})
-
-new Chart(document.getElementById("mixChart"),{
-
-type:'doughnut',
-
-data:{
-labels:types,
-datasets:[{
+label:"Energy Usage Trend",
 data:values
 }]
 }
-
 })
 
 }
 
-document.getElementById("facilityFilter").onchange=updateDashboard
-
-loadData()
+loadDashboard()
