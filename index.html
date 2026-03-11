@@ -1,4 +1,4 @@
-<!-- Premium SaaS Filters + Stacked Bar Chart -->
+<!-- Premium SaaS Filters + Live Chart -->
 <div id="dashboard-filters" style="display:flex; gap:20px; align-items:flex-end; margin-bottom:20px; font-family: 'Inter', sans-serif; flex-wrap:wrap;">
 
   <!-- Facility Multi-Select -->
@@ -45,7 +45,7 @@
 </div>
 
 <!-- Chart.js Canvas -->
-<canvas id="energy-chart" style="max-width:100%; height:400px;"></canvas>
+<canvas id="energy-chart" style="max-width:100%; height:350px;"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -55,25 +55,22 @@
   const totalEnergyDisplay = document.getElementById('total-energy');
   const ctx = document.getElementById('energy-chart').getContext('2d');
 
-  const energyTypes = ['Electricity','Gas','Coal','Diesel'];
-  const facilityColors = {
-    'facility_a': '#4F46E5',
-    'facility_b': '#6366F1',
-    'facility_c': '#818CF8'
-  };
-
   let energyChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: energyTypes,
-      datasets: []
+      labels: ['Electricity','Gas','Coal','Diesel'],
+      datasets: [{
+        label: 'Energy Consumption (kWh)',
+        data: [0,0,0,0],
+        backgroundColor: ['#4F46E5','#6366F1','#818CF8','#A5B4FC'],
+        borderRadius: 6
+      }]
     },
     options: {
       responsive:true,
-      plugins:{ legend:{ position:'top' } },
-      scales:{
-        x:{ stacked:true },
-        y:{ stacked:true, beginAtZero:true, title:{ display:true, text:'kWh' } }
+      plugins: { legend: { display:false } },
+      scales: {
+        y: { beginAtZero:true, title: { display:true, text:'kWh' } }
       }
     }
   });
@@ -89,55 +86,54 @@
     console.log('Updating dashboard:', { selectedFacilities, selectedMonth });
 
     // =========================
-    // Replace with your Supabase fetch:
+    // Replace with your Supabase fetch
     // const { data, error } = await supabase
     //   .from('energy_data')
-    //   .select('facility_id, energy_type, total_kwh')
+    //   .select('*')
     //   .in('facility_id', selectedFacilities)
     //   .eq('month', selectedMonth);
     // =========================
 
-    // Demo: random data
-    let totalEnergy = 0;
-    const datasets = selectedFacilities.map(fac => {
-      const data = energyTypes.map(() => {
-        const val = Math.floor(Math.random()*500+100);
-        totalEnergy += val;
-        return val;
-      });
-      return {
-        label: fac,
-        data,
-        backgroundColor: facilityColors[fac] || '#A5B4FC',
-        borderRadius: 6
-      };
+    // Demo: simulate fetched data
+    const energyTypes = ['Electricity','Gas','Coal','Diesel'];
+    let total = 0;
+    const newData = energyTypes.map(() => {
+      const val = Math.floor(Math.random()*500+100);
+      total += val;
+      return val;
     });
 
-    totalEnergyDisplay.innerText = totalEnergy;
-    energyChart.data.datasets = datasets;
+    // Update total above chart
+    totalEnergyDisplay.innerText = total;
+
+    // Update Chart.js
+    energyChart.data.datasets[0].data = newData;
     energyChart.update();
   }
 
+  // Event listeners
   facilitySelect.addEventListener('change', updateDashboard);
   monthSelect.addEventListener('change', updateDashboard);
 
+  // Default current month
   const now = new Date();
-  monthSelect.value = String(now.getMonth()+1).padStart(2,'0');
+  monthSelect.value = String(now.getMonth() + 1).padStart(2,'0');
 
+  // Initial load
   updateDashboard();
 
+  // Export KPI CSV
   exportBtn.addEventListener('click', () => {
     const selectedFacilities = getSelectedFacilities();
     const selectedMonth = monthSelect.value;
-
     const csvContent = "data:text/csv;charset=utf-8,"
-      + ["Facility","Month",...energyTypes,"Total Energy"].join(",") + "\n"
-      + selectedFacilities.map(fac => {
-          const values = energyTypes.map(()=>Math.floor(Math.random()*500+100));
-          const total = values.reduce((a,b)=>a+b,0);
-          return [fac, selectedMonth,...values,total].join(",");
+      + "Facility,Month,Electricity,Gas,Coal,Diesel,Total Energy\n"
+      + selectedFacilities.map(f => {
+        const vals = Array.from({length:4},()=>Math.floor(Math.random()*500+100));
+        const total = vals.reduce((a,b)=>a+b,0);
+        return `${f},${selectedMonth},${vals.join(',')},${total}`;
       }).join("\n");
-
+    
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
