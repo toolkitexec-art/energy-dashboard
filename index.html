@@ -1,72 +1,51 @@
-<!-- Premium SaaS Style Filters -->
-<div id="dashboard-filters" style="display:flex; gap:20px; align-items:center; margin-bottom:20px; font-family: 'Inter', sans-serif;">
+<!DOCTYPE html>
+<html>
+<head>
 
-  <!-- Facility Selector -->
-  <div style="display:flex; flex-direction:column;">
-    <label for="facility-select" style="font-weight:600; font-size:14px; color:#111;">Select Facility</label>
-    <select id="facility-select" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:180px;">
-      <option value="all">All Facilities</option>
-      <option value="facility_a">Facility A</option>
-      <option value="facility_b">Facility B</option>
-      <option value="facility_c">Facility C</option>
-      <!-- Add more facility options dynamically if needed -->
-    </select>
-  </div>
+<meta charset="UTF-8">
+<title>Helixon Energy Intelligence</title>
 
-  <!-- Month Selector -->
-  <div style="display:flex; flex-direction:column;">
-    <label for="month-select" style="font-weight:600; font-size:14px; color:#111;">Select Month</label>
-    <select id="month-select" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:140px;">
-      <option value="01">January</option>
-      <option value="02">February</option>
-      <option value="03">March</option>
-      <option value="04">April</option>
-      <option value="05">May</option>
-      <option value="06">June</option>
-      <option value="07">July</option>
-      <option value="08">August</option>
-      <option value="09">September</option>
-      <option value="10">October</option>
-      <option value="11">November</option>
-      <option value="12">December</option>
-    </select>
-  </div>
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- plugin label angka di chart -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+</head>
+
+<body>
+
+<h1>Helixon Energy Intelligence</h1>
+
+<div id="loading">Loading data...</div>
+
+<div id="kpi-container" class="kpi-container"></div>
+
+<div class="carbon-box">
+<h3>Carbon Price Tracker</h3>
+<div class="carbon-price">$85 / tCO₂</div>
+<div>EU ETS benchmark</div>
 </div>
 
-<script>
-  // Grab selectors
-  const facilitySelect = document.getElementById('facility-select');
-  const monthSelect = document.getElementById('month-select');
+<div class="chart-container">
+<h3>Energy Type Comparison</h3>
+<canvas id="stackedChart"></canvas>
+</div>
 
-  // Function to trigger dashboard update
-  function updateDashboard() {
-    const selectedFacility = facilitySelect.value;
-    const selectedMonth = monthSelect.value;
+<div class="chart-container">
+<h3>Emission Trend</h3>
+<canvas id="trendChart"></canvas>
+</div>
 
-    // Call your existing Supabase / chart update functions here
-    // Example pseudo-code:
-    // loadEnergyData({ facility_id: selectedFacility, month: selectedMonth });
+<div class="ai-panel">
+<h3>AI Energy Recommendation</h3>
+<div id="ai-recommend"></div>
+</div>
 
-    console.log('Filters applied:', { selectedFacility, selectedMonth });
-  }
+<script type="module" src="script.js"></script>
 
-  // Event listeners
-  facilitySelect.addEventListener('change', updateDashboard);
-  monthSelect.addEventListener('change', updateDashboard);
-
-  // Optional: default current month
-  const now = new Date();
-  monthSelect.value = String(now.getMonth() + 1).padStart(2, '0');
-</script>
-
-<style>
-  /* Optional: hover/focus premium effects */
-  #dashboard-filters select {
-    transition: all 0.2s ease-in-out;
-  }
-  #dashboard-filters select:hover, #dashboard-filters select:focus {
-    border-color: #4F46E5; /* Indigo premium color */
-    box-shadow: 0 0 8px rgba(79,70,229,0.3);
-    outline: none;
-  }
-</style>
+</body>
+</html>
