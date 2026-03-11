@@ -1,51 +1,164 @@
-<!DOCTYPE html>
-<html>
-<head>
+<!-- Premium SaaS Filters + Stacked Bar Chart -->
+<div id="dashboard-filters" style="display:flex; gap:20px; align-items:flex-end; margin-bottom:20px; font-family: 'Inter', sans-serif; flex-wrap:wrap;">
 
-<meta charset="UTF-8">
-<title>Helixon Energy Intelligence</title>
+  <!-- Facility Multi-Select -->
+  <div style="display:flex; flex-direction:column;">
+    <label for="facility-select" style="font-weight:600; font-size:14px; color:#111;">Select Facility(s)</label>
+    <select id="facility-select" multiple style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:180px; height:90px;">
+      <option value="facility_a">Facility A</option>
+      <option value="facility_b">Facility B</option>
+      <option value="facility_c">Facility C</option>
+    </select>
+    <small style="color:#666; font-size:12px;">Hold Ctrl / Cmd to select multiple</small>
+  </div>
 
-<link rel="stylesheet" href="style.css">
+  <!-- Month Selector -->
+  <div style="display:flex; flex-direction:column;">
+    <label for="month-select" style="font-weight:600; font-size:14px; color:#111;">Select Month</label>
+    <select id="month-select" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:140px;">
+      <option value="01">January</option>
+      <option value="02">February</option>
+      <option value="03">March</option>
+      <option value="04">April</option>
+      <option value="05">May</option>
+      <option value="06">June</option>
+      <option value="07">July</option>
+      <option value="08">August</option>
+      <option value="09">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select>
+  </div>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Export KPI Card -->
+  <div style="display:flex; flex-direction:column; justify-content:flex-end;">
+    <button id="export-kpi" style="padding:10px 16px; border-radius:8px; border:none; font-weight:600; background:#4F46E5; color:#fff; font-size:14px; cursor:pointer; transition:0.2s;">
+      Export KPI Data
+    </button>
+  </div>
+</div>
+
+<!-- Total Energy Display Above Chart -->
+<div id="total-energy-display" style="font-family:'Inter', sans-serif; font-weight:600; font-size:16px; margin-bottom:10px; color:#111;">
+  Total Energy: <span id="total-energy">0</span> kWh
+</div>
+
+<!-- Chart.js Canvas -->
+<canvas id="energy-chart" style="max-width:100%; height:400px;"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const facilitySelect = document.getElementById('facility-select');
+  const monthSelect = document.getElementById('month-select');
+  const exportBtn = document.getElementById('export-kpi');
+  const totalEnergyDisplay = document.getElementById('total-energy');
+  const ctx = document.getElementById('energy-chart').getContext('2d');
 
-<!-- plugin label angka di chart -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  const energyTypes = ['Electricity','Gas','Coal','Diesel'];
+  const facilityColors = {
+    'facility_a': '#4F46E5',
+    'facility_b': '#6366F1',
+    'facility_c': '#818CF8'
+  };
 
-</head>
+  let energyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: energyTypes,
+      datasets: []
+    },
+    options: {
+      responsive:true,
+      plugins:{ legend:{ position:'top' } },
+      scales:{
+        x:{ stacked:true },
+        y:{ stacked:true, beginAtZero:true, title:{ display:true, text:'kWh' } }
+      }
+    }
+  });
 
-<body>
+  function getSelectedFacilities() {
+    return Array.from(facilitySelect.selectedOptions).map(o => o.value);
+  }
 
-<h1>Helixon Energy Intelligence</h1>
+  async function updateDashboard() {
+    const selectedFacilities = getSelectedFacilities();
+    const selectedMonth = monthSelect.value;
 
-<div id="loading">Loading data...</div>
+    console.log('Updating dashboard:', { selectedFacilities, selectedMonth });
 
-<div id="kpi-container" class="kpi-container"></div>
+    // =========================
+    // Replace with your Supabase fetch:
+    // const { data, error } = await supabase
+    //   .from('energy_data')
+    //   .select('facility_id, energy_type, total_kwh')
+    //   .in('facility_id', selectedFacilities)
+    //   .eq('month', selectedMonth);
+    // =========================
 
-<div class="carbon-box">
-<h3>Carbon Price Tracker</h3>
-<div class="carbon-price">$85 / tCO₂</div>
-<div>EU ETS benchmark</div>
-</div>
+    // Demo: random data
+    let totalEnergy = 0;
+    const datasets = selectedFacilities.map(fac => {
+      const data = energyTypes.map(() => {
+        const val = Math.floor(Math.random()*500+100);
+        totalEnergy += val;
+        return val;
+      });
+      return {
+        label: fac,
+        data,
+        backgroundColor: facilityColors[fac] || '#A5B4FC',
+        borderRadius: 6
+      };
+    });
 
-<div class="chart-container">
-<h3>Energy Type Comparison</h3>
-<canvas id="stackedChart"></canvas>
-</div>
+    totalEnergyDisplay.innerText = totalEnergy;
+    energyChart.data.datasets = datasets;
+    energyChart.update();
+  }
 
-<div class="chart-container">
-<h3>Emission Trend</h3>
-<canvas id="trendChart"></canvas>
-</div>
+  facilitySelect.addEventListener('change', updateDashboard);
+  monthSelect.addEventListener('change', updateDashboard);
 
-<div class="ai-panel">
-<h3>AI Energy Recommendation</h3>
-<div id="ai-recommend"></div>
-</div>
+  const now = new Date();
+  monthSelect.value = String(now.getMonth()+1).padStart(2,'0');
 
-<script type="module" src="script.js"></script>
+  updateDashboard();
 
-</body>
-</html>
+  exportBtn.addEventListener('click', () => {
+    const selectedFacilities = getSelectedFacilities();
+    const selectedMonth = monthSelect.value;
+
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + ["Facility","Month",...energyTypes,"Total Energy"].join(",") + "\n"
+      + selectedFacilities.map(fac => {
+          const values = energyTypes.map(()=>Math.floor(Math.random()*500+100));
+          const total = values.reduce((a,b)=>a+b,0);
+          return [fac, selectedMonth,...values,total].join(",");
+      }).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `KPI_${selectedMonth}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+</script>
+
+<style>
+  #dashboard-filters select {
+    transition: all 0.2s ease-in-out;
+  }
+  #dashboard-filters select:hover, #dashboard-filters select:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 8px rgba(79,70,229,0.3);
+    outline: none;
+  }
+  #export-kpi:hover {
+    background:#3730A3;
+    box-shadow: 0 0 10px rgba(79,70,229,0.4);
+  }
+</style>
