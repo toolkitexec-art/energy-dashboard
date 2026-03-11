@@ -14,27 +14,27 @@ const { data, error } = await supabase
 .select("*")
 
 if(error){
-console.log("ERROR:", error)
+console.log(error)
 return
 }
 
 dataset = data
 
-populateFacilityFilter()
+populateDepartmentFilter()
 
 updateDashboard()
 
 }
 
-function populateFacilityFilter(){
+function populateDepartmentFilter(){
 
-const facilities=[...new Set(dataset.map(d=>d.facility_id))]
+const departments=[...new Set(dataset.map(d=>d.department))]
 
 const select=document.getElementById("facilityFilter")
 
-select.innerHTML='<option value="all">All Facilities</option>'
+select.innerHTML='<option value="all">All Departments</option>'
 
-facilities.forEach(f=>{
+departments.forEach(f=>{
 select.innerHTML+="<option value="${f}">${f}</option>"
 })
 
@@ -42,10 +42,10 @@ select.innerHTML+="<option value="${f}">${f}</option>"
 
 function getFilteredData(){
 
-const facility=document.getElementById("facilityFilter").value
+const department=document.getElementById("facilityFilter").value
 
 return dataset.filter(d=>{
-return facility==="all" || d.facility_id==facility
+return department==="all" || d.department==department
 })
 
 }
@@ -54,24 +54,25 @@ function updateDashboard(){
 
 const data=getFilteredData()
 
-const totalEnergy=data.reduce((s,r)=>s+Number(r.energy_used||0),0)
-const totalCost=data.reduce((s,r)=>s+Number(r.energy_cost||0),0)
+const totalEnergy=data.reduce((s,r)=>s+Number(r.quantity||0),0)
+const totalEmission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
 document.getElementById("kpiEnergy").innerText=Math.round(totalEnergy)
-document.getElementById("kpiCost").innerText="$"+Math.round(totalCost)
+document.getElementById("kpiCO2").innerText=Math.round(totalEmission)
 
 renderTrend(data)
+renderMix(data)
 
 }
 
 function renderTrend(data){
 
-const months=[...new Set(data.map(d=>d.month))]
+const months=[...new Set(data.map(d=>d.date.substring(0,7)))]
 
 const values=months.map(m=>{
 return data
-.filter(x=>x.month===m)
-.reduce((s,r)=>s+Number(r.energy_used||0),0)
+.filter(x=>x.date.startsWith(m))
+.reduce((s,r)=>s+Number(r.quantity||0),0)
 })
 
 new Chart(document.getElementById("trendChart"),{
@@ -84,6 +85,31 @@ datasets:[{
 data:values,
 borderColor:'#24E0C7',
 tension:.4
+}]
+}
+
+})
+
+}
+
+function renderMix(data){
+
+const types=[...new Set(data.map(d=>d.energy_type))]
+
+const values=types.map(t=>{
+return data
+.filter(x=>x.energy_type===t)
+.reduce((s,r)=>s+Number(r.quantity||0),0)
+})
+
+new Chart(document.getElementById("mixChart"),{
+
+type:'doughnut',
+
+data:{
+labels:types,
+datasets:[{
+data:values
 }]
 }
 
