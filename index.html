@@ -17,30 +17,26 @@
 
 <div id="loading">Loading data...</div>
 
-<div id="dashboard-filters" style="display:flex; gap:20px; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; font-family:'Montserrat';">
+<div id="dashboard-filters" class="filters">
 
   <!-- Facility Multi-Select -->
-  <div style="display:flex; flex-direction:column;">
-    <label for="facility-select" style="font-weight:600; font-size:14px; color:white;">Select Facility(s)</label>
-    <select id="facility-select" multiple style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:180px; height:90px;">
-      <!-- Options will be populated dynamically -->
+  <div class="filter-box">
+    <label for="facility-select">Select Facility(s)</label>
+    <select id="facility-select" multiple>
+      <option value="all" selected>All Facilities</option>
     </select>
-    <small style="color:#aaa; font-size:12px;">Hold Ctrl / Cmd to select multiple</small>
+    <small>Hold Ctrl / Cmd to select multiple</small>
   </div>
 
   <!-- Month Selector -->
-  <div style="display:flex; flex-direction:column;">
-    <label for="month-select" style="font-weight:600; font-size:14px; color:white;">Select Month</label>
-    <select id="month-select" style="padding:8px 12px; border-radius:8px; border:1px solid #ddd; font-size:14px; color:#111; background:#fff; min-width:140px;">
-      <!-- Options populated dynamically -->
-    </select>
+  <div class="filter-box">
+    <label for="month-select">Select Month</label>
+    <select id="month-select"></select>
   </div>
 
   <!-- Export KPI -->
-  <div style="display:flex; flex-direction:column; justify-content:flex-end;">
-    <button id="export-kpi" style="padding:10px 16px; border-radius:8px; border:none; font-weight:600; background:#4F46E5; color:white; font-size:14px; cursor:pointer; transition:0.2s;">
-      Export KPI Data
-    </button>
+  <div class="filter-box">
+    <button id="export-kpi">Export KPI Data</button>
   </div>
 
 </div>
