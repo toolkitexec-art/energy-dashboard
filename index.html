@@ -1,126 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Helixon Energy Intelligence</title>
+<title>Helixon Carbon Dashboard</title>
 
 <link rel="stylesheet" href="style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
-
-<style>
-
-/* EXPORT BUTTON */
-
-.export-btn{
-position:fixed;
-top:30px;
-right:30px;
-background:linear-gradient(135deg,#2563eb,#1e3a8a);
-border:none;
-color:white;
-padding:10px 18px;
-border-radius:10px;
-font-size:14px;
-cursor:pointer;
-z-index:1000;
-}
-
-
-/* KPI FIX (VERTICAL + BACKGROUND) */
-
-#kpi-container{
-
-display:flex;
-flex-direction:column;
-
-gap:18px;
-
-margin-top:20px;
-margin-bottom:30px;
-
-}
-
-.kpi-card{
-
-padding:20px;
-
-border-radius:12px;
-
-background:linear-gradient(
-135deg,
-rgba(30,41,59,.9),
-rgba(2,6,23,.95)
-);
-
-border:1px solid #334155;
-
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-
-font-size:16px;
-
-}
-
-
-/* ANALYTICS GRID */
-
-.analytics-grid{
-
-display:grid;
-grid-template-columns:repeat(4,1fr);
-
-gap:20px;
-
-margin-bottom:30px;
-
-}
-
-@media (max-width:1100px){
-
-.analytics-grid{
-grid-template-columns:repeat(2,1fr);
-}
-
-}
-
-@media (max-width:600px){
-
-.analytics-grid{
-grid-template-columns:1fr;
-}
-
-}
-
-</style>
 
 </head>
 
 <body>
 
-
-<button class="export-btn" onclick="exportPDF()">Export PDF</button>
-
-
 <!-- HEADER -->
 
 <div class="header">
 
-<img src="logo-helixon.png" style="width:40px;height:40px">
+<img src="logo-helixon.png">
 
-<h1>Helixon Energy Intelligence</h1>
+<h2>Helixon Carbon Intelligence</h2>
 
 </div>
 
 
-<!-- FILTER -->
+<!-- EXPORT BUTTON -->
+
+<button onclick="exportPDF()" class="export-btn">
+Export PDF Report
+</button>
+
+
+<!-- FILTERS -->
 
 <div class="filters">
 
@@ -135,80 +49,99 @@ grid-template-columns:1fr;
 </div>
 
 
-<!-- KPI -->
+<!-- KPI SECTION (VERTICAL FIX) -->
+
+<div style="max-width:400px">
 
 <div id="kpi-container"></div>
 
+</div>
 
-<!-- ANALYTICS -->
+
+<!-- ANALYTICS PANEL (HORIZONTAL) -->
 
 <div class="analytics-grid">
 
 <div class="analytics-card">
-<div>Industry Benchmark</div>
+
+<h4>Industry Benchmark</h4>
+
 <div id="benchmark-value"></div>
+
 </div>
 
 <div class="analytics-card">
-<div>Energy Efficiency Score</div>
+
+<h4>Energy Efficiency Score</h4>
+
 <div id="efficiency-score"></div>
+
 </div>
 
 <div class="analytics-card">
-<div>Emission Reduction Potential</div>
+
+<h4>Emission Reduction Potential</h4>
+
 <div id="reduction-ai"></div>
+
 </div>
 
 <div class="analytics-card">
-<div>Cost Saving Opportunity</div>
+
+<h4>Cost Saving Opportunity</h4>
+
 <div id="saving-ai"></div>
-</div>
 
 </div>
 
+</div>
 
-<h3>Energy Type Comparison</h3>
 
-<div id="energy-total"></div>
+<!-- ENERGY TYPE -->
+
+<h3>
+Energy Type Comparison
+<span id="energy-total"></span>
+</h3>
 
 <canvas id="stackedChart"></canvas>
 
+
+<!-- EMISSION TREND -->
 
 <h3>Emission Trend</h3>
 
 <canvas id="trendChart"></canvas>
 
 
-<h3>Facility Comparison</h3>
+<!-- FACILITY COMPARISON -->
+
+<h3>Facility Emissions</h3>
 
 <canvas id="facilityChart"></canvas>
 
 
-<script type="module" src="script.js"></script>
+<script src="script.js"></script>
 
+
+<!-- PDF EXPORT -->
 
 <script>
 
-async function exportPDF(){
+function exportPDF(){
 
-const element=document.body
+const pdf=new jspdf.jsPDF()
 
-const canvas=await html2canvas(element,{scale:2})
+pdf.text("Helixon Carbon Report",20,20)
 
-const img=canvas.toDataURL("image/png")
+pdf.text("Generated from dashboard",20,30)
 
-const pdf=new jspdf.jsPDF("p","mm","a4")
-
-const width=210
-const height=(canvas.height*width)/canvas.width
-
-pdf.addImage(img,"PNG",0,0,width,height)
-
-pdf.save("helixon-energy-report.pdf")
+pdf.save("helixon-report.pdf")
 
 }
 
 </script>
 
 </body>
+
 </html>
