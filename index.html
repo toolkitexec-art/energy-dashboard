@@ -16,25 +16,18 @@
 
 <body>
 
-<!-- HEADER -->
-
 <div class="header">
 
-<img src="logo-helixon.png">
+<img src="logo-helixon.png" style="width:42px">
 
 <h2>Helixon Carbon Intelligence</h2>
 
-</div>
-
-
-<!-- EXPORT BUTTON -->
-
 <button onclick="exportPDF()" class="export-btn">
-Export PDF Report
+Export PDF
 </button>
 
+</div>
 
-<!-- FILTERS -->
 
 <div class="filters">
 
@@ -49,47 +42,45 @@ Export PDF Report
 </div>
 
 
-<!-- KPI SECTION (VERTICAL FIX) -->
+<!-- KPI SECTION -->
 
-<div style="max-width:400px">
+<div id="kpi-container" style="
+display:flex;
+flex-direction:column;
+gap:14px;
+margin-bottom:30px;
+max-width:420px;
+"></div>
 
-<div id="kpi-container"></div>
 
-</div>
-
-
-<!-- ANALYTICS PANEL (HORIZONTAL) -->
+<!-- ANALYTICS PANEL -->
 
 <div class="analytics-grid">
 
 <div class="analytics-card">
 
-<h4>Industry Benchmark</h4>
-
+<h3>Industry Benchmark</h3>
 <div id="benchmark-value"></div>
 
 </div>
 
 <div class="analytics-card">
 
-<h4>Energy Efficiency Score</h4>
-
+<h3>Energy Efficiency Score</h3>
 <div id="efficiency-score"></div>
 
 </div>
 
 <div class="analytics-card">
 
-<h4>Emission Reduction Potential</h4>
-
+<h3>Emission Reduction Potential</h3>
 <div id="reduction-ai"></div>
 
 </div>
 
 <div class="analytics-card">
 
-<h4>Cost Saving Opportunity</h4>
-
+<h3>Cost Saving Opportunity</h3>
 <div id="saving-ai"></div>
 
 </div>
@@ -97,24 +88,19 @@ Export PDF Report
 </div>
 
 
-<!-- ENERGY TYPE -->
-
 <h3>
 Energy Type Comparison
-<span id="energy-total"></span>
 </h3>
+
+<div id="energy-total" style="margin-bottom:10px;font-weight:600"></div>
 
 <canvas id="stackedChart"></canvas>
 
-
-<!-- EMISSION TREND -->
 
 <h3>Emission Trend</h3>
 
 <canvas id="trendChart"></canvas>
 
-
-<!-- FACILITY COMPARISON -->
 
 <h3>Facility Emissions</h3>
 
@@ -124,17 +110,13 @@ Energy Type Comparison
 <script src="script.js"></script>
 
 
-<!-- PDF EXPORT -->
-
 <script>
 
 function exportPDF(){
 
 const pdf=new jspdf.jsPDF()
 
-pdf.text("Helixon Carbon Report",20,20)
-
-pdf.text("Generated from dashboard",20,30)
+pdf.text("Helixon Carbon Dashboard Report",20,20)
 
 pdf.save("helixon-report.pdf")
 
