@@ -8,6 +8,10 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
 
+let energyChart
+let trendChart
+let facilityChart
+
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
@@ -30,7 +34,6 @@ applyFilters(data)
 function populateFilters(data){
 
 const facilities=[...new Set(data.map(d=>d.facility_name).filter(Boolean))]
-
 facilities.forEach(f=>{
 facilitySelect.innerHTML+=`<option value="${f}">${f}</option>`
 })
@@ -64,10 +67,15 @@ filtered=filtered.filter(d=>d.month===month)
 }
 
 renderKPI(filtered)
+
 renderBenchmark(filtered)
 renderEfficiency(filtered)
 renderReduction(filtered)
 renderSaving(filtered)
+
+renderEnergyChart(filtered)
+renderTrendChart(filtered)
+renderFacilityChart(filtered)
 
 }
 
@@ -76,7 +84,7 @@ return data.reduce((s,r)=>s+Number(r[field]||0),0)
 }
 
 function safeDivide(a,b){
-if(!b || b===0) return 0
+if(!b||b===0) return 0
 return a/b
 }
 
@@ -100,14 +108,9 @@ const usage=sum(data,"total_usage")
 const emission=sum(data,"total_emission")
 
 const intensity=safeDivide(emission,usage)
-
 const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
 
-const element=document.getElementById("benchmark-value")
-
-if(!element) return
-
-element.innerHTML=
+document.getElementById("benchmark-value").innerHTML=
 
 `<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
 Industry Avg: ${INDUSTRY_AVG}<br>
@@ -127,26 +130,17 @@ let score=100-(intensity*100)
 if(score<0) score=0
 if(score>100) score=100
 
-const element=document.getElementById("efficiency-score")
-
-if(!element) return
-
-element.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
+document.getElementById("efficiency-score").innerHTML=
+`<b>${score.toFixed(1)} / 100</b>`
 
 }
 
 function renderReduction(data){
 
 const emission=sum(data,"total_emission")
-
 const reduction=emission*0.12
 
-const element=document.getElementById("reduction-ai")
-
-if(!element) return
-
-element.innerHTML=
-
+document.getElementById("reduction-ai").innerHTML=
 `<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
 
 }
@@ -154,18 +148,135 @@ element.innerHTML=
 function renderSaving(data){
 
 const emission=sum(data,"total_emission")
-
 const reduction=emission*0.12
-
 const saving=reduction*CARBON_PRICE
 
-const element=document.getElementById("saving-ai")
-
-if(!element) return
-
-element.innerHTML=
-
+document.getElementById("saving-ai").innerHTML=
 `<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
+
+}
+
+function renderEnergyChart(data){
+
+const labels=[...new Set(data.map(d=>d.energy_type_record))]
+
+const values=labels.map(type=>{
+return data
+.filter(r=>r.energy_type_record===type)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
+})
+
+const total=values.reduce((a,b)=>a+b,0)
+
+document.getElementById("energy-total").innerText=total.toFixed(2)
+
+const ctx=document.getElementById("stackedChart").getContext("2d")
+
+if(energyChart) energyChart.destroy()
+
+const gradient=ctx.createLinearGradient(0,0,0,400)
+gradient.addColorStop(0,"#3b82f6")
+gradient.addColorStop(1,"#1e293b")
+
+energyChart=new Chart(ctx,{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+label:"Emission by Energy",
+data:values,
+backgroundColor:gradient,
+borderRadius:6
+}]
+},
+options:{
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{beginAtZero:true}
+}
+}
+})
+
+}
+
+function renderTrendChart(data){
+
+const months=[...new Set(data.map(d=>d.month))].sort()
+
+const values=months.map(m=>{
+return data.filter(r=>r.month===m)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
+})
+
+const ctx=document.getElementById("trendChart").getContext("2d")
+
+if(trendChart) trendChart.destroy()
+
+const gradient=ctx.createLinearGradient(0,0,0,400)
+gradient.addColorStop(0,"rgba(34,197,94,0.9)")
+gradient.addColorStop(1,"rgba(2,6,23,0.9)")
+
+trendChart=new Chart(ctx,{
+type:"line",
+data:{
+labels:months,
+datasets:[{
+label:"Emission Trend",
+data:values,
+borderColor:"#22c55e",
+backgroundColor:gradient,
+fill:true,
+tension:0.4
+}]
+},
+options:{
+plugins:{
+legend:{display:false}
+}
+}
+})
+
+}
+
+function renderFacilityChart(data){
+
+const facilities=[...new Set(data.map(d=>d.facility_name))]
+
+const values=facilities.map(f=>{
+return data.filter(r=>r.facility_name===f)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
+})
+
+const ctx=document.getElementById("facilityChart").getContext("2d")
+
+if(facilityChart) facilityChart.destroy()
+
+const gradient=ctx.createLinearGradient(0,0,0,400)
+gradient.addColorStop(0,"#f97316")
+gradient.addColorStop(1,"#7c2d12")
+
+facilityChart=new Chart(ctx,{
+type:"bar",
+data:{
+labels:facilities,
+datasets:[{
+label:"Facility Emission",
+data:values,
+backgroundColor:gradient,
+borderRadius:6
+}]
+},
+options:{
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{beginAtZero:true}
+}
+}
+})
 
 }
 
