@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>Helixon Energy Intelligence</title>
 
 <link rel="stylesheet" href="style.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 </head>
+
 <body>
 
 <h1>Helixon Energy Intelligence</h1>
 
 <div id="loading">Loading data...</div>
 
-<div id="dashboard-filters" class="filters">
+<div class="filters">
 
-  <!-- Facility Multi-Select -->
-  <div class="filter-box">
-    <label for="facility-select">Select Facility(s)</label>
-    <select id="facility-select" multiple>
-      <option value="all" selected>All Facilities</option>
-    </select>
-    <small>Hold Ctrl / Cmd to select multiple</small>
-  </div>
+<div class="filter-box">
+<label>Select Facility</label>
+<select id="facility-select">
+<option value="all">All Facilities</option>
+</select>
+</div>
 
-  <!-- Month Selector -->
-  <div class="filter-box">
-    <label for="month-select">Select Month</label>
-    <select id="month-select"></select>
-  </div>
+<div class="filter-box">
+<label>Select Month</label>
+<select id="month-select">
+<option value="all">All Months</option>
+</select>
+</div>
 
-  <!-- Export KPI -->
-  <div class="filter-box">
-    <button id="export-kpi">Export KPI Data</button>
-  </div>
+<div class="filter-box">
+<button id="export-kpi">Export KPI Data</button>
+</div>
 
 </div>
 
@@ -65,5 +66,6 @@
 </div>
 
 <script type="module" src="script.js"></script>
+
 </body>
 </html>
