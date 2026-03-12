@@ -1,322 +1,323 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
-const SUPABASE_URL="https://otzxkvdkpbsyrbiqtbjd.supabase.co"
-const SUPABASE_KEY="sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
+const SUPABASE_URL = "https://otzxkvdkpbsyrbiqtbjd.supabase.co"
+const SUPABASE_KEY = "sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
 
-const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-const facilitySelect=document.getElementById("facility-select")
-const monthSelect=document.getElementById("month-select")
+const facilitySelect = document.getElementById("facility-select")
+const monthSelect = document.getElementById("month-select")
 
 let energyChart
 let trendChart
 let facilityChart
 
-const INDUSTRY_AVG=0.42
-const CARBON_PRICE=85
+const INDUSTRY_AVG = 0.42
+const CARBON_PRICE = 85
 
 
-async function loadDashboard(){
+async function loadDashboard() {
 
-const {data,error}=await supabase
-.from("dashboard_phase2_final_named")
-.select("*")
+  const { data, error } = await supabase
+    .from("dashboard_phase2_final_named")
+    .select("*")
 
-if(error){
-console.log(error)
-return
-}
+  if (error) {
+    console.log(error)
+    return
+  }
 
-populateFilters(data)
-applyFilters(data)
-
-}
-
-
-function populateFilters(data){
-
-const facilities=[...new Set(data.map(d=>d.facility_name).filter(Boolean))]
-facilities.forEach(f=>{
-facilitySelect.innerHTML+=`<option value="${f}">${f}</option>`
-})
-
-const months=[...new Set(data.map(d=>d.month))].sort()
-
-months.forEach(m=>{
-const date=new Date(m)
-const label=date.toLocaleString("en",{month:"long",year:"numeric"})
-monthSelect.innerHTML+=`<option value="${m}">${label}</option>`
-})
-
-facilitySelect.addEventListener("change",()=>applyFilters(data))
-monthSelect.addEventListener("change",()=>applyFilters(data))
+  populateFilters(data)
+  applyFilters(data)
 
 }
 
 
-function applyFilters(data){
+function populateFilters(data) {
 
-let facility=facilitySelect.value
-let month=monthSelect.value
+  const facilities = [...new Set(data.map(d => d.facility_name).filter(Boolean))]
 
-let filtered=data
+  facilities.forEach(f => {
+    facilitySelect.innerHTML += `<option value="${f}">${f}</option>`
+  })
 
-if(facility!=="all"){
-filtered=filtered.filter(d=>d.facility_name===facility)
-}
+  const months = [...new Set(data.map(d => d.month))].sort()
 
-if(month!=="all"){
-filtered=filtered.filter(d=>d.month===month)
-}
+  months.forEach(m => {
+    const date = new Date(m)
+    const label = date.toLocaleString("en", { month: "long", year: "numeric" })
+    monthSelect.innerHTML += `<option value="${m}">${label}</option>`
+  })
 
-renderKPI(filtered)
-
-renderBenchmark(filtered)
-renderEfficiency(filtered)
-renderReduction(filtered)
-renderSaving(filtered)
-
-renderEnergyChart(filtered)
-renderTrendChart(filtered)
-renderFacilityChart(filtered)
+  facilitySelect.addEventListener("change", () => applyFilters(data))
+  monthSelect.addEventListener("change", () => applyFilters(data))
 
 }
 
 
-function sum(data,field){
-return data.reduce((s,r)=>s+Number(r[field]||0),0)
-}
+function applyFilters(data) {
 
-function safeDivide(a,b){
-if(!b||b===0) return 0
-return a/b
-}
+  let facility = facilitySelect.value
+  let month = monthSelect.value
 
+  let filtered = data
 
-/* KPI FIXED LAYOUT */
+  if (facility !== "all") {
+    filtered = filtered.filter(d => d.facility_name === facility)
+  }
 
-function renderKPI(data){
+  if (month !== "all") {
+    filtered = filtered.filter(d => d.month === month)
+  }
 
-const usage=sum(data,"total_usage")
-const cost=sum(data,"total_cost")
-const emission=sum(data,"total_emission")
+  renderKPI(filtered)
 
-document.getElementById("kpi-container").innerHTML=
+  renderBenchmark(filtered)
+  renderEfficiency(filtered)
+  renderReduction(filtered)
+  renderSaving(filtered)
 
-`
-<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:30px">
-
-<div style="
-padding:18px;
-border-radius:12px;
-background:linear-gradient(135deg,#1e293b,#020617);
-border:1px solid #334155;
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-font-size:16px;
-">
-<b>Total Usage</b><br>${usage.toFixed(2)}
-</div>
-
-<div style="
-padding:18px;
-border-radius:12px;
-background:linear-gradient(135deg,#1e293b,#020617);
-border:1px solid #334155;
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-font-size:16px;
-">
-<b>Total Cost</b><br>$${cost.toFixed(2)}
-</div>
-
-<div style="
-padding:18px;
-border-radius:12px;
-background:linear-gradient(135deg,#1e293b,#020617);
-border:1px solid #334155;
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-font-size:16px;
-">
-<b>Total Emission</b><br>${emission.toFixed(2)}
-</div>
-
-</div>
-`
+  renderEnergyChart(filtered)
+  renderTrendChart(filtered)
+  renderFacilityChart(filtered)
 
 }
 
 
-function renderBenchmark(data){
+function sum(data, field) {
+  return data.reduce((s, r) => s + Number(r[field] || 0), 0)
+}
 
-const usage=sum(data,"total_usage")
-const emission=sum(data,"total_emission")
 
-const intensity=safeDivide(emission,usage)
-const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
+function safeDivide(a, b) {
+  if (!b || b === 0) return 0
+  return a / b
+}
 
-const el=document.getElementById("benchmark-value")
 
-el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
-Industry Avg: ${INDUSTRY_AVG}<br>
-Difference: ${diff.toFixed(1)}%`
+function renderKPI(data) {
+
+  const usage = sum(data, "total_usage")
+  const cost = sum(data, "total_cost")
+  const emission = sum(data, "total_emission")
+
+  document.getElementById("kpi-container").innerHTML = `
+  <div class="kpi-card"><b>Total Usage</b><br>${usage.toFixed(2)}</div>
+  <div class="kpi-card"><b>Total Cost</b><br>$${cost.toFixed(2)}</div>
+  <div class="kpi-card"><b>Total Emission</b><br>${emission.toFixed(2)}</div>
+  `
 
 }
 
 
-function renderEfficiency(data){
+function renderBenchmark(data) {
 
-const usage=sum(data,"total_usage")
-const emission=sum(data,"total_emission")
+  const usage = sum(data, "total_usage")
+  const emission = sum(data, "total_emission")
 
-const intensity=safeDivide(emission,usage)
+  const intensity = safeDivide(emission, usage)
+  const diff = ((intensity - INDUSTRY_AVG) / INDUSTRY_AVG) * 100
 
-let score=100-(intensity*100)
+  const el = document.getElementById("benchmark-value")
 
-if(score<0) score=0
-if(score>100) score=100
+  el.innerHTML = `
+  <b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
+  Industry Avg: ${INDUSTRY_AVG}<br>
+  Difference: ${diff.toFixed(1)}%
+  `
 
-const el=document.getElementById("efficiency-score")
-
-el.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
-
-}
-
-
-function renderReduction(data){
-
-const emission=sum(data,"total_emission")
-const reduction=emission*0.12
-
-const el=document.getElementById("reduction-ai")
-
-el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
+  el.parentElement.style.background = "linear-gradient(135deg,#1e293b,#0f172a)"
+  el.parentElement.style.border = "1px solid #334155"
 
 }
 
 
-function renderSaving(data){
+function renderEfficiency(data) {
 
-const emission=sum(data,"total_emission")
-const reduction=emission*0.12
-const saving=reduction*CARBON_PRICE
+  const usage = sum(data, "total_usage")
+  const emission = sum(data, "total_emission")
 
-const el=document.getElementById("saving-ai")
+  const intensity = safeDivide(emission, usage)
 
-el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
+  let score = 100 - (intensity * 100)
 
-}
+  if (score < 0) score = 0
+  if (score > 100) score = 100
 
+  const el = document.getElementById("efficiency-score")
 
-function renderEnergyChart(data){
+  el.innerHTML = `<b>${score.toFixed(1)} / 100</b>`
 
-const labels=[...new Set(data.map(d=>d.energy_type_record))]
-
-const values=labels.map(type=>{
-return data
-.filter(r=>r.energy_type_record===type)
-.reduce((s,r)=>s+Number(r.total_emission||0),0)
-})
-
-const total=values.reduce((a,b)=>a+b,0)
-
-document.getElementById("energy-total").innerText=total.toFixed(2)
-
-const ctx=document.getElementById("stackedChart").getContext("2d")
-
-if(energyChart) energyChart.destroy()
-
-const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#60a5fa")
-gradient.addColorStop(1,"#1e293b")
-
-energyChart=new Chart(ctx,{
-type:"bar",
-data:{
-labels:labels,
-datasets:[{
-data:values,
-backgroundColor:gradient,
-borderRadius:6
-}]
-},
-plugins:[ChartDataLabels],
-options:{
-plugins:{
-legend:{display:false},
-datalabels:{
-color:"#e5e7eb",
-anchor:"end",
-align:"top",
-formatter:(v)=>v.toFixed(2)
-}
-},
-scales:{y:{beginAtZero:true}}
-}
-})
+  el.parentElement.style.background = "linear-gradient(135deg,#1e3a8a,#020617)"
+  el.parentElement.style.border = "1px solid #1d4ed8"
 
 }
 
 
-function renderTrendChart(data){
+function renderReduction(data) {
 
-const months=[...new Set(data.map(d=>d.month))].sort()
+  const emission = sum(data, "total_emission")
+  const reduction = emission * 0.12
 
-const values=months.map(m=>{
-return data.filter(r=>r.month===m)
-.reduce((s,r)=>s+Number(r.total_emission||0),0)
-})
+  const el = document.getElementById("reduction-ai")
 
-const ctx=document.getElementById("trendChart").getContext("2d")
+  el.innerHTML = `<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
 
-if(trendChart) trendChart.destroy()
-
-trendChart=new Chart(ctx,{
-type:"line",
-data:{
-labels:months,
-datasets:[{
-data:values,
-borderColor:"#22c55e",
-fill:false,
-tension:0.4
-}]
-},
-options:{
-plugins:{legend:{display:false}}
-}
-})
+  el.parentElement.style.background = "linear-gradient(135deg,#14532d,#020617)"
+  el.parentElement.style.border = "1px solid #22c55e"
 
 }
 
 
-function renderFacilityChart(data){
+function renderSaving(data) {
 
-const facilities=[...new Set(data.map(d=>d.facility_name))]
+  const emission = sum(data, "total_emission")
+  const reduction = emission * 0.12
+  const saving = reduction * CARBON_PRICE
 
-const values=facilities.map(f=>{
-return data.filter(r=>r.facility_name===f)
-.reduce((s,r)=>s+Number(r.total_emission||0),0)
-})
+  const el = document.getElementById("saving-ai")
 
-const ctx=document.getElementById("facilityChart").getContext("2d")
+  el.innerHTML = `<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
 
-if(facilityChart) facilityChart.destroy()
-
-facilityChart=new Chart(ctx,{
-type:"bar",
-data:{
-labels:facilities,
-datasets:[{
-data:values,
-backgroundColor:"#fb923c",
-borderRadius:6
-}]
-},
-options:{
-plugins:{legend:{display:false}},
-scales:{y:{beginAtZero:true}}
-}
-})
+  el.parentElement.style.background = "linear-gradient(135deg,#7c2d12,#020617)"
+  el.parentElement.style.border = "1px solid #f97316"
 
 }
+
+
+function renderEnergyChart(data) {
+
+  const labels = [...new Set(data.map(d => d.energy_type_record))]
+
+  const values = labels.map(type => {
+    return data
+      .filter(r => r.energy_type_record === type)
+      .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+  })
+
+  const total = values.reduce((a, b) => a + b, 0)
+
+  document.getElementById("energy-total").innerText = total.toFixed(2)
+
+  const ctx = document.getElementById("stackedChart").getContext("2d")
+
+  if (energyChart) energyChart.destroy()
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+  gradient.addColorStop(0, "#60a5fa")
+  gradient.addColorStop(0.5, "#3b82f6")
+  gradient.addColorStop(1, "#1e293b")
+
+  energyChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: gradient,
+        borderRadius: 6
+      }]
+    },
+    plugins: [ChartDataLabels],
+    options: {
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          color: "#e5e7eb",
+          anchor: "end",
+          align: "top",
+          font: { weight: "600" },
+          formatter: v => v.toFixed(2)
+        }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  })
+
+}
+
+
+function renderTrendChart(data) {
+
+  const months = [...new Set(data.map(d => d.month))].sort()
+
+  const values = months.map(m => {
+    return data
+      .filter(r => r.month === m)
+      .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+  })
+
+  const ctx = document.getElementById("trendChart").getContext("2d")
+
+  if (trendChart) trendChart.destroy()
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+  gradient.addColorStop(0, "rgba(34,197,94,0.9)")
+  gradient.addColorStop(1, "rgba(2,6,23,0.9)")
+
+  trendChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: months,
+      datasets: [{
+        data: values,
+        borderColor: "#22c55e",
+        backgroundColor: gradient,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  })
+
+}
+
+
+function renderFacilityChart(data) {
+
+  const facilities = [...new Set(data.map(d => d.facility_name))]
+
+  const values = facilities.map(f => {
+    return data
+      .filter(r => r.facility_name === f)
+      .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+  })
+
+  const ctx = document.getElementById("facilityChart").getContext("2d")
+
+  if (facilityChart) facilityChart.destroy()
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+  gradient.addColorStop(0, "#fb923c")
+  gradient.addColorStop(1, "#7c2d12")
+
+  facilityChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: facilities,
+      datasets: [{
+        data: values,
+        backgroundColor: gradient,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  })
+
+}
+
 
 loadDashboard()
