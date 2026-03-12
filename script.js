@@ -110,11 +110,13 @@ const emission=sum(data,"total_emission")
 const intensity=safeDivide(emission,usage)
 const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
 
-document.getElementById("benchmark-value").innerHTML=
-
-`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
+const el=document.getElementById("benchmark-value")
+el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
 Industry Avg: ${INDUSTRY_AVG}<br>
 Difference: ${diff.toFixed(1)}%`
+
+el.parentElement.style.background="linear-gradient(135deg,#1e293b,#0f172a)"
+el.parentElement.style.border="1px solid #334155"
 
 }
 
@@ -130,8 +132,11 @@ let score=100-(intensity*100)
 if(score<0) score=0
 if(score>100) score=100
 
-document.getElementById("efficiency-score").innerHTML=
-`<b>${score.toFixed(1)} / 100</b>`
+const el=document.getElementById("efficiency-score")
+el.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
+
+el.parentElement.style.background="linear-gradient(135deg,#1e3a8a,#020617)"
+el.parentElement.style.border="1px solid #1d4ed8"
 
 }
 
@@ -140,8 +145,12 @@ function renderReduction(data){
 const emission=sum(data,"total_emission")
 const reduction=emission*0.12
 
-document.getElementById("reduction-ai").innerHTML=
-`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
+const el=document.getElementById("reduction-ai")
+
+el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
+
+el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
+el.parentElement.style.border="1px solid #22c55e"
 
 }
 
@@ -151,8 +160,12 @@ const emission=sum(data,"total_emission")
 const reduction=emission*0.12
 const saving=reduction*CARBON_PRICE
 
-document.getElementById("saving-ai").innerHTML=
-`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
+const el=document.getElementById("saving-ai")
+
+el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
+
+el.parentElement.style.background="linear-gradient(135deg,#7c2d12,#020617)"
+el.parentElement.style.border="1px solid #f97316"
 
 }
 
@@ -175,7 +188,8 @@ const ctx=document.getElementById("stackedChart").getContext("2d")
 if(energyChart) energyChart.destroy()
 
 const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#3b82f6")
+gradient.addColorStop(0,"#60a5fa")
+gradient.addColorStop(0.5,"#3b82f6")
 gradient.addColorStop(1,"#1e293b")
 
 energyChart=new Chart(ctx,{
@@ -183,15 +197,22 @@ type:"bar",
 data:{
 labels:labels,
 datasets:[{
-label:"Emission by Energy",
 data:values,
 backgroundColor:gradient,
 borderRadius:6
 }]
 },
+plugins:[ChartDataLabels],
 options:{
 plugins:{
-legend:{display:false}
+legend:{display:false},
+datalabels:{
+color:"#e5e7eb",
+anchor:"end",
+align:"top",
+font:{weight:"600"},
+formatter:(v)=>v.toFixed(2)
+}
 },
 scales:{
 y:{beginAtZero:true}
@@ -223,7 +244,6 @@ type:"line",
 data:{
 labels:months,
 datasets:[{
-label:"Emission Trend",
 data:values,
 borderColor:"#22c55e",
 backgroundColor:gradient,
@@ -254,7 +274,7 @@ const ctx=document.getElementById("facilityChart").getContext("2d")
 if(facilityChart) facilityChart.destroy()
 
 const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#f97316")
+gradient.addColorStop(0,"#fb923c")
 gradient.addColorStop(1,"#7c2d12")
 
 facilityChart=new Chart(ctx,{
@@ -262,7 +282,6 @@ type:"bar",
 data:{
 labels:facilities,
 datasets:[{
-label:"Facility Emission",
 data:values,
 backgroundColor:gradient,
 borderRadius:6
