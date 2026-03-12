@@ -98,13 +98,13 @@ function renderKPI(data){
     const emission=sum(data,"total_emission")
 
     document.getElementById("kpi-container").innerHTML=
-    `<div class="kpi-card" style="background:linear-gradient(135deg,#3b82f6,#1e3a8a);">
+    `<div class="kpi-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);">
         <b>Total Usage</b><br>${usage.toFixed(2)}
     </div>
-    <div class="kpi-card" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+    <div class="kpi-card" style="background:linear-gradient(135deg,#1e3a8a,#020617);">
         <b>Total Cost</b><br>$${cost.toFixed(2)}
     </div>
-    <div class="kpi-card" style="background:linear-gradient(135deg,#f97316,#7c2d12);">
+    <div class="kpi-card" style="background:linear-gradient(135deg,#7c2d12,#020617);">
         <b>Total Emission</b><br>${emission.toFixed(2)}
     </div>`
 }
@@ -122,7 +122,7 @@ function renderBenchmark(data){
     el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
                   Industry Avg: ${INDUSTRY_AVG}<br>
                   Difference: ${diff.toFixed(1)}%`
-    el.parentElement.style.background="linear-gradient(135deg,#60a5fa,#22c55e)"
+    el.parentElement.style.background="linear-gradient(135deg,#1e293b,#0f172a)"
     el.parentElement.style.border="1px solid #334155"
 }
 
@@ -196,7 +196,7 @@ function renderTrendChart(data){
     })
     const monthLabels=months.map(m=>{
         const date=new Date(m)
-        return date.toLocaleString("en",{month:"long"})
+        return date.toLocaleString("en",{month:"long"}) // FIX: nama bulan
     })
 
     const ctx=document.getElementById("trendChart").getContext("2d")
