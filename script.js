@@ -15,9 +15,6 @@ let facilityChart
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
-/* =========================
-LOAD DASHBOARD DATA
-========================= */
 async function loadDashboard(){
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
@@ -29,12 +26,9 @@ async function loadDashboard(){
 
     populateFilters(data)
     applyFilters(data)
-    createExportButton() // tombol PDF
+    createExportButton()
 }
 
-/* =========================
-POPULATE FILTERS
-========================= */
 function populateFilters(data){
     const facilities=[...new Set(data.map(d=>d.facility_name).filter(Boolean))]
     facilities.forEach(f=>{
@@ -52,9 +46,6 @@ function populateFilters(data){
     monthSelect.addEventListener("change",()=>applyFilters(data))
 }
 
-/* =========================
-APPLY FILTERS
-========================= */
 function applyFilters(data){
     let facility=facilitySelect.value
     let month=monthSelect.value
@@ -72,15 +63,11 @@ function applyFilters(data){
     renderEfficiency(filtered)
     renderReduction(filtered)
     renderSaving(filtered)
-
     renderEnergyChart(filtered)
     renderTrendChart(filtered)
     renderFacilityChart(filtered)
 }
 
-/* =========================
-HELPER FUNCTIONS
-========================= */
 function sum(data,field){
     return data.reduce((s,r)=>s+Number(r[field]||0),0)
 }
@@ -98,7 +85,7 @@ function renderKPI(data){
     const emission=sum(data,"total_emission")
 
     document.getElementById("kpi-container").innerHTML=
-    `<div class="kpi-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);">
+    `<div class="kpi-card" style="background:linear-gradient(135deg,#60a5fa,#3b82f6);">
         <b>Total Usage</b><br>${usage.toFixed(2)}
     </div>
     <div class="kpi-card" style="background:linear-gradient(135deg,#1e3a8a,#020617);">
@@ -122,7 +109,7 @@ function renderBenchmark(data){
     el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
                   Industry Avg: ${INDUSTRY_AVG}<br>
                   Difference: ${diff.toFixed(1)}%`
-    el.parentElement.style.background="linear-gradient(135deg,#1e293b,#0f172a)"
+    el.parentElement.style.background="linear-gradient(135deg,#60a5fa,#3b82f6)" // GRADIEN DIPULIHKAN
     el.parentElement.style.border="1px solid #334155"
 }
 
@@ -196,7 +183,7 @@ function renderTrendChart(data){
     })
     const monthLabels=months.map(m=>{
         const date=new Date(m)
-        return date.toLocaleString("en",{month:"long"}) // FIX: nama bulan
+        return date.toLocaleString("en",{month:"long"})
     })
 
     const ctx=document.getElementById("trendChart").getContext("2d")
@@ -234,7 +221,7 @@ function renderFacilityChart(data){
 }
 
 /* =========================
-EXPORT PDF (DASHBOARD ONLY)
+EXPORT PDF
 ========================= */
 function createExportButton(){
     const btn=document.createElement("button")
@@ -283,7 +270,4 @@ async function exportPDF(){
     html2pdf().set(opt).from(container).save()
 }
 
-/* =========================
-INITIALIZE DASHBOARD
-========================= */
 loadDashboard()
