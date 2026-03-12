@@ -33,7 +33,7 @@ applyFilters(data)
 
 function populateFilters(data){
 
-const facilities=[...new Set(data.map(d=>d.facility_name))]
+const facilities=[...new Set(data.map(d=>d.facility_name).filter(Boolean))]
 
 facilities.forEach(f=>{
 facilitySelect.innerHTML+=`<option value="${f}">${f}</option>`
@@ -82,11 +82,16 @@ renderAI(filtered)
 
 }
 
+function safeDivide(a,b){
+if(!b || b===0) return 0
+return a/b
+}
+
 function renderKPI(data){
 
-const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
-const cost=data.reduce((s,r)=>s+Number(r.total_cost),0)
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const usage=data.reduce((s,r)=>s+Number(r.total_usage||0),0)
+const cost=data.reduce((s,r)=>s+Number(r.total_cost||0),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
 document.getElementById("kpi-container").innerHTML=
 
@@ -98,64 +103,70 @@ document.getElementById("kpi-container").innerHTML=
 
 function renderCarbonImpact(data){
 
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
 const cost=emission*CARBON_PRICE
 
 document.getElementById("carbon-impact").innerHTML=
-`Estimated Carbon Cost: <b>$${cost.toFixed(2)}</b>`
+`Estimated Carbon Cost Impact: <b>$${cost.toFixed(2)}</b>`
 
 }
 
 function renderBenchmark(data){
 
-const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const usage=data.reduce((s,r)=>s+Number(r.total_usage||0),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
-const intensity=emission/usage
+const intensity=safeDivide(emission,usage)
 
-const compare=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
+const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
 
 document.getElementById("benchmark-value").innerHTML=
-`Emission Intensity: ${intensity.toFixed(2)}<br>
+
+`Emission Intensity: <b>${intensity.toFixed(3)}</b><br>
 Industry Avg: ${INDUSTRY_AVG}<br>
-Difference: ${compare.toFixed(1)}%`
+Difference: ${diff.toFixed(1)}%`
 
 }
 
 function renderEfficiency(data){
 
-const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const usage=data.reduce((s,r)=>s+Number(r.total_usage||0),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
-const score=100-(emission/usage*100)
+const intensity=safeDivide(emission,usage)
+
+let score=100-(intensity*100)
+
+if(score<0) score=0
+if(score>100) score=100
 
 document.getElementById("efficiency-score").innerHTML=
-`Score: ${Math.max(0,score).toFixed(1)}/100`
+`Efficiency Score: <b>${score.toFixed(1)}/100</b>`
 
 }
 
 function renderReduction(data){
 
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
 const potential=emission*0.12
 
 document.getElementById("reduction-ai").innerHTML=
-`Potential Reduction: ${potential.toFixed(2)} tCO₂`
+`AI Reduction Potential: <b>${potential.toFixed(2)} tCO₂</b>`
 
 }
 
 function renderSaving(data){
 
-const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
 const potential=emission*0.12
 
 const saving=potential*CARBON_PRICE
 
 document.getElementById("saving-ai").innerHTML=
-`Potential Saving: $${saving.toFixed(2)}`
+`Cost Saving Opportunity: <b>$${saving.toFixed(2)}</b>`
 
 }
 
@@ -166,7 +177,7 @@ const labels=[...new Set(data.map(d=>d.energy_type_record))]
 const values=labels.map(type=>{
 return data
 .filter(r=>r.energy_type_record===type)
-.reduce((s,r)=>s+Number(r.total_emission),0)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
 })
 
 const total=values.reduce((a,b)=>a+b,0)
@@ -199,7 +210,7 @@ const months=[...new Set(data.map(d=>d.month))].sort()
 
 const values=months.map(m=>{
 return data.filter(r=>r.month===m)
-.reduce((s,r)=>s+Number(r.total_emission),0)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
 })
 
 const ctx=document.getElementById("trendChart").getContext("2d")
@@ -219,7 +230,7 @@ const facilities=[...new Set(data.map(d=>d.facility_name))]
 
 const values=facilities.map(f=>{
 return data.filter(r=>r.facility_name===f)
-.reduce((s,r)=>s+Number(r.total_emission),0)
+.reduce((s,r)=>s+Number(r.total_emission||0),0)
 })
 
 const ctx=document.getElementById("facilityChart").getContext("2d")
@@ -237,7 +248,7 @@ function renderAI(data){
 
 const electricity=data
 .filter(d=>d.energy_type_record==="electricity")
-.reduce((s,r)=>s+Number(r.total_usage),0)
+.reduce((s,r)=>s+Number(r.total_usage||0),0)
 
 let message="Energy usage efficient."
 
