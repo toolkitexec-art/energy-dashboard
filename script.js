@@ -15,6 +15,7 @@ let facilityChart
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
+
 async function loadDashboard(){
 
 const {data,error}=await supabase
@@ -30,6 +31,7 @@ populateFilters(data)
 applyFilters(data)
 
 }
+
 
 function populateFilters(data){
 
@@ -50,6 +52,7 @@ facilitySelect.addEventListener("change",()=>applyFilters(data))
 monthSelect.addEventListener("change",()=>applyFilters(data))
 
 }
+
 
 function applyFilters(data){
 
@@ -79,6 +82,7 @@ renderFacilityChart(filtered)
 
 }
 
+
 function sum(data,field){
 return data.reduce((s,r)=>s+Number(r[field]||0),0)
 }
@@ -88,6 +92,9 @@ if(!b||b===0) return 0
 return a/b
 }
 
+
+/* KPI FIXED LAYOUT */
+
 function renderKPI(data){
 
 const usage=sum(data,"total_usage")
@@ -96,11 +103,47 @@ const emission=sum(data,"total_emission")
 
 document.getElementById("kpi-container").innerHTML=
 
-`<div class="kpi-card"><b>Total Usage</b><br>${usage.toFixed(2)}</div>
-<div class="kpi-card"><b>Total Cost</b><br>$${cost.toFixed(2)}</div>
-<div class="kpi-card"><b>Total Emission</b><br>${emission.toFixed(2)}</div>`
+`
+<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:30px">
+
+<div style="
+padding:18px;
+border-radius:12px;
+background:linear-gradient(135deg,#1e293b,#020617);
+border:1px solid #334155;
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+font-size:16px;
+">
+<b>Total Usage</b><br>${usage.toFixed(2)}
+</div>
+
+<div style="
+padding:18px;
+border-radius:12px;
+background:linear-gradient(135deg,#1e293b,#020617);
+border:1px solid #334155;
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+font-size:16px;
+">
+<b>Total Cost</b><br>$${cost.toFixed(2)}
+</div>
+
+<div style="
+padding:18px;
+border-radius:12px;
+background:linear-gradient(135deg,#1e293b,#020617);
+border:1px solid #334155;
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+font-size:16px;
+">
+<b>Total Emission</b><br>${emission.toFixed(2)}
+</div>
+
+</div>
+`
 
 }
+
 
 function renderBenchmark(data){
 
@@ -111,14 +154,13 @@ const intensity=safeDivide(emission,usage)
 const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
 
 const el=document.getElementById("benchmark-value")
+
 el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
 Industry Avg: ${INDUSTRY_AVG}<br>
 Difference: ${diff.toFixed(1)}%`
 
-el.parentElement.style.background="linear-gradient(135deg,#1e293b,#0f172a)"
-el.parentElement.style.border="1px solid #334155"
-
 }
+
 
 function renderEfficiency(data){
 
@@ -133,12 +175,11 @@ if(score<0) score=0
 if(score>100) score=100
 
 const el=document.getElementById("efficiency-score")
+
 el.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
 
-el.parentElement.style.background="linear-gradient(135deg,#1e3a8a,#020617)"
-el.parentElement.style.border="1px solid #1d4ed8"
-
 }
+
 
 function renderReduction(data){
 
@@ -149,10 +190,8 @@ const el=document.getElementById("reduction-ai")
 
 el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
 
-el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
-el.parentElement.style.border="1px solid #22c55e"
-
 }
+
 
 function renderSaving(data){
 
@@ -164,10 +203,8 @@ const el=document.getElementById("saving-ai")
 
 el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
 
-el.parentElement.style.background="linear-gradient(135deg,#7c2d12,#020617)"
-el.parentElement.style.border="1px solid #f97316"
-
 }
+
 
 function renderEnergyChart(data){
 
@@ -189,7 +226,6 @@ if(energyChart) energyChart.destroy()
 
 const gradient=ctx.createLinearGradient(0,0,0,400)
 gradient.addColorStop(0,"#60a5fa")
-gradient.addColorStop(0.5,"#3b82f6")
 gradient.addColorStop(1,"#1e293b")
 
 energyChart=new Chart(ctx,{
@@ -210,17 +246,15 @@ datalabels:{
 color:"#e5e7eb",
 anchor:"end",
 align:"top",
-font:{weight:"600"},
 formatter:(v)=>v.toFixed(2)
 }
 },
-scales:{
-y:{beginAtZero:true}
-}
+scales:{y:{beginAtZero:true}}
 }
 })
 
 }
+
 
 function renderTrendChart(data){
 
@@ -235,10 +269,6 @@ const ctx=document.getElementById("trendChart").getContext("2d")
 
 if(trendChart) trendChart.destroy()
 
-const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"rgba(34,197,94,0.9)")
-gradient.addColorStop(1,"rgba(2,6,23,0.9)")
-
 trendChart=new Chart(ctx,{
 type:"line",
 data:{
@@ -246,19 +276,17 @@ labels:months,
 datasets:[{
 data:values,
 borderColor:"#22c55e",
-backgroundColor:gradient,
-fill:true,
+fill:false,
 tension:0.4
 }]
 },
 options:{
-plugins:{
-legend:{display:false}
-}
+plugins:{legend:{display:false}}
 }
 })
 
 }
+
 
 function renderFacilityChart(data){
 
@@ -273,27 +301,19 @@ const ctx=document.getElementById("facilityChart").getContext("2d")
 
 if(facilityChart) facilityChart.destroy()
 
-const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#fb923c")
-gradient.addColorStop(1,"#7c2d12")
-
 facilityChart=new Chart(ctx,{
 type:"bar",
 data:{
 labels:facilities,
 datasets:[{
 data:values,
-backgroundColor:gradient,
+backgroundColor:"#fb923c",
 borderRadius:6
 }]
 },
 options:{
-plugins:{
-legend:{display:false}
-},
-scales:{
-y:{beginAtZero:true}
-}
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true}}
 }
 })
 
