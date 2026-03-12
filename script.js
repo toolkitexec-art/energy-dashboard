@@ -84,14 +84,17 @@ function renderKPI(data){
     const cost=sum(data,"total_cost")
     const emission=sum(data,"total_emission")
 
+    // Semua KPI pakai gradien yang sama
+    const kpiGradient="linear-gradient(135deg,#14532d,#020617)"
+
     document.getElementById("kpi-container").innerHTML=
-    `<div class="kpi-card" style="background:linear-gradient(135deg,#60a5fa,#3b82f6);">
+    `<div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Usage</b><br>${usage.toFixed(2)}
     </div>
-    <div class="kpi-card" style="background:linear-gradient(135deg,#1e3a8a,#020617);">
+    <div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Cost</b><br>$${cost.toFixed(2)}
     </div>
-    <div class="kpi-card" style="background:linear-gradient(135deg,#7c2d12,#020617);">
+    <div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Emission</b><br>${emission.toFixed(2)}
     </div>`
 }
@@ -109,7 +112,7 @@ function renderBenchmark(data){
     el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
                   Industry Avg: ${INDUSTRY_AVG}<br>
                   Difference: ${diff.toFixed(1)}%`
-    el.parentElement.style.background="linear-gradient(135deg,#60a5fa,#3b82f6)" // GRADIEN DIPULIHKAN
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)" // SESUAI KPI
     el.parentElement.style.border="1px solid #334155"
 }
 
