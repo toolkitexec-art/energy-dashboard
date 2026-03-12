@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,19 +12,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <!-- PDF EXPORT LIBRARIES -->
-
 <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
 
 <style>
 
-/* EXPORT BUTTON */
+/* Export button – tidak mempengaruhi layout dashboard */
 
 .export-btn{
-
 position:fixed;
-right:30px;
 top:30px;
+right:30px;
 
 background:linear-gradient(135deg,#2563eb,#1e3a8a);
 
@@ -42,7 +38,6 @@ font-size:14px;
 cursor:pointer;
 
 z-index:1000;
-
 }
 
 .export-btn:hover{
@@ -55,10 +50,7 @@ transform:translateY(-2px);
 
 <body>
 
-
-<button class="export-btn" onclick="exportPDF()">
-Export PDF
-</button>
+<button class="export-btn" onclick="exportPDF()">Export PDF</button>
 
 
 <!-- HEADER -->
@@ -92,7 +84,7 @@ Export PDF
 <div id="kpi-container"></div>
 
 
-<!-- ANALYTICS GRID (TETAP SEPERTI YANG ANDA SUKA) -->
+<!-- ANALYTICS GRID -->
 
 <div class="analytics-grid">
 
@@ -119,8 +111,6 @@ Export PDF
 </div>
 
 
-<!-- ENERGY -->
-
 <h3>Energy Type Comparison</h3>
 
 <div id="energy-total"></div>
@@ -128,19 +118,14 @@ Export PDF
 <canvas id="stackedChart"></canvas>
 
 
-<!-- TREND -->
-
 <h3>Emission Trend</h3>
 
 <canvas id="trendChart"></canvas>
 
 
-<!-- FACILITY -->
-
 <h3>Facility Comparison</h3>
 
 <canvas id="facilityChart"></canvas>
-
 
 
 <script type="module" src="script.js"></script>
@@ -163,13 +148,11 @@ const height=(canvas.height*width)/canvas.width
 
 pdf.addImage(img,"PNG",0,0,width,height)
 
-pdf.save("helixon-report.pdf")
+pdf.save("helixon-energy-report.pdf")
 
 }
 
 </script>
 
-
 </body>
-
 </html>
