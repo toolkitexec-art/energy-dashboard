@@ -1,48 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Helixon Energy Intelligence</title>
 
 <link rel="stylesheet" href="style.css">
 
-</head>
+<style>
 
+/* Header logo – tidak mempengaruhi sistem */
+.helixon-header{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+}
+
+.helixon-logo{
+width:36px;
+height:36px;
+object-fit:contain;
+filter:drop-shadow(0 0 6px rgba(59,130,246,0.6));
+}
+
+</style>
+
+</head>
 <body>
 
-<!-- HELIXON HEADER -->
-
+<!-- HEADER -->
 <div class="helixon-header">
-
-<div class="helixon-brand">
-
 <img src="logo-helixon.png" class="helixon-logo">
-
-<div class="helixon-title">
-
-<div class="helixon-name">HELIXON</div>
-
-<div class="helixon-sub">Energy Intelligence</div>
-
-</div>
-
-</div>
-
+<h1>Helixon Energy Intelligence</h1>
 </div>
 
 
 <!-- FILTER -->
-
 <div class="filters">
 
 <select id="facilitySelect"></select>
 
 <select id="monthSelect">
-
 <option value="all">All Months</option>
 <option value="1">January</option>
 <option value="2">February</option>
@@ -56,122 +55,76 @@
 <option value="10">October</option>
 <option value="11">November</option>
 <option value="12">December</option>
-
 </select>
 
 </div>
 
 
-<!-- KPI -->
-
+<!-- KPI CARDS -->
 <div class="kpi-grid">
 
 <div class="kpi-card">
-
-<div class="kpi-title">Total Usage</div>
-<div id="total-usage" class="kpi-value"></div>
-
+<div>Total Usage</div>
+<div id="total-usage"></div>
 </div>
 
 <div class="kpi-card">
-
-<div class="kpi-title">Total Cost</div>
-<div id="total-cost" class="kpi-value"></div>
-
+<div>Total Cost</div>
+<div id="total-cost"></div>
 </div>
 
 <div class="kpi-card">
-
-<div class="kpi-title">Total Emission</div>
-<div id="total-emission" class="kpi-value"></div>
-
+<div>Total Emission</div>
+<div id="total-emission"></div>
 </div>
 
 </div>
 
 
 <!-- ANALYTICS -->
-
 <div class="analytics-grid">
 
 <div class="analytics-card">
-
-<div class="kpi-title">Industry Benchmark</div>
+<div>Industry Benchmark</div>
 <div id="benchmark-value"></div>
-
 </div>
 
 <div class="analytics-card">
-
-<div class="kpi-title">Energy Efficiency Score</div>
+<div>Energy Efficiency Score</div>
 <div id="efficiency-score"></div>
-
 </div>
 
 <div class="analytics-card">
-
-<div class="kpi-title">Emission Reduction Potential</div>
+<div>Emission Reduction Potential</div>
 <div id="reduction-ai"></div>
-
 </div>
 
 <div class="analytics-card">
-
-<div class="kpi-title">Cost Saving Opportunity</div>
+<div>Cost Saving Opportunity</div>
 <div id="saving-ai"></div>
-
 </div>
 
 </div>
 
 
 <!-- ENERGY TYPE CHART -->
-
-<div class="chart-panel">
-
-<div class="chart-title">
-
-Energy Type Comparison
-
-</div>
-
+<h3>Energy Type Comparison</h3>
 <canvas id="energyChart"></canvas>
-
-</div>
 
 
 <!-- EMISSION TREND -->
-
-<div class="chart-panel">
-
-<div class="chart-title">
-
-Emission Trend
-
-</div>
-
+<h3>Emission Trend</h3>
 <canvas id="trendChart"></canvas>
-
-</div>
 
 
 <!-- FACILITY COMPARISON -->
-
-<div class="chart-panel">
-
-<div class="chart-title">
-
-Facility Comparison
-
-</div>
-
+<h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
-
-</div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- SCRIPT SISTEM (TIDAK DIUBAH) -->
 <script src="script.js"></script>
 
 </body>
