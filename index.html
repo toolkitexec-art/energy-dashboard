@@ -1,88 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Helixon Energy Intelligence</title>
 
 <link rel="stylesheet" href="style.css">
 
-<style>
-
-/* Header logo – tidak mempengaruhi sistem */
-.helixon-header{
-display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:10px;
-}
-
-.helixon-logo{
-width:36px;
-height:36px;
-object-fit:contain;
-filter:drop-shadow(0 0 6px rgba(59,130,246,0.6));
-}
-
-</style>
-
 </head>
+
 <body>
 
 <!-- HEADER -->
-<div class="helixon-header">
-<img src="logo-helixon.png" class="helixon-logo">
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:15px;">
+
+<img src="logo-helixon.png" style="width:38px;height:38px;">
+
 <h1>Helixon Energy Intelligence</h1>
+
 </div>
 
 
 <!-- FILTER -->
-<div class="filters">
 
-<select id="facilitySelect"></select>
-
-<select id="monthSelect">
-<option value="all">All Months</option>
-<option value="1">January</option>
-<option value="2">February</option>
-<option value="3">March</option>
-<option value="4">April</option>
-<option value="5">May</option>
-<option value="6">June</option>
-<option value="7">July</option>
-<option value="8">August</option>
-<option value="9">September</option>
-<option value="10">October</option>
-<option value="11">November</option>
-<option value="12">December</option>
+<select id="facility-select">
+<option value="all">All Facilities</option>
 </select>
 
-</div>
+<select id="month-select">
+<option value="all">All Months</option>
+</select>
 
 
-<!-- KPI CARDS -->
-<div class="kpi-grid">
+<!-- KPI -->
 
-<div class="kpi-card">
-<div>Total Usage</div>
-<div id="total-usage"></div>
-</div>
-
-<div class="kpi-card">
-<div>Total Cost</div>
-<div id="total-cost"></div>
-</div>
-
-<div class="kpi-card">
-<div>Total Emission</div>
-<div id="total-emission"></div>
-</div>
-
-</div>
+<div id="kpi-container"></div>
 
 
 <!-- ANALYTICS -->
-<div class="analytics-grid">
 
 <div class="analytics-card">
 <div>Industry Benchmark</div>
@@ -104,28 +63,35 @@ filter:drop-shadow(0 0 6px rgba(59,130,246,0.6));
 <div id="saving-ai"></div>
 </div>
 
-</div>
 
+<!-- ENERGY TYPE -->
 
-<!-- ENERGY TYPE CHART -->
 <h3>Energy Type Comparison</h3>
-<canvas id="energyChart"></canvas>
+
+<div id="energy-total" style="font-size:24px;margin-bottom:10px;"></div>
+
+<canvas id="stackedChart"></canvas>
 
 
-<!-- EMISSION TREND -->
+<!-- TREND -->
+
 <h3>Emission Trend</h3>
+
 <canvas id="trendChart"></canvas>
 
 
-<!-- FACILITY COMPARISON -->
+<!-- FACILITY -->
+
 <h3>Facility Comparison</h3>
+
 <canvas id="facilityChart"></canvas>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- SCRIPT SISTEM (TIDAK DIUBAH) -->
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 
 </body>
+
 </html>
