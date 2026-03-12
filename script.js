@@ -13,6 +13,7 @@ let trendChart
 let facilityChart
 
 const CARBON_PRICE=85
+const INDUSTRY_AVG=0.42
 
 async function loadDashboard(){
 
@@ -22,11 +23,8 @@ const {data,error}=await supabase
 
 if(error){
 console.log(error)
-document.getElementById("loading").innerText="Error loading data"
 return
 }
-
-document.getElementById("loading").style.display="none"
 
 populateFilters(data)
 applyFilters(data)
@@ -35,9 +33,7 @@ applyFilters(data)
 
 function populateFilters(data){
 
-const facilities=[...new Set(
-data.map(d=>d.facility_name).filter(v=>v && v!=="undefined")
-)]
+const facilities=[...new Set(data.map(d=>d.facility_name))]
 
 facilities.forEach(f=>{
 facilitySelect.innerHTML+=`<option value="${f}">${f}</option>`
@@ -76,36 +72,90 @@ renderStack(filtered)
 renderTrend(data,facility,month)
 renderFacilityComparison(filtered)
 renderCarbonImpact(filtered)
+
+renderBenchmark(filtered)
+renderEfficiency(filtered)
+renderReduction(filtered)
+renderSaving(filtered)
+
 renderAI(filtered)
 
 }
 
 function renderKPI(data){
 
-const totalUsage=data.reduce((sum,r)=>sum+Number(r.total_usage),0)
-const totalCost=data.reduce((sum,r)=>sum+Number(r.total_cost),0)
-const totalEmission=data.reduce((sum,r)=>sum+Number(r.total_emission),0)
+const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
+const cost=data.reduce((s,r)=>s+Number(r.total_cost),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
 
-document.getElementById("kpi-container").innerHTML=`
+document.getElementById("kpi-container").innerHTML=
 
-<div class="kpi-card"><b>Total Usage</b><br>${totalUsage.toFixed(2)}</div>
-
-<div class="kpi-card"><b>Total Cost</b><br>$${totalCost.toFixed(2)}</div>
-
-<div class="kpi-card"><b>Total Emission</b><br>${totalEmission.toFixed(2)}</div>
-
-`
+`<div class="kpi-card">Total Usage<br>${usage.toFixed(2)}</div>
+<div class="kpi-card">Total Cost<br>$${cost.toFixed(2)}</div>
+<div class="kpi-card">Total Emission<br>${emission.toFixed(2)}</div>`
 
 }
 
 function renderCarbonImpact(data){
 
-const emission=data.reduce((sum,r)=>sum+Number(r.total_emission),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
 
-const carbonCost=emission*CARBON_PRICE
+const cost=emission*CARBON_PRICE
 
 document.getElementById("carbon-impact").innerHTML=
-`Estimated Carbon Cost Impact: <b>$${carbonCost.toFixed(2)}</b>`
+`Estimated Carbon Cost: <b>$${cost.toFixed(2)}</b>`
+
+}
+
+function renderBenchmark(data){
+
+const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+
+const intensity=emission/usage
+
+const compare=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
+
+document.getElementById("benchmark-value").innerHTML=
+`Emission Intensity: ${intensity.toFixed(2)}<br>
+Industry Avg: ${INDUSTRY_AVG}<br>
+Difference: ${compare.toFixed(1)}%`
+
+}
+
+function renderEfficiency(data){
+
+const usage=data.reduce((s,r)=>s+Number(r.total_usage),0)
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+
+const score=100-(emission/usage*100)
+
+document.getElementById("efficiency-score").innerHTML=
+`Score: ${Math.max(0,score).toFixed(1)}/100`
+
+}
+
+function renderReduction(data){
+
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+
+const potential=emission*0.12
+
+document.getElementById("reduction-ai").innerHTML=
+`Potential Reduction: ${potential.toFixed(2)} tCO₂`
+
+}
+
+function renderSaving(data){
+
+const emission=data.reduce((s,r)=>s+Number(r.total_emission),0)
+
+const potential=emission*0.12
+
+const saving=potential*CARBON_PRICE
+
+document.getElementById("saving-ai").innerHTML=
+`Potential Saving: $${saving.toFixed(2)}`
 
 }
 
@@ -116,43 +166,21 @@ const labels=[...new Set(data.map(d=>d.energy_type_record))]
 const values=labels.map(type=>{
 return data
 .filter(r=>r.energy_type_record===type)
-.reduce((sum,r)=>sum+Number(r.total_emission),0)
+.reduce((s,r)=>s+Number(r.total_emission),0)
 })
 
-const totalEmission=values.reduce((a,b)=>a+b,0)
+const total=values.reduce((a,b)=>a+b,0)
 
-document.getElementById("energy-total").innerText=totalEmission.toFixed(2)
+document.getElementById("energy-total").innerText=total.toFixed(2)
 
 const ctx=document.getElementById("stackedChart").getContext("2d")
 
 if(stackedChart) stackedChart.destroy()
 
-const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#60a5fa")
-gradient.addColorStop(1,"#1e293b")
-
 stackedChart=new Chart(ctx,{
 type:"bar",
-data:{
-labels:labels,
-datasets:[{
-label:"Emission by Energy",
-data:values,
-backgroundColor:gradient
-}]
-},
-plugins:[ChartDataLabels],
-options:{
-plugins:{
-datalabels:{
-color:"#fff",
-anchor:"end",
-align:"top",
-formatter:v=>v.toFixed(2)
-}
-},
-scales:{y:{beginAtZero:true}}
-}
+data:{labels:labels,datasets:[{data:values,backgroundColor:"#6366f1"}]},
+plugins:[ChartDataLabels]
 })
 
 }
@@ -164,55 +192,23 @@ data=data.filter(d=>d.facility_name===facility)
 }
 
 if(month!=="all"){
-
-const value=data
-.filter(r=>r.month===month)
-.reduce((sum,r)=>sum+Number(r.total_emission),0)
-
-drawTrend([month],[value])
-
-}else{
+data=data.filter(d=>d.month===month)
+}
 
 const months=[...new Set(data.map(d=>d.month))].sort()
 
 const values=months.map(m=>{
-return data
-.filter(r=>r.month===m)
-.reduce((sum,r)=>sum+Number(r.total_emission),0)
+return data.filter(r=>r.month===m)
+.reduce((s,r)=>s+Number(r.total_emission),0)
 })
-
-drawTrend(months,values)
-
-}
-
-}
-
-function drawTrend(labels,values){
 
 const ctx=document.getElementById("trendChart").getContext("2d")
 
 if(trendChart) trendChart.destroy()
 
-const gradient=ctx.createLinearGradient(0,0,0,400)
-gradient.addColorStop(0,"#22c55e")
-gradient.addColorStop(1,"#020617")
-
 trendChart=new Chart(ctx,{
 type:"line",
-data:{
-labels:labels.map(m=>{
-const d=new Date(m)
-return d.toLocaleString("en",{month:"short"})
-}),
-datasets:[{
-label:"Emission Trend",
-data:values,
-borderColor:"#22c55e",
-backgroundColor:gradient,
-fill:true,
-tension:0.4
-}]
-}
+data:{labels:months,datasets:[{data:values,borderColor:"#22c55e"}]}
 })
 
 }
@@ -222,9 +218,8 @@ function renderFacilityComparison(data){
 const facilities=[...new Set(data.map(d=>d.facility_name))]
 
 const values=facilities.map(f=>{
-return data
-.filter(r=>r.facility_name===f)
-.reduce((sum,r)=>sum+Number(r.total_emission),0)
+return data.filter(r=>r.facility_name===f)
+.reduce((s,r)=>s+Number(r.total_emission),0)
 })
 
 const ctx=document.getElementById("facilityChart").getContext("2d")
@@ -233,15 +228,7 @@ if(facilityChart) facilityChart.destroy()
 
 facilityChart=new Chart(ctx,{
 type:"bar",
-data:{
-labels:facilities,
-datasets:[{
-label:"Facility Emission",
-data:values,
-backgroundColor:"#f97316"
-}]
-},
-options:{scales:{y:{beginAtZero:true}}}
+data:{labels:facilities,datasets:[{data:values,backgroundColor:"#f97316"}]}
 })
 
 }
@@ -250,12 +237,12 @@ function renderAI(data){
 
 const electricity=data
 .filter(d=>d.energy_type_record==="electricity")
-.reduce((sum,r)=>sum+Number(r.total_usage),0)
+.reduce((s,r)=>s+Number(r.total_usage),0)
 
 let message="Energy usage efficient."
 
 if(electricity>300){
-message="AI Insight: Electricity usage high. Consider renewable energy."
+message="AI Insight: electricity consumption high. Consider renewable transition."
 }
 
 document.getElementById("ai-recommend").innerText=message
