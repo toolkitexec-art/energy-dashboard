@@ -1,169 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Helixon Energy Intelligence</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 
-<style>
-
-body{
-margin:0;
-font-family:Inter,system-ui;
-background:#020617;
-color:#e5e7eb;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-padding:30px;
-}
-
-h1{
-font-size:28px;
-font-weight:600;
-margin-bottom:25px;
-}
-
-.filters{
-display:flex;
-gap:20px;
-margin-bottom:25px;
-}
-
-select{
-background:#0f172a;
-color:white;
-border:1px solid #334155;
-padding:10px 14px;
-border-radius:8px;
-font-size:14px;
-}
-
-.kpi-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-bottom:25px;
-}
-
-.kpi-card{
-background:linear-gradient(145deg,#0f172a,#1e293b);
-padding:18px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
-font-size:15px;
-}
-
-.analytics-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-bottom:30px;
-}
-
-.analytics-card{
-background:linear-gradient(145deg,#0f172a,#1e293b);
-padding:18px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.35);
-}
-
-.analytics-title{
-font-size:13px;
-color:#94a3b8;
-margin-bottom:6px;
-}
-
-.analytics-value{
-font-size:20px;
-font-weight:600;
-}
-
-.chart-card{
-background:linear-gradient(145deg,#0f172a,#1e293b);
-border-radius:14px;
-padding:20px;
-margin-bottom:25px;
-}
-
-canvas{
-max-height:320px;
-}
-
-</style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- HELIXON HEADER -->
 
-<h1>Helixon Energy Intelligence</h1>
+<div class="helixon-header">
+
+<div class="helixon-brand">
+
+<img src="logo-helixon.png" class="helixon-logo">
+
+<div class="helixon-title">
+
+<div class="helixon-name">HELIXON</div>
+
+<div class="helixon-sub">Energy Intelligence</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FILTER -->
 
 <div class="filters">
 
-<select id="facility-select">
-<option value="all">All Facilities</option>
-</select>
+<select id="facilitySelect"></select>
 
-<select id="month-select">
+<select id="monthSelect">
+
 <option value="all">All Months</option>
+<option value="1">January</option>
+<option value="2">February</option>
+<option value="3">March</option>
+<option value="4">April</option>
+<option value="5">May</option>
+<option value="6">June</option>
+<option value="7">July</option>
+<option value="8">August</option>
+<option value="9">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+
 </select>
 
 </div>
 
-<div id="kpi-container" class="kpi-grid"></div>
+
+<!-- KPI -->
+
+<div class="kpi-grid">
+
+<div class="kpi-card">
+
+<div class="kpi-title">Total Usage</div>
+<div id="total-usage" class="kpi-value"></div>
+
+</div>
+
+<div class="kpi-card">
+
+<div class="kpi-title">Total Cost</div>
+<div id="total-cost" class="kpi-value"></div>
+
+</div>
+
+<div class="kpi-card">
+
+<div class="kpi-title">Total Emission</div>
+<div id="total-emission" class="kpi-value"></div>
+
+</div>
+
+</div>
+
+
+<!-- ANALYTICS -->
 
 <div class="analytics-grid">
 
 <div class="analytics-card">
-<div class="analytics-title">Industry Benchmark</div>
-<div id="benchmark-value" class="analytics-value">Loading...</div>
+
+<div class="kpi-title">Industry Benchmark</div>
+<div id="benchmark-value"></div>
+
 </div>
 
 <div class="analytics-card">
-<div class="analytics-title">Energy Efficiency Score</div>
-<div id="efficiency-score" class="analytics-value">Loading...</div>
+
+<div class="kpi-title">Energy Efficiency Score</div>
+<div id="efficiency-score"></div>
+
 </div>
 
 <div class="analytics-card">
-<div class="analytics-title">Emission Reduction Potential</div>
-<div id="reduction-ai" class="analytics-value">Loading...</div>
+
+<div class="kpi-title">Emission Reduction Potential</div>
+<div id="reduction-ai"></div>
+
 </div>
 
 <div class="analytics-card">
-<div class="analytics-title">Cost Saving Opportunity</div>
-<div id="saving-ai" class="analytics-value">Loading...</div>
-</div>
+
+<div class="kpi-title">Cost Saving Opportunity</div>
+<div id="saving-ai"></div>
 
 </div>
 
-<div class="chart-card">
-<h3>Energy Type Comparison</h3>
-<div style="font-size:28px;font-weight:600;margin-bottom:10px" id="energy-total">0</div>
-<canvas id="stackedChart"></canvas>
 </div>
 
-<div class="chart-card">
-<h3>Emission Trend</h3>
+
+<!-- ENERGY TYPE CHART -->
+
+<div class="chart-panel">
+
+<div class="chart-title">
+
+Energy Type Comparison
+
+</div>
+
+<canvas id="energyChart"></canvas>
+
+</div>
+
+
+<!-- EMISSION TREND -->
+
+<div class="chart-panel">
+
+<div class="chart-title">
+
+Emission Trend
+
+</div>
+
 <canvas id="trendChart"></canvas>
+
 </div>
 
-<div class="chart-card">
-<h3>Facility Comparison</h3>
+
+<!-- FACILITY COMPARISON -->
+
+<div class="chart-panel">
+
+<div class="chart-title">
+
+Facility Comparison
+
+</div>
+
 <canvas id="facilityChart"></canvas>
-</div>
 
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<script type="module" src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
