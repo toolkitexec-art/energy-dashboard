@@ -84,8 +84,8 @@ function renderKPI(data){
     const cost=sum(data,"total_cost")
     const emission=sum(data,"total_emission")
 
-    // KPI & Industry Benchmark gradien sama dengan Cost Saving Opportunity
-    const kpiGradient="linear-gradient(135deg,#7c2d12,#020617)"
+    // KPI lainnya tetap seperti semula
+    const kpiGradient="linear-gradient(135deg,#7c2d12,#020617)" // Total Usage, Total Cost, Total Emission
 
     document.getElementById("kpi-container").innerHTML=
     `<div class="kpi-card" style="background:${kpiGradient}">
@@ -112,7 +112,7 @@ function renderBenchmark(data){
     el.innerHTML=`<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
                   Industry Avg: ${INDUSTRY_AVG}<br>
                   Difference: ${diff.toFixed(1)}%`
-    el.parentElement.style.background="linear-gradient(135deg,#7c2d12,#020617)" // SESUAI Cost Saving Opportunity
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)" // SESUAI Emission Reduction Potential
     el.parentElement.style.border="1px solid #334155"
 }
 
@@ -146,7 +146,7 @@ function renderSaving(data){
     const saving=reduction*CARBON_PRICE
     const el=document.getElementById("saving-ai")
     el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
-    el.parentElement.style.background="linear-gradient(135deg,#7c2d12,#020617)"
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)" // SESUAI Emission Reduction Potential
     el.parentElement.style.border="1px solid #f97316"
 }
 
