@@ -294,53 +294,86 @@ function renderTrendChart(data){
 }
 
 /* =========================
-FACILITY CHART
+SAFE EXPORT PDF SYSTEM
+(Place at the very end of script.js)
 ========================= */
 
-function renderFacilityChart(data){
+/* LOAD PDF LIBRARY */
 
-    const facilities=[...new Set(data.map(d=>d.facility_name))]
+function loadPDFLibrary(){
+return new Promise((resolve)=>{
+if(window.html2pdf){ resolve(); return; }
 
-    const values=facilities.map(f=>{
-        return data.filter(r=>r.facility_name===f)
-            .reduce((s,r)=>s+Number(r.total_emission||0),0)
-    })
+const script=document.createElement("script")
+script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+script.onload=()=>resolve()
 
-    const ctx=document.getElementById("facilityChart").getContext("2d")
-
-    if(facilityChart) facilityChart.destroy()
-
-    const gradient=ctx.createLinearGradient(0,0,0,400)
-
-    gradient.addColorStop(0,"#fb923c")
-    gradient.addColorStop(1,"#7c2d12")
-
-    facilityChart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:facilities,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
-            }]
-        },
-        options:{
-            plugins:{legend:{display:false}},
-            scales:{y:{beginAtZero:true}}
-        }
-    })
+document.body.appendChild(script)
+})
 }
 
-/* =========================
-EXPORT PDF SYSTEM
-MULTI PAGE + REPORT INFO
-========================= */
+
+/* GET CHART IMAGE SAFELY */
+
+function getChartImage(chartVar){
+
+try{
+
+if(!chartVar) return null
+
+if(typeof chartVar.toBase64Image==="function"){
+return chartVar.toBase64Image()
+}
+
+if(chartVar.canvas){
+return chartVar.canvas.toDataURL("image/png")
+}
+
+return null
+
+}catch(e){
+return null
+}
+
+}
+
+
+/* TRY FIND CHART VARIABLES */
+
+function detectCharts(){
+
+const charts={}
+
+charts.energy =
+window.energyChart ||
+window.stackedChart ||
+window.energyChartInstance ||
+null
+
+charts.trend =
+window.trendChart ||
+window.trendChartInstance ||
+null
+
+charts.facility =
+window.facilityChart ||
+window.facilityChartInstance ||
+null
+
+return charts
+
+}
+
+
+/* CREATE EXPORT BUTTON */
 
 function createExportButton(){
 
+if(document.getElementById("exportPDFButton")) return
+
 const btn=document.createElement("button")
 
+btn.id="exportPDFButton"
 btn.innerText="Export PDF"
 
 btn.style.position="fixed"
@@ -362,35 +395,13 @@ document.body.appendChild(btn)
 }
 
 
-/* LOAD PDF LIBRARY */
-
-function loadPDFLibrary(){
-
-return new Promise((resolve)=>{
-
-if(window.html2pdf){
-resolve()
-return
-}
-
-const script=document.createElement("script")
-
-script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-
-script.onload=()=>resolve()
-
-document.body.appendChild(script)
-
-})
-
-}
-
-
 /* EXPORT FUNCTION */
 
 async function exportPDF(){
 
 await loadPDFLibrary()
+
+const charts=detectCharts()
 
 const container=document.createElement("div")
 
@@ -409,61 +420,60 @@ header.style.marginBottom="30px"
 
 const title=document.createElement("h2")
 title.innerText="Helixon Energy Intelligence Report"
-title.style.marginBottom="10px"
 
 const now=new Date()
-const dateText=now.toLocaleDateString("en-US",{
-year:"numeric",
-month:"long",
-day:"numeric"
-})
+const reportDate=now.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})
 
-const facility=document.getElementById("facility-select").value
-const month=document.getElementById("month-select").value
+const facility=document.getElementById("facility-select")?.value || "All"
+const month=document.getElementById("month-select")?.value || "All"
 
-const info=document.createElement("div")
-info.style.fontSize="14px"
-info.style.opacity="0.8"
-info.innerHTML=`
-Report Date: ${dateText}<br>
+const meta=document.createElement("div")
+
+meta.style.fontSize="14px"
+meta.style.opacity="0.8"
+
+meta.innerHTML=`
+Report Date: ${reportDate}<br>
 Facility Filter: ${facility}<br>
 Month Filter: ${month}
 `
 
 header.appendChild(title)
-header.appendChild(info)
+header.appendChild(meta)
 
 container.appendChild(header)
 
 
-/* KPI SECTION */
+/* KPI */
 
-const kpiSection=document.getElementById("kpi-container").cloneNode(true)
-kpiSection.style.marginBottom="30px"
+const kpi=document.getElementById("kpi-container")
 
-container.appendChild(kpiSection)
-
-
-/* ANALYTICS SECTION */
-
-const analytics=document.querySelector(".analytics-grid").cloneNode(true)
-analytics.style.marginBottom="30px"
-
-container.appendChild(analytics)
+if(kpi){
+container.appendChild(kpi.cloneNode(true))
+}
 
 
-/* ENERGY TYPE CHART */
+/* ANALYTICS */
 
-if(typeof energyChart!=="undefined"){
+const analytics=document.querySelector(".analytics-grid")
+
+if(analytics){
+container.appendChild(analytics.cloneNode(true))
+}
+
+
+/* ENERGY CHART */
+
+const energyImg=getChartImage(charts.energy)
+
+if(energyImg){
 
 const title=document.createElement("h3")
 title.innerText="Energy Type Comparison"
-title.style.marginTop="30px"
 
 const img=document.createElement("img")
-img.src=energyChart.toBase64Image()
+img.src=energyImg
 img.style.width="100%"
-img.style.marginTop="10px"
 
 container.appendChild(title)
 container.appendChild(img)
@@ -473,16 +483,16 @@ container.appendChild(img)
 
 /* TREND CHART */
 
-if(typeof trendChart!=="undefined"){
+const trendImg=getChartImage(charts.trend)
+
+if(trendImg){
 
 const title=document.createElement("h3")
 title.innerText="Emission Trend"
-title.style.marginTop="40px"
 
 const img=document.createElement("img")
-img.src=trendChart.toBase64Image()
+img.src=trendImg
 img.style.width="100%"
-img.style.marginTop="10px"
 
 container.appendChild(title)
 container.appendChild(img)
@@ -492,16 +502,16 @@ container.appendChild(img)
 
 /* FACILITY CHART */
 
-if(typeof facilityChart!=="undefined"){
+const facilityImg=getChartImage(charts.facility)
+
+if(facilityImg){
 
 const title=document.createElement("h3")
 title.innerText="Facility Comparison"
-title.style.marginTop="40px"
 
 const img=document.createElement("img")
-img.src=facilityChart.toBase64Image()
+img.src=facilityImg
 img.style.width="100%"
-img.style.marginTop="10px"
 
 container.appendChild(title)
 container.appendChild(img)
@@ -545,3 +555,12 @@ html2pdf()
 .save()
 
 }
+
+
+/* INITIALIZE BUTTON AFTER PAGE LOAD */
+
+window.addEventListener("load",()=>{
+setTimeout(()=>{
+createExportButton()
+},1500)
+})
