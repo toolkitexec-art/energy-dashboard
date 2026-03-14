@@ -242,250 +242,9 @@ function renderEnergyChart(data){
     })
 }
 
-/* =========================
-EMISSION TREND CHART
-ORANGE GRADIENT
-========================= */
 
-function renderTrendChart(data){
 
-    const months=[...new Set(data.map(d=>d.month))].sort()
-
-    const values=months.map(m=>{
-        return data.filter(r=>r.month===m)
-            .reduce((s,r)=>s+Number(r.total_emission||0),0)
-    })
-
-    const monthLabels=months.map(m=>{
-        const date=new Date(m)
-        return date.toLocaleString("en",{month:"long"})
-    })
-
-    const ctx=document.getElementById("trendChart").getContext("2d")
-
-    if(trendChart) trendChart.destroy()
-
-    const gradient=ctx.createLinearGradient(0,0,0,400)
-
-    gradient.addColorStop(0,"rgba(251,146,60,0.9)")
-    gradient.addColorStop(0.5,"rgba(249,115,22,0.7)")
-    gradient.addColorStop(1,"rgba(2,6,23,0.9)")
-
-    trendChart=new Chart(ctx,{
-        type:"line",
-        data:{
-            labels:monthLabels,
-            datasets:[{
-                data:values,
-                borderColor:"#fb923c",
-                backgroundColor:gradient,
-                fill:true,
-                tension:0.4,
-                borderWidth:3,
-                pointBackgroundColor:"#fb923c",
-                pointBorderColor:"#ffffff",
-                pointRadius:4
-            }]
-        },
-        options:{
-            plugins:{legend:{display:false}}
-        }
-    })
-}
-
-/* =========================
-SAFE EXPORT PDF SYSTEM
-(Place at the very end of script.js)
-========================= */
-
-/* LOAD PDF LIBRARY */
-
-function loadPDFLibrary(){
-return new Promise((resolve)=>{
-if(window.html2pdf){ resolve(); return; }
-
-const script=document.createElement("script")
-script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-script.onload=()=>resolve()
-
-document.body.appendChild(script)
-})
-}
-
-
-/* GET CHART IMAGE SAFELY */
-
-function getChartImage(chartVar){
-
-try{
-
-if(!chartVar) return null
-
-if(typeof chartVar.toBase64Image==="function"){
-return chartVar.toBase64Image()
-}
-
-if(chartVar.canvas){
-return chartVar.canvas.toDataURL("image/png")
-}
-
-return null
-
-}catch(e){
-return null
-}
-
-}
-
-
-/* TRY FIND CHART VARIABLES */
-
-function detectCharts(){
-
-const charts={}
-
-charts.energy =
-window.energyChart ||
-window.stackedChart ||
-window.energyChartInstance ||
-null
-
-charts.trend =
-window.trendChart ||
-window.trendChartInstance ||
-null
-
-charts.facility =
-window.facilityChart ||
-window.facilityChartInstance ||
-null
-
-return charts
-
-}
-
-
-/* CREATE EXPORT BUTTON */
-
-function createExportButton(){
-
-if(document.getElementById("exportPDFButton")) return
-
-const btn=document.createElement("button")
-
-btn.id="exportPDFButton"
-btn.innerText="Export PDF"
-
-btn.style.position="fixed"
-btn.style.top="30px"
-btn.style.right="40px"
-btn.style.padding="10px 16px"
-btn.style.borderRadius="10px"
-btn.style.border="1px solid #334155"
-btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
-btn.style.color="white"
-btn.style.fontWeight="600"
-btn.style.cursor="pointer"
-btn.style.zIndex="999"
-
-btn.addEventListener("click",exportPDF)
-
-document.body.appendChild(btn)
-
-}
-
-
-/* EXPORT FUNCTION */
-
-async function exportPDF(){
-
-await loadPDFLibrary()
-
-const charts=detectCharts()
-
-const container=document.createElement("div")
-
-container.style.background="#020617"
-container.style.padding="40px"
-container.style.color="#e5e7eb"
-container.style.fontFamily="Inter, sans-serif"
-container.style.width="100%"
-
-
-/* REPORT HEADER */
-
-const header=document.createElement("div")
-
-header.style.marginBottom="30px"
-
-const title=document.createElement("h2")
-title.innerText="Helixon Energy Intelligence Report"
-
-const now=new Date()
-const reportDate=now.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})
-
-const facility=document.getElementById("facility-select")?.value || "All"
-const month=document.getElementById("month-select")?.value || "All"
-
-const meta=document.createElement("div")
-
-meta.style.fontSize="14px"
-meta.style.opacity="0.8"
-
-meta.innerHTML=`
-Report Date: ${reportDate}<br>
-Facility Filter: ${facility}<br>
-Month Filter: ${month}
-`
-
-header.appendChild(title)
-header.appendChild(meta)
-
-container.appendChild(header)
-
-
-/* KPI */
-
-const kpi=document.getElementById("kpi-container")
-
-if(kpi){
-container.appendChild(kpi.cloneNode(true))
-}
-
-
-/* ANALYTICS */
-
-const analytics=document.querySelector(".analytics-grid")
-
-if(analytics){
-container.appendChild(analytics.cloneNode(true))
-}
-
-
-/* ENERGY CHART */
-
-const energyImg=getChartImage(charts.energy)
-
-if(energyImg){
-
-const title=document.createElement("h3")
-title.innerText="Energy Type Comparison"
-
-const img=document.createElement("img")
-img.src=energyImg
-img.style.width="100%"
-
-container.appendChild(title)
-container.appendChild(img)
-
-}
-
-
-/* TREND CHART */
-
-const trendImg=getChartImage(charts.trend)
-
-if(trendImg){
+/if(trendImg){
 
 const title=document.createElement("h3")
 title.innerText="Emission Trend"
@@ -499,68 +258,136 @@ container.appendChild(img)
 
 }
 
+/* =========================
+SAFE HELIXON PDF EXPORT
+PLACE AT VERY BOTTOM OF script.js
+========================= */
 
-/* FACILITY CHART */
+function loadPDFLibrary(){
 
-const facilityImg=getChartImage(charts.facility)
+return new Promise(resolve=>{
 
-if(facilityImg){
+if(window.html2pdf){
+resolve()
+return
+}
 
-const title=document.createElement("h3")
-title.innerText="Facility Comparison"
+const s=document.createElement("script")
+s.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
 
-const img=document.createElement("img")
-img.src=facilityImg
-img.style.width="100%"
+s.onload=()=>resolve()
 
-container.appendChild(title)
-container.appendChild(img)
+document.body.appendChild(s)
+
+})
 
 }
 
 
+async function exportPDF(){
+
+await loadPDFLibrary()
+
+const report=document.createElement("div")
+
+report.style.background="#020617"
+report.style.color="#e5e7eb"
+report.style.padding="40px"
+report.style.fontFamily="Inter, sans-serif"
+
+
+/* HEADER */
+
+const title=document.createElement("h2")
+title.innerText="Helixon Energy Intelligence Report"
+
+const date=new Date().toLocaleDateString("en-US",{
+year:"numeric",
+month:"long",
+day:"numeric"
+})
+
+const facility=document.getElementById("facility-select")?.value || "All Facilities"
+const month=document.getElementById("month-select")?.value || "All Months"
+
+const info=document.createElement("div")
+info.innerHTML=`
+Report Date: ${date}<br>
+Facility Filter: ${facility}<br>
+Month Filter: ${month}
+`
+
+report.appendChild(title)
+report.appendChild(info)
+
+
+/* COPY DASHBOARD SECTIONS */
+
+const kpi=document.getElementById("kpi-container")
+if(kpi) report.appendChild(kpi.cloneNode(true))
+
+const analytics=document.querySelector(".analytics-grid")
+if(analytics) report.appendChild(analytics.cloneNode(true))
+
+
+/* COPY CHART CANVAS AS IMAGE */
+
+document.querySelectorAll("canvas").forEach(canvas=>{
+
+const img=document.createElement("img")
+
+img.src=canvas.toDataURL("image/png")
+
+img.style.width="100%"
+img.style.marginTop="20px"
+
+report.appendChild(img)
+
+})
+
+
 /* PDF OPTIONS */
 
-const opt={
+html2pdf().set({
 
-margin:0.4,
-
+margin:0.5,
 filename:"helixon-energy-report.pdf",
 
-image:{type:"jpeg",quality:0.98},
-
 html2canvas:{
-scale:2,
-useCORS:true
+scale:2
 },
 
 jsPDF:{
 unit:"in",
 format:"a4",
 orientation:"portrait"
-},
-
-pagebreak:{
-mode:["css","legacy"]
 }
 
-}
-
-
-/* GENERATE PDF */
-
-html2pdf()
-.set(opt)
-.from(container)
-.save()
+}).from(report).save()
 
 }
 
 
-/* INITIALIZE BUTTON AFTER PAGE LOAD */
+/* CREATE BUTTON */
 
 window.addEventListener("load",()=>{
-setTimeout(()=>{
-createExportButton()
-},1500)
+
+const btn=document.createElement("button")
+
+btn.innerText="Export PDF"
+
+btn.style.position="fixed"
+btn.style.right="40px"
+btn.style.top="30px"
+btn.style.padding="10px 16px"
+btn.style.borderRadius="10px"
+btn.style.border="1px solid #334155"
+btn.style.background="#1e3a8a"
+btn.style.color="white"
+btn.style.cursor="pointer"
+
+btn.onclick=exportPDF
+
+document.body.appendChild(btn)
+
 })
