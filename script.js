@@ -333,73 +333,215 @@ function renderFacilityChart(data){
 }
 
 /* =========================
-EXPORT PDF
+EXPORT PDF SYSTEM
+MULTI PAGE + REPORT INFO
 ========================= */
 
 function createExportButton(){
 
-    const btn=document.createElement("button")
+const btn=document.createElement("button")
 
-    btn.innerText="Export PDF"
+btn.innerText="Export PDF"
 
-    btn.style.position="fixed"
-    btn.style.top="30px"
-    btn.style.right="40px"
-    btn.style.padding="10px 16px"
-    btn.style.borderRadius="10px"
-    btn.style.border="1px solid #334155"
-    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
-    btn.style.color="white"
-    btn.style.fontWeight="600"
-    btn.style.cursor="pointer"
-    btn.style.zIndex="999"
+btn.style.position="fixed"
+btn.style.top="30px"
+btn.style.right="40px"
+btn.style.padding="10px 16px"
+btn.style.borderRadius="10px"
+btn.style.border="1px solid #334155"
+btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
+btn.style.color="white"
+btn.style.fontWeight="600"
+btn.style.cursor="pointer"
+btn.style.zIndex="999"
 
-    btn.addEventListener("click",exportPDF)
+btn.addEventListener("click",exportPDF)
 
-    document.body.appendChild(btn)
+document.body.appendChild(btn)
+
 }
+
+
+/* LOAD PDF LIBRARY */
 
 function loadPDFLibrary(){
 
-    return new Promise((resolve)=>{
+return new Promise((resolve)=>{
 
-        if(window.html2pdf){
-            resolve()
-            return
-        }
-
-        const script=document.createElement("script")
-
-        script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-
-        script.onload=()=>resolve()
-
-        document.body.appendChild(script)
-
-    })
+if(window.html2pdf){
+resolve()
+return
 }
+
+const script=document.createElement("script")
+
+script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+
+script.onload=()=>resolve()
+
+document.body.appendChild(script)
+
+})
+
+}
+
+
+/* EXPORT FUNCTION */
 
 async function exportPDF(){
 
-    await loadPDFLibrary()
+await loadPDFLibrary()
 
-    const container=document.createElement("div")
+const container=document.createElement("div")
 
-    container.appendChild(document.getElementById("kpi-container").cloneNode(true))
-    container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
-    container.appendChild(document.getElementById("stackedChart").cloneNode(true))
-    container.appendChild(document.getElementById("trendChart").cloneNode(true))
-    container.appendChild(document.getElementById("facilityChart").cloneNode(true))
+container.style.background="#020617"
+container.style.padding="40px"
+container.style.color="#e5e7eb"
+container.style.fontFamily="Inter, sans-serif"
+container.style.width="100%"
 
-    const opt={
-        margin:0.3,
-        filename:"helixon-energy-report.pdf",
-        image:{type:"jpeg",quality:0.98},
-        html2canvas:{scale:2,useCORS:true},
-        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
-    }
 
-    html2pdf().set(opt).from(container).save()
+/* REPORT HEADER */
+
+const header=document.createElement("div")
+
+header.style.marginBottom="30px"
+
+const title=document.createElement("h2")
+title.innerText="Helixon Energy Intelligence Report"
+title.style.marginBottom="10px"
+
+const now=new Date()
+const dateText=now.toLocaleDateString("en-US",{
+year:"numeric",
+month:"long",
+day:"numeric"
+})
+
+const facility=document.getElementById("facility-select").value
+const month=document.getElementById("month-select").value
+
+const info=document.createElement("div")
+info.style.fontSize="14px"
+info.style.opacity="0.8"
+info.innerHTML=`
+Report Date: ${dateText}<br>
+Facility Filter: ${facility}<br>
+Month Filter: ${month}
+`
+
+header.appendChild(title)
+header.appendChild(info)
+
+container.appendChild(header)
+
+
+/* KPI SECTION */
+
+const kpiSection=document.getElementById("kpi-container").cloneNode(true)
+kpiSection.style.marginBottom="30px"
+
+container.appendChild(kpiSection)
+
+
+/* ANALYTICS SECTION */
+
+const analytics=document.querySelector(".analytics-grid").cloneNode(true)
+analytics.style.marginBottom="30px"
+
+container.appendChild(analytics)
+
+
+/* ENERGY TYPE CHART */
+
+if(typeof energyChart!=="undefined"){
+
+const title=document.createElement("h3")
+title.innerText="Energy Type Comparison"
+title.style.marginTop="30px"
+
+const img=document.createElement("img")
+img.src=energyChart.toBase64Image()
+img.style.width="100%"
+img.style.marginTop="10px"
+
+container.appendChild(title)
+container.appendChild(img)
+
 }
 
-loadDashboard()
+
+/* TREND CHART */
+
+if(typeof trendChart!=="undefined"){
+
+const title=document.createElement("h3")
+title.innerText="Emission Trend"
+title.style.marginTop="40px"
+
+const img=document.createElement("img")
+img.src=trendChart.toBase64Image()
+img.style.width="100%"
+img.style.marginTop="10px"
+
+container.appendChild(title)
+container.appendChild(img)
+
+}
+
+
+/* FACILITY CHART */
+
+if(typeof facilityChart!=="undefined"){
+
+const title=document.createElement("h3")
+title.innerText="Facility Comparison"
+title.style.marginTop="40px"
+
+const img=document.createElement("img")
+img.src=facilityChart.toBase64Image()
+img.style.width="100%"
+img.style.marginTop="10px"
+
+container.appendChild(title)
+container.appendChild(img)
+
+}
+
+
+/* PDF OPTIONS */
+
+const opt={
+
+margin:0.4,
+
+filename:"helixon-energy-report.pdf",
+
+image:{type:"jpeg",quality:0.98},
+
+html2canvas:{
+scale:2,
+useCORS:true
+},
+
+jsPDF:{
+unit:"in",
+format:"a4",
+orientation:"portrait"
+},
+
+pagebreak:{
+mode:["css","legacy"]
+}
+
+}
+
+
+/* GENERATE PDF */
+
+html2pdf()
+.set(opt)
+.from(container)
+.save()
+
+}
