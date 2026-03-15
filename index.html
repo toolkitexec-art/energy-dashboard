@@ -10,64 +10,66 @@
 
 <!-- HEADER -->
 <div class="header">
-  <img src="logo-helixon.png" alt="Logo Helixon">
-  <h1>Helixon Energy Intelligence</h1>
+    <img src="logo-helixon.png" alt="Helixon Logo">
+    <h1>Helixon Energy Intelligence</h1>
 </div>
 
 <!-- FILTER -->
 <div class="filters">
-  <select id="facility-select">
-    <option value="all">All Facilities</option>
-  </select>
-  <select id="month-select">
-    <option value="all">All Months</option>
-  </select>
+    <select id="facility-select">
+        <option value="all">All Facilities</option>
+    </select>
+
+    <select id="month-select">
+        <option value="all">All Months</option>
+    </select>
 </div>
 
-<!-- KPI GRID -->
-<div id="kpi-container">
-  <div class="analytics-card">
-    <div>Total Usage</div>
-    <div id="total-usage">950.00</div>
-  </div>
-  <div class="analytics-card">
-    <div>Total Cost</div>
-    <div id="total-cost">$200850.00</div>
-  </div>
-  <div class="analytics-card">
-    <div>Total Emission</div>
-    <div id="total-emission">245.00</div>
-  </div>
+<!-- KPI -->
+<div id="kpi-container"></div>
+
+<!-- ANALYTICS GRID -->
+<div class="analytics-grid">
+    <div class="analytics-card">
+        <div>Industry Benchmark</div>
+        <div id="benchmark-value"></div>
+    </div>
+
+    <div class="analytics-card">
+        <div>Energy Efficiency Score</div>
+        <div id="efficiency-score"></div>
+    </div>
+
+    <div class="analytics-card">
+        <div>Emission Reduction Potential</div>
+        <div id="reduction-ai"></div>
+    </div>
+
+    <div class="analytics-card">
+        <div>Cost Saving Opportunity</div>
+        <div id="saving-ai"></div>
+    </div>
 </div>
 
 <!-- ENERGY TYPE -->
 <h3>Energy Type Comparison</h3>
-<div id="energy-total" style="font-size:24px;margin-bottom:10px;"></div>
+<div id="energy-total" class="energy-total"></div>
 <canvas id="stackedChart"></canvas>
 
-<!-- EMISSION TREND -->
+<!-- TREND -->
 <h3>Emission Trend</h3>
 <canvas id="trendChart"></canvas>
 
-<!-- FACILITY COMPARISON -->
+<!-- FACILITY -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
-<!-- Libraries -->
+<!-- LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- Dashboard Script -->
-<script type="module" src="script.js"></script>
-
-<!-- Export JS -->
-<script src="export.js"></script>
-
-<!-- Export Button -->
-<button id="export-pdf-btn">Export PDF</button>
-
-<!-- Preview Container -->
-<div id="pdf-preview-container" style="display:none;"></div>
+<!-- EXPORT JS -->
+<script src="script.js" type="module"></script>
 
 </body>
 </html>
