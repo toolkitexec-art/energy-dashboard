@@ -12,14 +12,9 @@ const month=params.get("month")
 
 async function buildReport(){
 
-const {data,error}=await supabase
+const {data}=await supabase
 .from("dashboard_phase2_final_named")
 .select("*")
-
-if(error){
-console.log(error)
-return
-}
 
 let filtered=data
 
@@ -31,25 +26,31 @@ if(month!=="all"){
 filtered=filtered.filter(d=>d.month===month)
 }
 
-const total=filtered.reduce((s,r)=>s+Number(r.total_emission||0),0)
+renderCharts(filtered)
 
-const ctx=document.getElementById("reportChart")
+setTimeout(generatePDF,1500)
 
-const chart=new Chart(ctx,{
+}
+
+function renderCharts(data){
+
+const energyTotals={}
+
+data.forEach(r=>{
+energyTotals[r.energy_type]=(energyTotals[r.energy_type]||0)+Number(r.total_emission||0)
+})
+
+new Chart(document.getElementById("energyChart"),{
 type:"bar",
 data:{
-labels:["Total Emission"],
-datasets:[{
-data:[total]
-}]
+labels:Object.keys(energyTotals),
+datasets:[{data:Object.values(energyTotals)}]
 }
 })
 
-setTimeout(()=>exportPDF(chart),1200)
-
 }
 
-function exportPDF(chart){
+function generatePDF(){
 
 const { jsPDF } = window.jspdf
 
@@ -57,11 +58,13 @@ const pdf=new jsPDF("p","mm","a4")
 
 pdf.text("Helixon ESG Report",20,20)
 
-const img=chart.toBase64Image()
+const canvas=document.querySelector("canvas")
+
+const img=canvas.toDataURL()
 
 pdf.addImage(img,"PNG",15,40,180,100)
 
-pdf.save("helixon-report.pdf")
+pdf.save("helixon-esg-report.pdf")
 
 }
 
