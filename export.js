@@ -1,5 +1,3 @@
-// export.js
-
 async function loadPDFLibrary() {
     if (window.html2pdf) return;
     return new Promise(resolve => {
@@ -10,21 +8,7 @@ async function loadPDFLibrary() {
     });
 }
 
-function createPreviewContainer() {
-    const oldPreview = document.getElementById("pdf-preview");
-    if (oldPreview) oldPreview.remove();
-
-    const previewContainer = document.createElement("div");
-    previewContainer.id = "pdf-preview";
-    previewContainer.innerHTML = "<h2>PDF Preview</h2>";
-    document.body.appendChild(previewContainer);
-
-    return previewContainer;
-}
-
-async function exportPDF(previewOnly = false) {
-    await loadPDFLibrary();
-
+function generatePDFContainer() {
     const container = document.createElement("div");
 
     // KPI Page
@@ -73,13 +57,20 @@ async function exportPDF(previewOnly = false) {
 
     container.appendChild(trendFacilityPage);
 
-    if (previewOnly) {
-        const preview = createPreviewContainer();
-        preview.appendChild(container);
-        return;
-    }
+    return container;
+}
 
-    // PDF Options
+async function exportPDF() {
+    await loadPDFLibrary();
+
+    const container = generatePDFContainer();
+
+    // Tampilkan preview scrollable
+    const previewContainer = document.getElementById("pdf-preview-container");
+    previewContainer.innerHTML = "<h3 style='margin-bottom:15px'>PDF Preview (Scroll untuk lihat semua halaman)</h3>";
+    previewContainer.appendChild(container.cloneNode(true));
+
+    // Download PDF
     const opt = {
         margin: 0.3,
         filename: "helixon-energy-report.pdf",
@@ -90,20 +81,3 @@ async function exportPDF(previewOnly = false) {
 
     html2pdf().set(opt).from(container).save();
 }
-
-// Tombol preview PDF
-const previewBtn = document.createElement("button");
-previewBtn.innerText = "Preview PDF";
-previewBtn.style.position = "fixed";
-previewBtn.style.top = "80px";
-previewBtn.style.right = "40px";
-previewBtn.style.padding = "10px 16px";
-previewBtn.style.borderRadius = "10px";
-previewBtn.style.border = "1px solid #334155";
-previewBtn.style.background = "linear-gradient(135deg,#facc15,#dc2626)";
-previewBtn.style.color = "white";
-previewBtn.style.fontWeight = "600";
-previewBtn.style.cursor = "pointer";
-previewBtn.style.zIndex = "999";
-previewBtn.onclick = () => exportPDF(true);
-document.body.appendChild(previewBtn);
