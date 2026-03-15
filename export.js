@@ -8,7 +8,21 @@ async function loadPDFLibrary() {
     });
 }
 
-function generatePDFContainer() {
+function createPreviewContainer() {
+    let container = document.getElementById("pdf-preview-container");
+    if (container) container.remove();
+
+    container = document.createElement("div");
+    container.id = "pdf-preview-container";
+    container.innerHTML = "<h2 style='margin-bottom:20px;'>PDF Preview</h2>";
+    document.body.appendChild(container);
+
+    return container;
+}
+
+async function exportPDF() {
+    await loadPDFLibrary();
+
     const container = document.createElement("div");
 
     // KPI Page
@@ -57,25 +71,16 @@ function generatePDFContainer() {
 
     container.appendChild(trendFacilityPage);
 
-    return container;
-}
+    // Preview di dashboard
+    const preview = createPreviewContainer();
+    preview.appendChild(container.cloneNode(true));
 
-async function exportPDF() {
-    await loadPDFLibrary();
-
-    const container = generatePDFContainer();
-
-    // Tampilkan preview scrollable
-    const previewContainer = document.getElementById("pdf-preview-container");
-    previewContainer.innerHTML = "<h3 style='margin-bottom:15px'>PDF Preview (Scroll untuk lihat semua halaman)</h3>";
-    previewContainer.appendChild(container.cloneNode(true));
-
-    // Download PDF
+    // PDF download options
     const opt = {
         margin: 0.3,
         filename: "helixon-energy-report.pdf",
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: null },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
     };
 
