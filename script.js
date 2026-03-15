@@ -332,3 +332,23 @@ function renderFacilityChart(data){
     })
 }
 
+/* ===== HELIXON EXPORT (SAFE VERSION) ===== */
+
+function exportPDF(){
+
+  const facility=document.getElementById("facility-select")?.value || "all"
+  const month=document.getElementById("month-select")?.value || "all"
+
+  const url=`report.html?facility=${facility}&month=${month}`
+
+  window.open(url,"_blank")
+
+}
+
+/* bind button */
+
+const exportBtn=document.getElementById("export-pdf")
+
+if(exportBtn){
+  exportBtn.onclick=exportPDF
+}
