@@ -95,3 +95,32 @@ canvas{
 
 /* SMOOTH PAGE */
 *{ box-sizing:border-box; transition:background .25s, border .25s, transform .25s; }
+
+/* =========================
+PDF EXPORT LAYOUT PROFESIONAL
+========================= */
+.page {
+    page-break-after: always;
+    padding: 40px 30px;      /* spacing atas-bawah konsisten */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.page:last-child {
+    page-break-after: auto;
+}
+
+.page h3 {
+    margin-top: 0;
+    margin-bottom: 20px;      
+    font-size: 18px;
+}
+
+.page .chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;               
+}
