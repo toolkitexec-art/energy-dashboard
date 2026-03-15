@@ -1,133 +1,131 @@
-body{
-    background: radial-gradient(circle at 20% 10%,#1e293b 0%,transparent 40%),
-                radial-gradient(circle at 90% 90%,#1e3a8a 0%,transparent 40%),
-                #020617;
-    color:#e5e7eb;
-    font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,sans-serif;
-    margin:40px;
+/* =========================
+GENERAL BODY
+========================= */
+body {
+  background:
+    radial-gradient(circle at 20% 10%, #1e293b 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, #1e3a8a 0%, transparent 40%),
+    #020617;
+  color: #e5e7eb;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Inter,
+    sans-serif;
+  margin: 40px;
 }
 
-/* HEADER */
-.header{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:20px;
-}
-.header img{
-    width:40px;
-    height:40px;
+/* TITLE */
+h1 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  margin-bottom: 25px;
 }
 
 /* FILTER */
-.filters{
-    display:flex;
-    gap:15px;
-    margin-bottom:25px;
+select {
+  background: linear-gradient(145deg, #0f172a, #020617);
+  border: 1px solid #334155;
+  color: #e5e7eb;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
 }
-select{
-    background:linear-gradient(145deg,#0f172a,#020617);
-    border:1px solid #334155;
-    color:#e5e7eb;
-    padding:10px 14px;
-    border-radius:10px;
-    font-size:14px;
-    outline:none;
-    transition:all .25s ease;
-}
-select:hover{
-    border-color:#3b82f6;
+select:hover {
+  border-color: #3b82f6;
 }
 
-/* KPI GRID */
-#kpi-container{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-    margin-bottom:25px;
+/* KPI CARDS */
+.kpi-card {
+  padding: 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1e293b, #020617);
+  border: 1px solid #334155;
+  font-size: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
 }
-.kpi-card{
-    padding:22px;
-    border-radius:14px;
-    background:linear-gradient(135deg,#1e293b,#020617);
-    border:1px solid #334155;
-    font-size:15px;
-    box-shadow:0 8px 30px rgba(0,0,0,.35);
-    transition:all .25s ease;
-}
-.kpi-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 14px 40px rgba(0,0,0,.55);
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
-/* ANALYTICS GRID */
-.analytics-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-    margin-bottom:30px;
+/* ANALYTICS CARDS */
+.analytics-card {
+  padding: 22px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.9),
+    rgba(2, 6, 23, 0.95)
+  );
+  border: 1px solid #334155;
+  font-size: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
 }
-.analytics-card{
-    padding:22px;
-    border-radius:14px;
-    background:linear-gradient(135deg,rgba(30,41,59,.9),rgba(2,6,23,.95));
-    border:1px solid #334155;
-    font-size:15px;
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
-    transition:all .25s ease;
-}
-.analytics-card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 18px 50px rgba(0,0,0,.65);
-    border-color:#3b82f6;
-}
-
-/* CHARTS */
-h3{
-    margin-top:40px;
-    margin-bottom:10px;
-    font-weight:500;
-    letter-spacing:0.3px;
-}
-canvas{
-    background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
-    border:1px solid #334155;
-    border-radius:12px;
-    padding:15px;
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
+.analytics-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65);
+  border-color: #3b82f6;
 }
 
-/* ENERGY TOTAL */
-.energy-total{
-    font-size:28px;
-    font-weight:600;
-    letter-spacing:0.5px;
-    background:linear-gradient(90deg,#60a5fa,#22c55e);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+/* CHART TITLES */
+h3 {
+  margin-top: 40px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-/* SMOOTH TRANSITIONS */
-*{
-    box-sizing:border-box;
-    transition:background .25s,border .25s,transform .25s;
+/* CHART CONTAINER */
+canvas {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.7),
+    rgba(2, 6, 23, 0.95)
+  );
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
 }
-/* Halaman PDF */
+
+/* ENERGY TOTAL TEXT */
+#energy-total {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #60a5fa, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* SMOOTH PAGE */
+* {
+  box-sizing: border-box;
+  transition: background 0.25s, border 0.25s, transform 0.25s;
+}
+
+/* =========================
+PDF EXPORT LAYOUT
+========================= */
 .page {
-    page-break-after: always;
-    padding: 40px 30px; /* padding atas/bawah sama */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  page-break-after: always;
+  padding: 20px 30px;
 }
 
 .page:last-child {
-    page-break-after: auto;
+  page-break-after: auto;
 }
 
 .page h3 {
-    margin-top: 0;
-    margin-bottom: 20px; /* jarak antara judul dan chart */
-    font-size: 20px;
-    text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
 }
