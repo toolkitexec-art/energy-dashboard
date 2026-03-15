@@ -31,14 +31,12 @@ async function loadDashboard(){
 }
 
 function populateFilters(data){
-
     const facilities=[...new Set(data.map(d=>d.facility_name).filter(Boolean))]
     facilities.forEach(f=>{
         facilitySelect.innerHTML+=`<option value="${f}">${f}</option>`
     })
 
     const months=[...new Set(data.map(d=>d.month))].sort()
-
     months.forEach(m=>{
         const date=new Date(m)
         const label=date.toLocaleString("en",{month:"long",year:"numeric"})
@@ -50,7 +48,6 @@ function populateFilters(data){
 }
 
 function applyFilters(data){
-
     let facility=facilitySelect.value
     let month=monthSelect.value
     let filtered=data
@@ -71,7 +68,6 @@ function applyFilters(data){
     renderEnergyChart(filtered)
     renderTrendChart(filtered)
     renderFacilityChart(filtered)
-
 }
 
 function sum(data,field){
@@ -86,25 +82,19 @@ function safeDivide(a,b){
 /* =========================
 RENDER KPI
 ========================= */
-
 function renderKPI(data){
-
     const usage=sum(data,"total_usage")
     const cost=sum(data,"total_cost")
     const emission=sum(data,"total_emission")
-
     const kpiGradient="linear-gradient(135deg,#7c2d12,#020617)"
 
     document.getElementById("kpi-container").innerHTML=
-
     `<div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Usage</b><br>${usage.toFixed(2)}
     </div>
-
     <div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Cost</b><br>$${cost.toFixed(2)}
     </div>
-
     <div class="kpi-card" style="background:${kpiGradient}">
         <b>Total Emission</b><br>${emission.toFixed(2)}
     </div>`
@@ -113,228 +103,111 @@ function renderKPI(data){
 /* =========================
 ANALYTICS PANELS
 ========================= */
-
 function renderBenchmark(data){
-
     const usage=sum(data,"total_usage")
     const emission=sum(data,"total_emission")
-
     const intensity=safeDivide(emission,usage)
-
     const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
-
     const el=document.getElementById("benchmark-value")
-
     el.innerHTML=
     `<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
-    Industry Avg: ${INDUSTRY_AVG}<br>
-    Difference: ${diff.toFixed(1)}%`
-
+     Industry Avg: ${INDUSTRY_AVG}<br>
+     Difference: ${diff.toFixed(1)}%`
     el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
     el.parentElement.style.border="1px solid #334155"
 }
 
 function renderEfficiency(data){
-
     const usage=sum(data,"total_usage")
     const emission=sum(data,"total_emission")
-
     const intensity=safeDivide(emission,usage)
-
     let score=100-(intensity*100)
-
-    if(score<0) score=0
-    if(score>100) score=100
-
+    score=Math.min(Math.max(score,0),100)
     const el=document.getElementById("efficiency-score")
-
     el.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
-
     el.parentElement.style.background="linear-gradient(135deg,#1e3a8a,#020617)"
     el.parentElement.style.border="1px solid #1d4ed8"
 }
 
 function renderReduction(data){
-
     const emission=sum(data,"total_emission")
-
     const reduction=emission*0.12
-
     const el=document.getElementById("reduction-ai")
-
-    el.innerHTML=
-    `<b>${reduction.toFixed(2)} tCO₂</b><br>
-    Potential reduction`
-
+    el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`
     el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
     el.parentElement.style.border="1px solid #22c55e"
 }
 
 function renderSaving(data){
-
     const emission=sum(data,"total_emission")
-
     const reduction=emission*0.12
-
     const saving=reduction*CARBON_PRICE
-
     const el=document.getElementById("saving-ai")
-
-    el.innerHTML=
-    `<b>$${saving.toFixed(2)}</b><br>
-    Potential cost saving`
-
+    el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
     el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
     el.parentElement.style.border="1px solid #f97316"
 }
 
 /* =========================
-ENERGY TYPE CHART
+CHARTS
 ========================= */
-
 function renderEnergyChart(data){
-
     const labels=[...new Set(data.map(d=>d.energy_type_record))]
-
     const values=labels.map(type=>{
         return data.filter(r=>r.energy_type_record===type)
             .reduce((s,r)=>s+Number(r.total_emission||0),0)
     })
-
     const total=values.reduce((a,b)=>a+b,0)
-
     document.getElementById("energy-total").innerText=total.toFixed(2)
-
     const ctx=document.getElementById("stackedChart").getContext("2d")
-
     if(energyChart) energyChart.destroy()
-
     const gradient=ctx.createLinearGradient(0,0,0,400)
-
     gradient.addColorStop(0,"#60a5fa")
     gradient.addColorStop(0.5,"#3b82f6")
     gradient.addColorStop(1,"#1e293b")
-
     energyChart=new Chart(ctx,{
         type:"bar",
-        data:{
-            labels,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
-            }]
-        },
+        data:{labels,datasets:[{data:values,backgroundColor:gradient,borderRadius:6}]},
         plugins:[ChartDataLabels],
-        options:{
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    color:"#e5e7eb",
-                    anchor:"end",
-                    align:"top",
-                    font:{weight:"600"},
-                    formatter:(v)=>v.toFixed(2)
-                }
-            },
-            scales:{y:{beginAtZero:true}}
-        }
+        options:{plugins:{legend:{display:false},datalabels:{color:"#e5e7eb",anchor:"end",align:"top",font:{weight:"600"},formatter:v=>v.toFixed(2)}},scales:{y:{beginAtZero:true}}}
     })
 }
 
-/* =========================
-EMISSION TREND CHART
-ORANGE GRADIENT
-========================= */
-
 function renderTrendChart(data){
-
     const months=[...new Set(data.map(d=>d.month))].sort()
-
-    const values=months.map(m=>{
-        return data.filter(r=>r.month===m)
-            .reduce((s,r)=>s+Number(r.total_emission||0),0)
-    })
-
-    const monthLabels=months.map(m=>{
-        const date=new Date(m)
-        return date.toLocaleString("en",{month:"long"})
-    })
-
+    const values=months.map(m=>data.filter(r=>r.month===m).reduce((s,r)=>s+Number(r.total_emission||0),0))
+    const monthLabels=months.map(m=>new Date(m).toLocaleString("en",{month:"long"}))
     const ctx=document.getElementById("trendChart").getContext("2d")
-
     if(trendChart) trendChart.destroy()
-
     const gradient=ctx.createLinearGradient(0,0,0,400)
-
     gradient.addColorStop(0,"rgba(251,146,60,0.9)")
     gradient.addColorStop(0.5,"rgba(249,115,22,0.7)")
     gradient.addColorStop(1,"rgba(2,6,23,0.9)")
-
     trendChart=new Chart(ctx,{
         type:"line",
-        data:{
-            labels:monthLabels,
-            datasets:[{
-                data:values,
-                borderColor:"#fb923c",
-                backgroundColor:gradient,
-                fill:true,
-                tension:0.4,
-                borderWidth:3,
-                pointBackgroundColor:"#fb923c",
-                pointBorderColor:"#ffffff",
-                pointRadius:4
-            }]
-        },
-        options:{
-            plugins:{legend:{display:false}}
-        }
+        data:{labels:monthLabels,datasets:[{data:values,borderColor:"#fb923c",backgroundColor:gradient,fill:true,tension:0.4,borderWidth:3,pointBackgroundColor:"#fb923c",pointBorderColor:"#ffffff",pointRadius:4}]},
+        options:{plugins:{legend:{display:false}}}
+    })
+}
+
+function renderFacilityChart(data){
+    const facilities=[...new Set(data.map(d=>d.facility_name))]
+    const values=facilities.map(f=>data.filter(r=>r.facility_name===f).reduce((s,r)=>s+Number(r.total_emission||0),0))
+    const ctx=document.getElementById("facilityChart").getContext("2d")
+    if(facilityChart) facilityChart.destroy()
+    const gradient=ctx.createLinearGradient(0,0,0,400)
+    gradient.addColorStop(0,"#fb923c")
+    gradient.addColorStop(1,"#7c2d12")
+    facilityChart=new Chart(ctx,{
+        type:"bar",
+        data:{labels:facilities,datasets:[{data:values,backgroundColor:gradient,borderRadius:6}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     })
 }
 
 /* =========================
-FACILITY CHART
+EXPORT PDF FINAL STABIL
 ========================= */
-
-function renderFacilityChart(data){
-
-    const facilities=[...new Set(data.map(d=>d.facility_name))]
-
-    const values=facilities.map(f=>{
-        return data.filter(r=>r.facility_name===f)
-            .reduce((s,r)=>s+Number(r.total_emission||0),0)
-    })
-
-    const ctx=document.getElementById("facilityChart").getContext("2d")
-
-    if(facilityChart) facilityChart.destroy()
-
-    const gradient=ctx.createLinearGradient(0,0,0,400)
-
-    gradient.addColorStop(0,"#fb923c")
-    gradient.addColorStop(1,"#7c2d12")
-
-    facilityChart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:facilities,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
-            }]
-        },
-        options:{
-            plugins:{legend:{display:false}},
-            scales:{y:{beginAtZero:true}}
-        }
-    })
-}
-
-// =========================
-// HELIXON SAFE EXPORT PDF
-// =========================
 function createExportButton(){
     const btn=document.createElement("button")
     btn.innerText="Export PDF"
@@ -353,34 +226,79 @@ function createExportButton(){
     document.body.appendChild(btn)
 }
 
+async function loadPDFLibrary(){
+    if(window.html2pdf) return
+    return new Promise(resolve=>{
+        const script=document.createElement("script")
+        script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        script.onload=()=>resolve()
+        document.body.appendChild(script)
+    })
+}
+
 async function exportPDF(){
-    if(!window.html2pdf){ alert("PDF library not loaded!"); return; }
-
-    const container = document.createElement("div");
-
-    // Clone KPI & Analytics
+    await loadPDFLibrary()
+    const container=document.createElement("div")
+    container.style.background="#020617"
+    container.style.padding="30px"
+    container.style.color="#e5e7eb"
+    container.style.fontFamily="Inter, sans-serif"
+    
+    // Header info
+    const header=document.createElement("div")
+    const title=document.createElement("h2")
+    title.innerText="Helixon Energy Intelligence Report"
+    title.style.marginBottom="10px"
+    const now=new Date()
+    const dateText=now.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})
+    const facility=facilitySelect.value
+    const month=monthSelect.value
+    const info=document.createElement("div")
+    info.style.fontSize="14px"
+    info.style.opacity="0.8"
+    info.innerHTML=`Report Date: ${dateText}<br>Facility Filter: ${facility}<br>Month Filter: ${month}`
+    header.appendChild(title)
+    header.appendChild(info)
+    container.appendChild(header)
+    
+    // Append KPI (clone DOM)
     container.appendChild(document.getElementById("kpi-container").cloneNode(true))
+    
+    // Append analytics grid
     container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
-
-    // Render chart canvases sebagai gambar
-    const chartIds = ["stackedChart","trendChart","facilityChart"]
-    for(let id of chartIds){
-        const canvas = document.getElementById(id)
-        const imgData = await html2canvas(canvas, { scale: 2, useCORS: true })
-        const img = document.createElement("img")
-        img.src = imgData.toDataURL("image/jpeg",1.0)
-        img.style.width = "100%"
-        img.style.marginTop = "20px"
+    
+    // Append charts as images (Base64) untuk resolusi tinggi
+    if(energyChart){
+        const img=document.createElement("img")
+        img.src=energyChart.toBase64Image()
+        img.style.width="100%"
+        container.appendChild(document.createElement("h3")).innerText="Energy Type Comparison"
         container.appendChild(img)
     }
-
-    const opt = {
-        margin:0.3,
-        filename:"helixon-energy-report.pdf",
-        image:{type:"jpeg",quality:0.98},
-        html2canvas:{scale:2,useCORS:true},
-        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
+    if(trendChart){
+        const img=document.createElement("img")
+        img.src=trendChart.toBase64Image()
+        img.style.width="100%"
+        container.appendChild(document.createElement("h3")).innerText="Emission Trend"
+        container.appendChild(img)
     }
-
-    html2pdf().set(opt).from(container).save()
+    if(facilityChart){
+        const img=document.createElement("img")
+        img.src=facilityChart.toBase64Image()
+        img.style.width="100%"
+        container.appendChild(document.createElement("h3")).innerText="Facility Comparison"
+        container.appendChild(img)
+    }
+    
+    // Generate PDF
+    html2pdf().set({
+        margin:0.4,
+        filename:"helixon-energy-report.pdf",
+        image:{type:"jpeg",quality:1},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:"in",format:"a4",orientation:"portrait"},
+        pagebreak:{mode:["css","legacy"]}
+    }).from(container).save()
 }
+
+loadDashboard()
