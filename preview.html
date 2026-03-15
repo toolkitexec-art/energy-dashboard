@@ -3,80 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Preview - Helixon</title>
-
+<title>Helixon PDF Preview</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 body {
-    background: #020617;
-    color: #e5e7eb;
-    font-family: sans-serif;
-    margin: 20px;
+    margin:0;
+    font-family:sans-serif;
+    background:#020617;
+    color:#e5e7eb;
 }
 
-/* Container preview */
+/* Scrollable preview container */
 #pdf-preview {
-    max-height: 90vh;
-    overflow-y: auto;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 20px;
-    background: #0f172a;
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+    padding:20px;
+    background:#020617;
+    border:1px solid #334155;
+    border-radius:12px;
+    color:#e5e7eb;
+    max-height:80vh;
+    overflow-y:auto;
 }
 
-/* Page style inside preview */
-#pdf-preview .page {
-    background: #ffffff; /* PDF background */
-    color: #000000;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    padding: 30px;
-    min-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+/* Each PDF page */
+.pdf-page {
+    page-break-after: always;
+    padding:40px 30px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    min-height:100vh;
+    background:#020617;
+    box-sizing:border-box;
+    margin-bottom:20px;
 }
 
-/* Chart wrapper */
-.chart-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+.pdf-page:last-child { page-break-after:auto; }
+
+.pdf-page h3 {
+    margin-top:0;
+    margin-bottom:20px;
+    font-size:18px;
 }
 
-/* Titles inside pages */
-.page h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 18px;
+.pdf-chart-wrapper {
+    display:flex;
+    flex-direction:column;
+    gap:30px;
 }
 
-/* Export button */
-.export-btn {
-    position: fixed;
-    top: 30px;
-    right: 40px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    border: 1px solid #334155;
-    background: linear-gradient(135deg,#3b82f6,#1e3a8a);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    z-index: 999;
+/* KPI cards in preview */
+#kpi-container .analytics-card {
+    padding:30px;
+    font-size:20px;
+}
+#kpi-container .analytics-card div:first-child {
+    font-size:14px;
+}
+#kpi-container .analytics-card div:last-child {
+    font-size:22px;
 }
 </style>
 </head>
 <body>
 
-<h1 style="color:white;">Helixon PDF Preview</h1>
-<p style="color:#e5e7eb;">Scroll untuk melihat setiap halaman sebelum download.</p>
+<h1 style="text-align:center; margin-top:20px;">Helixon PDF Preview</h1>
 
-<!-- Tombol download PDF -->
-<button onclick="downloadPDF()" class="export-btn">Download PDF</button>
-
-<!-- Preview container -->
 <div id="pdf-preview"></div>
 
 <!-- Libraries -->
@@ -84,86 +78,91 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<!-- Dashboard sample (clone dari index.html) -->
-<div id="dashboard-sample" style="display:none;">
-    <!-- KPI -->
-    <div id="kpi-container"></div>
+<script type="module">
+// Simulasi data sama dengan dashboard
+function createDummyDashboard() {
+    const container = document.createElement("div");
+    container.id = "kpi-container";
 
-    <!-- ENERGY TYPE -->
-    <canvas id="stackedChart"></canvas>
+    const cards = [
+        {label:"Total Usage", value:"950.00"},
+        {label:"Total Cost", value:"$200850.00"},
+        {label:"Total Emission", value:"245.00"}
+    ];
 
-    <!-- EMISSION TREND -->
-    <canvas id="trendChart"></canvas>
+    cards.forEach(c=>{
+        const card = document.createElement("div");
+        card.className="analytics-card";
+        card.innerHTML=`<div>${c.label}</div><div>${c.value}</div>`;
+        container.appendChild(card);
+    });
 
-    <!-- FACILITY COMPARISON -->
-    <canvas id="facilityChart"></canvas>
-</div>
+    document.body.appendChild(container);
 
-<script type="module" src="script.js"></script>
-
-<script>
-// Fungsi membuat preview PDF
-async function createPDFPreview() {
-    const previewContainer = document.getElementById("pdf-preview");
-    previewContainer.innerHTML = ""; // reset
-
-    // Halaman 1: KPI + Energy Type
-    const page1 = document.createElement("div");
-    page1.className = "page";
-    page1.appendChild(document.getElementById("kpi-container").cloneNode(true));
-
-    const energyWrapper = document.createElement("div");
-    energyWrapper.className = "chart-wrapper";
-    const energyTitle = document.createElement("h3");
-    energyTitle.innerText = "Energy Type Comparison";
-    energyWrapper.appendChild(energyTitle);
-    energyWrapper.appendChild(document.getElementById("stackedChart").cloneNode(true));
-    page1.appendChild(energyWrapper);
-
-    previewContainer.appendChild(page1);
-
-    // Halaman 2: Emission Trend + Facility Comparison
-    const page2 = document.createElement("div");
-    page2.className = "page";
-
-    const trendWrapper = document.createElement("div");
-    trendWrapper.className = "chart-wrapper";
-    const trendTitle = document.createElement("h3");
-    trendTitle.innerText = "Emission Trend";
-    trendWrapper.appendChild(trendTitle);
-    trendWrapper.appendChild(document.getElementById("trendChart").cloneNode(true));
-    page2.appendChild(trendWrapper);
-
-    const facilityWrapper = document.createElement("div");
-    facilityWrapper.className = "chart-wrapper";
-    const facilityTitle = document.createElement("h3");
-    facilityTitle.innerText = "Facility Comparison";
-    facilityWrapper.appendChild(facilityTitle);
-    facilityWrapper.appendChild(document.getElementById("facilityChart").cloneNode(true));
-    page2.appendChild(facilityWrapper);
-
-    previewContainer.appendChild(page2);
+    // Dummy charts
+    const chartIds = ["stackedChart","trendChart","facilityChart"];
+    chartIds.forEach(id=>{
+        const c = document.createElement("canvas");
+        c.id = id;
+        c.style.height="300px";
+        c.style.width="100%";
+        document.body.appendChild(c);
+        new Chart(c.getContext("2d"),{
+            type:'bar',
+            data:{labels:["A","B","C"], datasets:[{label:"Value", data:[10,20,15], backgroundColor:"#3b82f6"}]},
+            options:{responsive:true, plugins:{datalabels:{color:"#fff"}}}
+        });
+    });
 }
 
-// Fungsi download PDF dari preview
-async function downloadPDF() {
-    const container = document.getElementById("pdf-preview").cloneNode(true);
-    const opt = {
-        margin: 0.3,
-        filename: "helixon-energy-report.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
-    };
-    html2pdf().set(opt).from(container).save();
+function createPDFPage(title, elements){
+    const page = document.createElement("div");
+    page.className="pdf-page";
+
+    const wrapper = document.createElement("div");
+    wrapper.className="pdf-chart-wrapper";
+
+    if(title){
+        const h3 = document.createElement("h3");
+        h3.innerText = title;
+        wrapper.appendChild(h3);
+    }
+
+    elements.forEach(el => wrapper.appendChild(el.cloneNode(true)));
+    page.appendChild(wrapper);
+    return page;
 }
 
-// Inisialisasi preview setelah dashboard siap
-window.addEventListener("load", () => {
-    setTimeout(() => { // tunggu chart render
-        createPDFPreview();
-    }, 500);
-});
+// Preview rendering
+function renderPreview() {
+    createDummyDashboard();
+    const container = document.getElementById("pdf-preview");
+
+    // Page 1: KPI + Energy Type
+    const page1 = createPDFPage(null, [
+        document.getElementById("kpi-container"),
+        document.getElementById("stackedChart")
+    ]);
+    const h3Energy = document.createElement("h3");
+    h3Energy.innerText="Energy Type Comparison";
+    page1.querySelector(".pdf-chart-wrapper").insertBefore(h3Energy, page1.querySelector(".pdf-chart-wrapper").children[1]);
+    container.appendChild(page1);
+
+    // Page 2: Emission Trend + Facility Comparison
+    const page2 = createPDFPage(null, [
+        document.getElementById("trendChart"),
+        document.getElementById("facilityChart")
+    ]);
+    const h3Trend = document.createElement("h3");
+    h3Trend.innerText="Emission Trend";
+    page2.querySelector(".pdf-chart-wrapper").insertBefore(h3Trend, page2.querySelector(".pdf-chart-wrapper").children[0]);
+    const h3Facility = document.createElement("h3");
+    h3Facility.innerText="Facility Comparison";
+    page2.querySelector(".pdf-chart-wrapper").appendChild(h3Facility);
+    container.appendChild(page2);
+}
+
+renderPreview();
 </script>
 
 </body>
