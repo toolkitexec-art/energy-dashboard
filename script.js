@@ -332,3 +332,74 @@ function renderFacilityChart(data){
     })
 }
 
+/* =========================
+EXPORT PDF
+========================= */
+
+function createExportButton(){
+
+    const btn=document.createElement("button")
+
+    btn.innerText="Export PDF"
+
+    btn.style.position="fixed"
+    btn.style.top="30px"
+    btn.style.right="40px"
+    btn.style.padding="10px 16px"
+    btn.style.borderRadius="10px"
+    btn.style.border="1px solid #334155"
+    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
+    btn.style.color="white"
+    btn.style.fontWeight="600"
+    btn.style.cursor="pointer"
+    btn.style.zIndex="999"
+
+    btn.addEventListener("click",exportPDF)
+
+    document.body.appendChild(btn)
+}
+
+function loadPDFLibrary(){
+
+    return new Promise((resolve)=>{
+
+        if(window.html2pdf){
+            resolve()
+            return
+        }
+
+        const script=document.createElement("script")
+
+        script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+
+        script.onload=()=>resolve()
+
+        document.body.appendChild(script)
+
+    })
+}
+
+async function exportPDF(){
+
+    await loadPDFLibrary()
+
+    const container=document.createElement("div")
+
+    container.appendChild(document.getElementById("kpi-container").cloneNode(true))
+    container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
+    container.appendChild(document.getElementById("stackedChart").cloneNode(true))
+    container.appendChild(document.getElementById("trendChart").cloneNode(true))
+    container.appendChild(document.getElementById("facilityChart").cloneNode(true))
+
+    const opt={
+        margin:0.3,
+        filename:"helixon-energy-report.pdf",
+        image:{type:"jpeg",quality:0.98},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
+    }
+
+    html2pdf().set(opt).from(container).save()
+}
+
+loadDashboard()
