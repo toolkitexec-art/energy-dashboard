@@ -272,75 +272,63 @@ function renderFacilityChart(data){
 }
 
 
-/* =========================
-PDF EXPORT (FIXED VERSION)
-========================= */
-
-function createExportButton(){
-
-    const btn=document.createElement("button")
-
-    btn.innerText="Export PDF"
-
-    btn.style.position="fixed"
-    btn.style.top="30px"
-    btn.style.right="40px"
-    btn.style.padding="10px 16px"
-    btn.style.borderRadius="10px"
-    btn.style.border="1px solid #334155"
-    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
-    btn.style.color="white"
-    btn.style.fontWeight="600"
-    btn.style.cursor="pointer"
-    btn.style.zIndex="999"
-
-    btn.addEventListener("click",exportPDF)
-
-    document.body.appendChild(btn)
-}
-
+/* ===== HELIXON HIGH QUALITY PDF EXPORT ===== */
 
 async function exportPDF(){
 
-    const container=document.createElement("div")
+const dashboard=document.body.cloneNode(true)
 
-    container.appendChild(document.getElementById("kpi-container").cloneNode(true))
-    container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
+/* replace canvas charts with high-res images */
 
-    if(energyChart){
+const charts=dashboard.querySelectorAll("canvas")
 
-        const img=new Image()
-        img.src=energyChart.toBase64Image()
-        container.appendChild(img)
+charts.forEach((canvas,index)=>{
 
-    }
+let img=new Image()
 
-    if(trendChart){
-
-        const img=new Image()
-        img.src=trendChart.toBase64Image()
-        container.appendChild(img)
-
-    }
-
-    if(facilityChart){
-
-        const img=new Image()
-        img.src=facilityChart.toBase64Image()
-        container.appendChild(img)
-
-    }
-
-    const opt={
-        margin:0.3,
-        filename:"helixon-energy-report.pdf",
-        image:{type:"jpeg",quality:1},
-        html2canvas:{scale:2},
-        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
-    }
-
-    html2pdf().set(opt).from(container).save()
+if(index===0 && energyChart){
+img.src=energyChart.toBase64Image()
 }
 
+if(index===1 && trendChart){
+img.src=trendChart.toBase64Image()
+}
 
-loadDashboard()
+if(index===2 && facilityChart){
+img.src=facilityChart.toBase64Image()
+}
+
+img.style.width="100%"
+
+canvas.parentNode.replaceChild(img,canvas)
+
+})
+
+
+const opt={
+
+margin:0.2,
+
+filename:"helixon-energy-report.pdf",
+
+image:{
+type:"jpeg",
+quality:1
+},
+
+html2canvas:{
+scale:3,
+useCORS:true
+},
+
+jsPDF:{
+unit:"in",
+format:"a4",
+orientation:"portrait"
+}
+
+}
+
+html2pdf().set(opt).from(dashboard).save()
+
+}
