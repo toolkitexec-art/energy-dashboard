@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Helixon Energy Intelligence</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <img src="logo-helixon.png">
-  <h1>Helixon Energy Intelligence</h1>
+    <img src="logo-helixon.png">
+    <h1>Helixon Energy Intelligence</h1>
 </div>
 
 <!-- FILTER -->
 <div class="filters">
-  <select id="facility-select">
-    <option value="all">All Facilities</option>
-  </select>
-  <select id="month-select">
-    <option value="all">All Months</option>
-  </select>
+    <select id="facility-select">
+        <option value="all">All Facilities</option>
+    </select>
+    <select id="month-select">
+        <option value="all">All Months</option>
+    </select>
 </div>
 
 <!-- KPI -->
@@ -29,22 +31,22 @@
 
 <!-- ANALYTICS GRID -->
 <div class="analytics-grid">
-  <div class="analytics-card">
-    <div>Industry Benchmark</div>
-    <div id="benchmark-value"></div>
-  </div>
-  <div class="analytics-card">
-    <div>Energy Efficiency Score</div>
-    <div id="efficiency-score"></div>
-  </div>
-  <div class="analytics-card">
-    <div>Emission Reduction Potential</div>
-    <div id="reduction-ai"></div>
-  </div>
-  <div class="analytics-card">
-    <div>Cost Saving Opportunity</div>
-    <div id="saving-ai"></div>
-  </div>
+    <div class="analytics-card">
+        <div>Industry Benchmark</div>
+        <div id="benchmark-value"></div>
+    </div>
+    <div class="analytics-card">
+        <div>Energy Efficiency Score</div>
+        <div id="efficiency-score"></div>
+    </div>
+    <div class="analytics-card">
+        <div>Emission Reduction Potential</div>
+        <div id="reduction-ai"></div>
+    </div>
+    <div class="analytics-card">
+        <div>Cost Saving Opportunity</div>
+        <div id="saving-ai"></div>
+    </div>
 </div>
 
 <!-- ENERGY TYPE -->
@@ -52,20 +54,22 @@
 <div id="energy-total" style="font-size:24px;margin-bottom:10px;"></div>
 <canvas id="stackedChart"></canvas>
 
-<!-- TREND -->
+<!-- EMISSION TREND -->
 <h3>Emission Trend</h3>
 <canvas id="trendChart"></canvas>
 
-<!-- FACILITY -->
+<!-- FACILITY COMPARISON -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
-<!-- POJOK KANAN EXPORT BUTTON -->
-<button id="export-pdf">Export PDF</button>
-
+<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script type="module" src="script.js"></script>
+
+<!-- PDF EXPORT LIBRARY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="export.js"></script>
+
 </body>
 </html>
