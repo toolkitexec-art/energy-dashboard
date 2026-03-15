@@ -8,54 +8,66 @@ async function loadPDFLibrary() {
     });
 }
 
+function createPDFPage(title, elements) {
+    const page = document.createElement("div");
+    page.className = "pdf-page";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "pdf-chart-wrapper";
+
+    if(title){
+        const h3 = document.createElement("h3");
+        h3.innerText = title;
+        wrapper.appendChild(h3);
+    }
+
+    elements.forEach(el => wrapper.appendChild(el.cloneNode(true)));
+    page.appendChild(wrapper);
+    return page;
+}
+
 async function exportPDF() {
     await loadPDFLibrary();
 
     const container = document.createElement("div");
 
-    // Halaman 1: KPI + Energy Type
-    const page1 = document.createElement("div");
-    page1.className = "pdf-page";
-    page1.appendChild(document.getElementById("kpi-container").cloneNode(true));
-
-    const energyWrapper = document.createElement("div");
-    energyWrapper.className = "chart-wrapper";
-    const energyTitle = document.createElement("h3");
-    energyTitle.innerText = "Energy Type Comparison";
-    energyWrapper.appendChild(energyTitle);
-    energyWrapper.appendChild(document.getElementById("stackedChart").cloneNode(true));
-    page1.appendChild(energyWrapper);
-
+    // Page 1: KPI + Energy Type
+    const page1 = createPDFPage(null, [
+        document.getElementById("kpi-container"),
+        document.getElementById("stackedChart")
+    ]);
+    const h3Energy = document.createElement("h3");
+    h3Energy.innerText = "Energy Type Comparison";
+    page1.querySelector(".pdf-chart-wrapper").insertBefore(h3Energy, page1.querySelector(".pdf-chart-wrapper").children[1]);
     container.appendChild(page1);
 
-    // Halaman 2: Emission Trend + Facility Comparison
-    const page2 = document.createElement("div");
-    page2.className = "pdf-page";
+    // Page 2: Emission Trend + Facility Comparison
+    const page2 = createPDFPage(null, [
+        document.getElementById("trendChart"),
+        document.getElementById("facilityChart")
+    ]);
+    const h3Trend = document.createElement("h3");
+    h3Trend.innerText = "Emission Trend";
+    page2.querySelector(".pdf-chart-wrapper").insertBefore(h3Trend, page2.querySelector(".pdf-chart-wrapper").children[0]);
 
-    const trendWrapper = document.createElement("div");
-    trendWrapper.className = "chart-wrapper";
-    const trendTitle = document.createElement("h3");
-    trendTitle.innerText = "Emission Trend";
-    trendWrapper.appendChild(trendTitle);
-    trendWrapper.appendChild(document.getElementById("trendChart").cloneNode(true));
-    page2.appendChild(trendWrapper);
-
-    const facilityWrapper = document.createElement("div");
-    facilityWrapper.className = "chart-wrapper";
-    const facilityTitle = document.createElement("h3");
-    facilityTitle.innerText = "Facility Comparison";
-    facilityWrapper.appendChild(facilityTitle);
-    facilityWrapper.appendChild(document.getElementById("facilityChart").cloneNode(true));
-    page2.appendChild(facilityWrapper);
-
+    const h3Facility = document.createElement("h3");
+    h3Facility.innerText = "Facility Comparison";
+    page2.querySelector(".pdf-chart-wrapper").appendChild(h3Facility);
     container.appendChild(page2);
 
+    // Show preview
+    const preview = document.getElementById("pdf-preview-container");
+    preview.innerHTML = "";
+    preview.appendChild(container);
+    preview.style.display = "block";
+
+    // Download after preview (optional)
     const opt = {
-        margin: 0.3,
-        filename: "helixon-energy-report.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor:"#ffffff" },
-        jsPDF: { unit:"in", format:"a4", orientation:"portrait" }
+        margin:0.3,
+        filename:"helixon-energy-report.pdf",
+        image:{type:"jpeg",quality:0.98},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
     };
 
     html2pdf().set(opt).from(container).save();
