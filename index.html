@@ -176,3 +176,19 @@ window.open(
 
 </body>
 </html>
+
+<script>
+
+document.getElementById("export-report").onclick=function(){
+
+const facility=document.getElementById("facility-select").value
+const month=document.getElementById("month-select").value
+
+window.open(
+`report.html?facility=${facility}&month=${month}`,
+"_blank"
+)
+
+}
+
+</script>
