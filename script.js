@@ -272,42 +272,15 @@ function renderFacilityChart(data){
 }
 
 
-/* ===== HELIXON HIGH QUALITY PDF EXPORT ===== */
+/* ===== HELIXON STABLE PDF EXPORT ===== */
 
 async function exportPDF(){
 
-const dashboard=document.body.cloneNode(true)
-
-/* replace canvas charts with high-res images */
-
-const charts=dashboard.querySelectorAll("canvas")
-
-charts.forEach((canvas,index)=>{
-
-let img=new Image()
-
-if(index===0 && energyChart){
-img.src=energyChart.toBase64Image()
-}
-
-if(index===1 && trendChart){
-img.src=trendChart.toBase64Image()
-}
-
-if(index===2 && facilityChart){
-img.src=facilityChart.toBase64Image()
-}
-
-img.style.width="100%"
-
-canvas.parentNode.replaceChild(img,canvas)
-
-})
-
+const dashboard=document.body   // gunakan halaman yang sedang tampil
 
 const opt={
 
-margin:0.2,
+margin:0.3,
 
 filename:"helixon-energy-report.pdf",
 
@@ -317,8 +290,9 @@ quality:1
 },
 
 html2canvas:{
-scale:3,
-useCORS:true
+scale:2,
+useCORS:true,
+backgroundColor:"#020617"
 },
 
 jsPDF:{
