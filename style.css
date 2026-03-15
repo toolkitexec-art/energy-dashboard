@@ -78,41 +78,7 @@ canvas{
   -webkit-text-fill-color:transparent;
 }
 
-/* SMOOTH PAGE */
-*{ box-sizing:border-box; transition:background .25s, border .25s, transform .25s; }
-
-/* =========================
-PDF EXPORT & PREVIEW
-========================= */
-
-.page {
-    page-break-after: always;
-    padding: 40px 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    min-height: 100vh;
-    background: #0f172a;
-    color: #e5e7eb;
-    box-sizing: border-box;
-}
-
-.page:last-child { page-break-after: auto; }
-
-.page h3 {
-    margin-top:0;
-    margin-bottom:20px;
-    font-size:18px;
-}
-
-.page .chart-wrapper {
-    display:flex;
-    flex-direction:column;
-    gap:30px;
-    break-inside: avoid;
-}
-
-/* Export Button */
+/* EXPORT BUTTON */
 .export-btn{
     position: fixed;
     top: 30px;
@@ -127,19 +93,5 @@ PDF EXPORT & PREVIEW
     z-index: 999;
 }
 
-/* Preview container */
-#pdf-preview-container {
-    margin-top: 50px;
-    max-height: 80vh;
-    overflow-y: auto;
-    border: 1px solid #334155;
-    padding: 20px;
-    background: #020617;
-    border-radius: 12px;
-}
-#pdf-preview-container .page {
-    margin-bottom: 20px;
-    padding: 30px;
-    background: #0f172a;
-    border-radius: 12px;
-}
+/* SMOOTH PAGE */
+*{ box-sizing:border-box; transition:background .25s, border .25s, transform .25s; }
