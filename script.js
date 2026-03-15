@@ -188,7 +188,11 @@ datasets:[{data:values}]
 OPEN REPORT PAGE
 ========================= */
 
-function openReport(){
+const exportBtn=document.getElementById("export-report")
+
+if(exportBtn){
+
+exportBtn.addEventListener("click",()=>{
 
 const facility=facilitySelect.value
 const month=monthSelect.value
@@ -198,10 +202,6 @@ window.open(
 "_blank"
 )
 
-}
+})
 
-const exportBtn=document.getElementById("export-report")
-
-if(exportBtn){
-exportBtn.onclick=openReport
 }
