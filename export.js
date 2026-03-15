@@ -1,64 +1,69 @@
-/* =========================
-HELIXON PROFESSIONAL PDF EXPORT
-========================= */
+/* ===== HELIXON PDF EXPORT PROFESSIONAL ===== */
 
 async function exportPDF() {
+  if (!window.html2pdf) {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+    await new Promise(res => { script.onload = res; document.body.appendChild(script); });
+  }
 
-    // Buat container sementara
-    const container = document.createElement("div");
+  // Buat container utama PDF
+  const container = document.createElement("div");
 
-    // Wrap setiap section ke dalam div.page
-    const sections = [
-        document.getElementById("kpi-container"),
-        document.querySelector(".analytics-grid"),
-        document.getElementById("stackedChart"),
-        document.getElementById("trendChart"),
-        document.getElementById("facilityChart")
-    ];
+  // ================= PAGES =================
 
-    sections.forEach(section => {
-        const pageDiv = document.createElement("div");
-        pageDiv.classList.add("page");
-        pageDiv.appendChild(section.cloneNode(true));
-        container.appendChild(pageDiv);
-    });
+  const kpiPage = document.createElement("div");
+  kpiPage.className = "page";
+  kpiPage.appendChild(document.getElementById("kpi-container").cloneNode(true));
+  container.appendChild(kpiPage);
 
-    // Atur opsi html2pdf
-    const opt = {
-        margin: 0.4,
-        filename: "helixon-energy-report.pdf",
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] }
-    };
+  const analyticsPage = document.createElement("div");
+  analyticsPage.className = "page";
+  analyticsPage.appendChild(document.querySelector(".analytics-grid").cloneNode(true));
+  container.appendChild(analyticsPage);
 
-    html2pdf().set(opt).from(container).save();
+  const energyPage = document.createElement("div");
+  energyPage.className = "page";
+  energyPage.appendChild(document.getElementById("energy-total").cloneNode(true));
+  energyPage.appendChild(document.getElementById("stackedChart").cloneNode(true));
+  container.appendChild(energyPage);
+
+  const trendPage = document.createElement("div");
+  trendPage.className = "page";
+  trendPage.appendChild(document.getElementById("trendChart").cloneNode(true));
+  container.appendChild(trendPage);
+
+  const facilityPage = document.createElement("div");
+  facilityPage.className = "page";
+  facilityPage.appendChild(document.getElementById("facilityChart").cloneNode(true));
+  container.appendChild(facilityPage);
+
+  // ================= PDF OPTIONS =================
+
+  const opt = {
+    margin: [0.4, 0.4, 0.4, 0.4], // top, left, bottom, right in inches
+    filename: "helixon-energy-report.pdf",
+    image: { type: "jpeg", quality: 1 },
+    html2canvas: { scale: 3, useCORS: true }, // high res grafik
+    jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+  };
+
+  html2pdf().set(opt).from(container).save();
 }
 
-/* Tambahkan tombol export di pojok kanan, tidak mengubah dashboard */
-function createExportButton() {
-    if (document.getElementById("helixon-export-btn")) return;
-
-    const btn = document.createElement("button");
-    btn.id = "helixon-export-btn";
-    btn.innerText = "Export PDF";
-    btn.style.position = "fixed";
-    btn.style.top = "30px";
-    btn.style.right = "40px";
-    btn.style.padding = "10px 16px";
-    btn.style.borderRadius = "10px";
-    btn.style.border = "1px solid #334155";
-    btn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
-    btn.style.color = "white";
-    btn.style.fontWeight = "600";
-    btn.style.cursor = "pointer";
-    btn.style.zIndex = "999";
-
-    btn.onclick = exportPDF;
-
-    document.body.appendChild(btn);
-}
-
-// Auto-create tombol
-createExportButton();
+// Bind tombol export pojok kanan
+const exportBtn = document.createElement("button");
+exportBtn.innerText = "Export PDF";
+exportBtn.style.position = "fixed";
+exportBtn.style.top = "30px";
+exportBtn.style.right = "40px";
+exportBtn.style.padding = "10px 16px";
+exportBtn.style.borderRadius = "10px";
+exportBtn.style.border = "1px solid #334155";
+exportBtn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
+exportBtn.style.color = "white";
+exportBtn.style.fontWeight = "600";
+exportBtn.style.cursor = "pointer";
+exportBtn.style.zIndex = "999";
+exportBtn.onclick = exportPDF;
+document.body.appendChild(exportBtn);
