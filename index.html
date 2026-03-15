@@ -10,7 +10,7 @@
 
 <!-- HEADER -->
 <div class="header">
-  <img src="logo-helixon.png">
+  <img src="logo-helixon.png" alt="Logo Helixon">
   <h1>Helixon Energy Intelligence</h1>
 </div>
 
@@ -24,26 +24,19 @@
   </select>
 </div>
 
-<!-- KPI -->
-<div id="kpi-container"></div>
-
-<!-- ANALYTICS GRID -->
-<div class="analytics-grid">
+<!-- KPI GRID -->
+<div id="kpi-container">
   <div class="analytics-card">
-    <div>Industry Benchmark</div>
-    <div id="benchmark-value"></div>
+    <div>Total Usage</div>
+    <div id="total-usage">950.00</div>
   </div>
   <div class="analytics-card">
-    <div>Energy Efficiency Score</div>
-    <div id="efficiency-score"></div>
+    <div>Total Cost</div>
+    <div id="total-cost">$200850.00</div>
   </div>
   <div class="analytics-card">
-    <div>Emission Reduction Potential</div>
-    <div id="reduction-ai"></div>
-  </div>
-  <div class="analytics-card">
-    <div>Cost Saving Opportunity</div>
-    <div id="saving-ai"></div>
+    <div>Total Emission</div>
+    <div id="total-emission">245.00</div>
   </div>
 </div>
 
@@ -60,30 +53,21 @@
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
-<!-- LIBRARIES -->
+<!-- Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- DASHBOARD SCRIPT -->
+<!-- Dashboard Script -->
 <script type="module" src="script.js"></script>
 
-<!-- EXPORT PDF -->
+<!-- Export JS -->
 <script src="export.js"></script>
 
-<!-- Tombol export di pojok kanan -->
-<button onclick="exportPDF()" style="
-    position:fixed;
-    top:30px;
-    right:40px;
-    padding:10px 16px;
-    border-radius:10px;
-    border:1px solid #334155;
-    background:linear-gradient(135deg,#3b82f6,#1e3a8a);
-    color:white;
-    font-weight:600;
-    cursor:pointer;
-    z-index:999;
-">Export PDF</button>
+<!-- Export Button -->
+<button id="export-pdf-btn">Export PDF</button>
+
+<!-- Preview Container -->
+<div id="pdf-preview-container" style="display:none;"></div>
 
 </body>
 </html>
