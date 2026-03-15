@@ -43,7 +43,7 @@ gap:20px;
 margin-bottom:25px;
 }
 
-/* ANALYTICS GRID (PERBAIKAN UTAMA) */
+/* ANALYTICS GRID */
 
 .analytics-grid{
 display:grid;
@@ -52,7 +52,7 @@ gap:20px;
 margin-bottom:30px;
 }
 
-/* CARD STYLE */
+/* ANALYTICS CARD */
 
 .analytics-card{
 padding:20px;
@@ -67,6 +67,7 @@ font-size:15px;
 </head>
 
 <body>
+
 
 <!-- HEADER -->
 
@@ -91,6 +92,8 @@ font-size:15px;
 <option value="all">All Months</option>
 </select>
 
+<button id="export-pdf">Export PDF</button>
+
 </div>
 
 
@@ -99,7 +102,7 @@ font-size:15px;
 <div id="kpi-container"></div>
 
 
-<!-- ANALYTICS GRID -->
+<!-- ANALYTICS -->
 
 <div class="analytics-grid">
 
@@ -135,25 +138,37 @@ font-size:15px;
 <canvas id="stackedChart"></canvas>
 
 
-<!-- TREND -->
+<!-- EMISSION TREND -->
 
 <h3>Emission Trend</h3>
 
 <canvas id="trendChart"></canvas>
 
 
-<!-- FACILITY -->
+<!-- FACILITY COMPARISON -->
 
 <h3>Facility Comparison</h3>
 
 <canvas id="facilityChart"></canvas>
 
 
+
+<!-- LIBRARIES -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
+<!-- PDF EXPORT LIBRARY -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+<!-- MAIN DASHBOARD SCRIPT -->
 
 <script type="module" src="script.js"></script>
 
-</body>
 
+</body>
 </html>
