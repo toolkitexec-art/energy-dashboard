@@ -112,13 +112,22 @@ canvas{
     box-sizing:border-box;
     transition:background .25s,border .25s,transform .25s;
 }
-
 /* Halaman PDF */
 .page {
     page-break-after: always;
-    padding: 20px;
+    padding: 40px 30px; /* padding atas/bawah sama */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .page:last-child {
     page-break-after: auto;
+}
+
+.page h3 {
+    margin-top: 0;
+    margin-bottom: 20px; /* jarak antara judul dan chart */
+    font-size: 20px;
+    text-align: center;
 }
