@@ -184,36 +184,24 @@ datasets:[{data:values}]
 }
 
 
-/* PDF EXPORT */
+/* =========================
+OPEN REPORT PAGE
+========================= */
 
-function exportPDF(){
+function openReport(){
 
-const dashboard=document.body
+const facility=facilitySelect.value
+const month=monthSelect.value
 
-html2pdf().set({
-
-margin:0.5,
-
-filename:"helixon-energy-report.pdf",
-
-image:{type:"jpeg",quality:1},
-
-html2canvas:{scale:2,useCORS:true},
-
-jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
-
-}).from(dashboard).save()
+window.open(
+`report.html?facility=${facility}&month=${month}`,
+"_blank"
+)
 
 }
 
-
-/* BUTTON BIND */
-
-const exportBtn=document.getElementById("export-pdf")
+const exportBtn=document.getElementById("export-report")
 
 if(exportBtn){
-exportBtn.onclick=exportPDF
+exportBtn.onclick=openReport
 }
-
-
-loadDashboard()
