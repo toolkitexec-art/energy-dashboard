@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,141 +10,68 @@
 
 <style>
 /* HEADER */
-.header {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:20px;
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
 }
-.header img {
-    width:40px;
-    height:40px;
+
+.header img{
+  width:40px;
+  height:40px;
 }
 
 /* FILTER */
-.filters {
-    display:flex;
-    gap:15px;
-    margin-bottom:25px;
-}
-select {
-    background: linear-gradient(145deg,#0f172a,#020617);
-    border: 1px solid #334155;
-    color: #e5e7eb;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    outline: none;
-    transition: all .25s ease;
-}
-select:hover {
-    border-color: #3b82f6;
+.filters{
+  display:flex;
+  gap:15px;
+  margin-bottom:25px;
 }
 
 /* KPI GRID */
-#kpi-container {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-    margin-bottom:25px;
+#kpi-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+  margin-bottom:25px;
 }
 
 /* ANALYTICS GRID */
-.analytics-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-    margin-bottom:30px;
+.analytics-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+  margin-bottom:30px;
 }
 
-/* CARD STYLE */
-.kpi-card, .analytics-card {
-    padding:22px;
-    border-radius:14px;
-    background: linear-gradient(135deg,#1e293b,#020617);
-    border:1px solid #334155;
-    font-size:15px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.35);
-    transition: all .25s ease;
-}
-.kpi-card:hover, .analytics-card:hover {
-    transform: translateY(-3px);
-    box-shadow:0 14px 40px rgba(0,0,0,.55);
-}
-.analytics-card {
-    backdrop-filter: blur(10px);
-}
-.analytics-card:hover {
-    border-color:#3b82f6;
-}
-
-/* CHART TITLES */
-h3 {
-    margin-top:40px;
-    margin-bottom:10px;
-    font-weight:500;
-    letter-spacing:0.3px;
-}
-
-/* CHART CONTAINER */
-canvas {
-    background: linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
-    border:1px solid #334155;
-    border-radius:12px;
-    padding:15px;
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
-}
-
-/* ENERGY TOTAL */
-#energy-total {
-    font-size:28px;
-    font-weight:600;
-    letter-spacing:0.5px;
-    background: linear-gradient(90deg,#60a5fa,#22c55e);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
-
-/* PDF PAGE BREAK */
-.page {
-    page-break-after: always;
-    padding: 20px;
-}
-.page:last-child {
-    page-break-after: auto;
-}
-
-/* BODY */
-body {
-    background: radial-gradient(circle at 20% 10%,#1e293b 0%,transparent 40%), radial-gradient(circle at 90% 90%,#1e3a8a 0%,transparent 40%),#020617;
-    color:#e5e7eb;
-    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,sans-serif;
-    margin:40px;
-}
-h1 {
-    font-size:32px;
-    font-weight:600;
-    letter-spacing:0.4px;
-    margin-bottom:25px;
+/* ANALYTICS CARD */
+.analytics-card{
+  padding:20px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  border:1px solid #334155;
+  font-size:15px;
 }
 </style>
 </head>
+
 <body>
 
 <!-- HEADER -->
 <div class="header">
-    <img src="logo-helixon.png" alt="Helixon Logo">
-    <h1>Helixon Energy Intelligence</h1>
+  <img src="logo-helixon.png">
+  <h1>Helixon Energy Intelligence</h1>
 </div>
 
 <!-- FILTER -->
 <div class="filters">
-    <select id="facility-select">
-        <option value="all">All Facilities</option>
-    </select>
-    <select id="month-select">
-        <option value="all">All Months</option>
-    </select>
+  <select id="facility-select">
+    <option value="all">All Facilities</option>
+  </select>
+  <select id="month-select">
+    <option value="all">All Months</option>
+  </select>
 </div>
 
 <!-- KPI -->
@@ -151,34 +79,34 @@ h1 {
 
 <!-- ANALYTICS GRID -->
 <div class="analytics-grid">
-    <div class="analytics-card">
-        <div>Industry Benchmark</div>
-        <div id="benchmark-value"></div>
-    </div>
-    <div class="analytics-card">
-        <div>Energy Efficiency Score</div>
-        <div id="efficiency-score"></div>
-    </div>
-    <div class="analytics-card">
-        <div>Emission Reduction Potential</div>
-        <div id="reduction-ai"></div>
-    </div>
-    <div class="analytics-card">
-        <div>Cost Saving Opportunity</div>
-        <div id="saving-ai"></div>
-    </div>
+  <div class="analytics-card">
+    <div>Industry Benchmark</div>
+    <div id="benchmark-value"></div>
+  </div>
+  <div class="analytics-card">
+    <div>Energy Efficiency Score</div>
+    <div id="efficiency-score"></div>
+  </div>
+  <div class="analytics-card">
+    <div>Emission Reduction Potential</div>
+    <div id="reduction-ai"></div>
+  </div>
+  <div class="analytics-card">
+    <div>Cost Saving Opportunity</div>
+    <div id="saving-ai"></div>
+  </div>
 </div>
 
 <!-- ENERGY TYPE -->
 <h3>Energy Type Comparison</h3>
-<div id="energy-total" style="margin-bottom:10px;"></div>
+<div id="energy-total" style="font-size:24px;margin-bottom:10px;"></div>
 <canvas id="stackedChart"></canvas>
 
-<!-- EMISSION TREND -->
+<!-- TREND -->
 <h3>Emission Trend</h3>
 <canvas id="trendChart"></canvas>
 
-<!-- FACILITY COMPARISON -->
+<!-- FACILITY -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
@@ -186,11 +114,25 @@ h1 {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- MAIN DASHBOARD SCRIPT (tidak diubah sama sekali) -->
+<!-- DASHBOARD SCRIPT -->
 <script type="module" src="script.js"></script>
 
-<!-- PDF EXPORT -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- EXPORT BUTTON -->
+<button onclick="exportPDF()" style="
+    position:fixed;
+    top:30px;
+    right:40px;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid #334155;
+    background:linear-gradient(135deg,#3b82f6,#1e3a8a);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    z-index:999;
+">Export PDF</button>
+
+<!-- EXPORT.JS -->
 <script src="export.js"></script>
 
 </body>
