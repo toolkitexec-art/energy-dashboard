@@ -2,72 +2,63 @@
 HELIXON PROFESSIONAL PDF EXPORT
 ========================= */
 
-async function exportPDF(){
-  // Pastikan html2pdf tersedia
-  if(!window.html2pdf){
-    console.error("html2pdf.js library not loaded");
-    return;
-  }
+async function exportPDF() {
 
-  const pdfContainer = document.createElement("div");
-  pdfContainer.style.background = "#fff";
-  pdfContainer.style.padding = "25px";
-  pdfContainer.style.color = "#1f2937";
-  pdfContainer.style.fontFamily = "Inter, sans-serif";
+    // Buat container sementara
+    const container = document.createElement("div");
 
-  // HEADER
-  const header = document.createElement("div");
-  header.innerHTML = `<h1 style="text-align:center;margin-bottom:20px;">Helixon Energy Intelligence Report</h1>
-                      <div style="font-size:14px;opacity:0.7;margin-bottom:20px;">
-                        Report Date: ${new Date().toLocaleDateString()}<br>
-                        Facility: ${document.getElementById("facility-select").value}<br>
-                        Month: ${document.getElementById("month-select").value}
-                      </div>`;
-  pdfContainer.appendChild(header);
+    // Wrap setiap section ke dalam div.page
+    const sections = [
+        document.getElementById("kpi-container"),
+        document.querySelector(".analytics-grid"),
+        document.getElementById("stackedChart"),
+        document.getElementById("trendChart"),
+        document.getElementById("facilityChart")
+    ];
 
-  // KPI SECTION
-  const kpiClone = document.getElementById("kpi-container").cloneNode(true);
-  kpiClone.style.display = "grid";
-  kpiClone.style.gridTemplateColumns = "repeat(auto-fit,minmax(250px,1fr))";
-  kpiClone.style.gap = "15px";
-  kpiClone.style.marginBottom = "25px";
-  pdfContainer.appendChild(kpiClone);
+    sections.forEach(section => {
+        const pageDiv = document.createElement("div");
+        pageDiv.classList.add("page");
+        pageDiv.appendChild(section.cloneNode(true));
+        container.appendChild(pageDiv);
+    });
 
-  // ANALYTICS SECTION
-  const analyticsClone = document.querySelector(".analytics-grid").cloneNode(true);
-  analyticsClone.style.display = "grid";
-  analyticsClone.style.gridTemplateColumns = "repeat(auto-fit,minmax(250px,1fr))";
-  analyticsClone.style.gap = "15px";
-  analyticsClone.style.marginBottom = "25px";
-  pdfContainer.appendChild(analyticsClone);
+    // Atur opsi html2pdf
+    const opt = {
+        margin: 0.4,
+        filename: "helixon-energy-report.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+    };
 
-  // CHARTS
-  ["stackedChart","trendChart","facilityChart"].forEach(id=>{
-    const canvas = document.getElementById(id);
-    if(canvas){
-      const img = document.createElement("img");
-      img.src = canvas.toDataURL("image/jpeg", 1);
-      img.style.width = "100%";
-      img.style.marginBottom = "25px";
-      pdfContainer.appendChild(img);
-    }
-  });
-
-  // PDF OPTIONS
-  const opt = {
-    margin: 0.4,
-    filename: "helixon-energy-report.pdf",
-    image: { type: "jpeg", quality: 1 },
-    html2canvas: { scale: 3, useCORS: true },
-    jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    pagebreak: { mode: ["css", "legacy"] }
-  };
-
-  html2pdf().set(opt).from(pdfContainer).save();
+    html2pdf().set(opt).from(container).save();
 }
 
-/* Bind button */
-const exportBtn = document.getElementById("export-pdf");
-if(exportBtn){
-  exportBtn.onclick = exportPDF;
+/* Tambahkan tombol export di pojok kanan, tidak mengubah dashboard */
+function createExportButton() {
+    if (document.getElementById("helixon-export-btn")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "helixon-export-btn";
+    btn.innerText = "Export PDF";
+    btn.style.position = "fixed";
+    btn.style.top = "30px";
+    btn.style.right = "40px";
+    btn.style.padding = "10px 16px";
+    btn.style.borderRadius = "10px";
+    btn.style.border = "1px solid #334155";
+    btn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
+    btn.style.color = "white";
+    btn.style.fontWeight = "600";
+    btn.style.cursor = "pointer";
+    btn.style.zIndex = "999";
+
+    btn.onclick = exportPDF;
+
+    document.body.appendChild(btn);
 }
+
+// Auto-create tombol
+createExportButton();
