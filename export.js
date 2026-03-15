@@ -1,4 +1,4 @@
-/* export.js - PDF Export Profesional Helixon */
+/* ===== HELIXON PDF EXPORT (PROFESSIONAL ESG LAYOUT) ===== */
 
 async function loadPDFLibrary() {
     return new Promise((resolve) => {
@@ -16,58 +16,44 @@ async function loadPDFLibrary() {
 async function exportPDF() {
     await loadPDFLibrary();
 
-    // Buat container sementara untuk PDF
     const container = document.createElement("div");
 
-    // Clone tiap section dashboard ke container
-    const sections = [
-        document.getElementById("kpi-container"),
-        document.querySelector(".analytics-grid"),
-        document.getElementById("stackedChart"),
-        document.getElementById("trendChart"),
-        document.getElementById("facilityChart")
-    ];
-
-    sections.forEach((el, idx) => {
+    // ===== Halaman 1: KPI + Analytics =====
+    ["kpi-container", ".analytics-grid"].forEach(sel => {
         const wrapper = document.createElement("div");
-        wrapper.classList.add("page"); // setiap page
-        wrapper.appendChild(el.cloneNode(true));
+        wrapper.classList.add("page");
+        const el = document.querySelector(sel);
+        if (el) wrapper.appendChild(el.cloneNode(true));
         container.appendChild(wrapper);
     });
 
-    // PDF options
-    const opt = {
+    // ===== Halaman 2: Emission Trend + Facility Comparison =====
+    [
+        ["trendChart", "Emission Trend"],
+        ["facilityChart", "Facility Comparison"]
+    ].forEach(([id, title]) => {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("page");
+
+        const h3 = document.createElement("h3");
+        h3.innerText = title;
+        wrapper.appendChild(h3);
+
+        const chartEl = document.getElementById(id);
+        if (chartEl) wrapper.appendChild(chartEl.cloneNode(true));
+
+        container.appendChild(wrapper);
+    });
+
+    // ===== PDF Options =====
+    const options = {
         margin: 0.4,
         filename: "helixon-energy-report.pdf",
         image: { type: "jpeg", quality: 1 },
-        html2canvas: { scale: 3, useCORS: true, logging: false },
+        html2canvas: { scale: 3, useCORS: true },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] } // memaksa page break per .page
+        pagebreak: { mode: ["css", "legacy"] }
     };
 
-    html2pdf().set(opt).from(container).save();
+    html2pdf().set(options).from(container).save();
 }
-
-// Tambahkan tombol export di pojok kanan atas
-function createExportButton() {
-    const btn = document.createElement("button");
-    btn.innerText = "Export PDF";
-    btn.style.position = "fixed";
-    btn.style.top = "30px";
-    btn.style.right = "40px";
-    btn.style.padding = "10px 16px";
-    btn.style.borderRadius = "10px";
-    btn.style.border = "1px solid #334155";
-    btn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
-    btn.style.color = "white";
-    btn.style.fontWeight = "600";
-    btn.style.cursor = "pointer";
-    btn.style.zIndex = "999";
-    btn.onclick = exportPDF;
-    document.body.appendChild(btn);
-}
-
-// Jalankan otomatis setelah page load
-window.addEventListener("DOMContentLoaded", () => {
-    createExportButton();
-});
