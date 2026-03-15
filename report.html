@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Helixon ESG Report</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+background:#ffffff;
+font-family:Arial;
+padding:40px;
+}
+
+canvas{
+margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Helixon Energy Intelligence Report</h2>
+
+<div id="report-info"></div>
+
+<h3>Energy Type Comparison</h3>
+<canvas id="energyChart"></canvas>
+
+<h3>Emission Trend</h3>
+<canvas id="trendChart"></canvas>
+
+<h3>Facility Comparison</h3>
+<canvas id="facilityChart"></canvas>
+
+<script type="module" src="report.js"></script>
+
+</body>
+</html>
