@@ -13,16 +13,11 @@ async function exportPDF() {
 
     const container = document.createElement("div");
 
-    // ===============================
     // Halaman 1: KPI + Energy Type
-    // ===============================
     const page1 = document.createElement("div");
     page1.className = "page";
-
-    // KPI
     page1.appendChild(document.getElementById("kpi-container").cloneNode(true));
 
-    // Energy Type
     const energyWrapper = document.createElement("div");
     energyWrapper.className = "chart-wrapper";
     const energyTitle = document.createElement("h3");
@@ -33,13 +28,10 @@ async function exportPDF() {
 
     container.appendChild(page1);
 
-    // ===============================
     // Halaman 2: Emission Trend + Facility Comparison
-    // ===============================
     const page2 = document.createElement("div");
     page2.className = "page";
 
-    // Emission Trend
     const trendWrapper = document.createElement("div");
     trendWrapper.className = "chart-wrapper";
     const trendTitle = document.createElement("h3");
@@ -48,7 +40,6 @@ async function exportPDF() {
     trendWrapper.appendChild(document.getElementById("trendChart").cloneNode(true));
     page2.appendChild(trendWrapper);
 
-    // Facility Comparison
     const facilityWrapper = document.createElement("div");
     facilityWrapper.className = "chart-wrapper";
     const facilityTitle = document.createElement("h3");
@@ -59,9 +50,7 @@ async function exportPDF() {
 
     container.appendChild(page2);
 
-    // ===============================
     // PDF Options
-    // ===============================
     const opt = {
         margin: 0.3,
         filename: "helixon-energy-report.pdf",
