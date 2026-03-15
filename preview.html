@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Preview - Helixon</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    background: #020617;
+    color: #e5e7eb;
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+/* Container preview */
+#pdf-preview {
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px;
+    background: #0f172a;
+}
+
+/* Page style inside preview */
+#pdf-preview .page {
+    background: #ffffff; /* PDF background */
+    color: #000000;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    padding: 30px;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Chart wrapper */
+.chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Titles inside pages */
+.page h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* Export button */
+.export-btn {
+    position: fixed;
+    top: 30px;
+    right: 40px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: linear-gradient(135deg,#3b82f6,#1e3a8a);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<h1 style="color:white;">Helixon PDF Preview</h1>
+<p style="color:#e5e7eb;">Scroll untuk melihat setiap halaman sebelum download.</p>
+
+<!-- Tombol download PDF -->
+<button onclick="downloadPDF()" class="export-btn">Download PDF</button>
+
+<!-- Preview container -->
+<div id="pdf-preview"></div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Dashboard sample (clone dari index.html) -->
+<div id="dashboard-sample" style="display:none;">
+    <!-- KPI -->
+    <div id="kpi-container"></div>
+
+    <!-- ENERGY TYPE -->
+    <canvas id="stackedChart"></canvas>
+
+    <!-- EMISSION TREND -->
+    <canvas id="trendChart"></canvas>
+
+    <!-- FACILITY COMPARISON -->
+    <canvas id="facilityChart"></canvas>
+</div>
+
+<script type="module" src="script.js"></script>
+
+<script>
+// Fungsi membuat preview PDF
+async function createPDFPreview() {
+    const previewContainer = document.getElementById("pdf-preview");
+    previewContainer.innerHTML = ""; // reset
+
+    // Halaman 1: KPI + Energy Type
+    const page1 = document.createElement("div");
+    page1.className = "page";
+    page1.appendChild(document.getElementById("kpi-container").cloneNode(true));
+
+    const energyWrapper = document.createElement("div");
+    energyWrapper.className = "chart-wrapper";
+    const energyTitle = document.createElement("h3");
+    energyTitle.innerText = "Energy Type Comparison";
+    energyWrapper.appendChild(energyTitle);
+    energyWrapper.appendChild(document.getElementById("stackedChart").cloneNode(true));
+    page1.appendChild(energyWrapper);
+
+    previewContainer.appendChild(page1);
+
+    // Halaman 2: Emission Trend + Facility Comparison
+    const page2 = document.createElement("div");
+    page2.className = "page";
+
+    const trendWrapper = document.createElement("div");
+    trendWrapper.className = "chart-wrapper";
+    const trendTitle = document.createElement("h3");
+    trendTitle.innerText = "Emission Trend";
+    trendWrapper.appendChild(trendTitle);
+    trendWrapper.appendChild(document.getElementById("trendChart").cloneNode(true));
+    page2.appendChild(trendWrapper);
+
+    const facilityWrapper = document.createElement("div");
+    facilityWrapper.className = "chart-wrapper";
+    const facilityTitle = document.createElement("h3");
+    facilityTitle.innerText = "Facility Comparison";
+    facilityWrapper.appendChild(facilityTitle);
+    facilityWrapper.appendChild(document.getElementById("facilityChart").cloneNode(true));
+    page2.appendChild(facilityWrapper);
+
+    previewContainer.appendChild(page2);
+}
+
+// Fungsi download PDF dari preview
+async function downloadPDF() {
+    const container = document.getElementById("pdf-preview").cloneNode(true);
+    const opt = {
+        margin: 0.3,
+        filename: "helixon-energy-report.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+    };
+    html2pdf().set(opt).from(container).save();
+}
+
+// Inisialisasi preview setelah dashboard siap
+window.addEventListener("load", () => {
+    setTimeout(() => { // tunggu chart render
+        createPDFPreview();
+    }, 500);
+});
+</script>
+
+</body>
+</html>
