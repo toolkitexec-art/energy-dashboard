@@ -332,16 +332,12 @@ function renderFacilityChart(data){
     })
 }
 
-/* =========================
-EXPORT PDF
-========================= */
-
+// =========================
+// HELIXON SAFE EXPORT PDF
+// =========================
 function createExportButton(){
-
     const btn=document.createElement("button")
-
     btn.innerText="Export PDF"
-
     btn.style.position="fixed"
     btn.style.top="30px"
     btn.style.right="40px"
@@ -353,45 +349,32 @@ function createExportButton(){
     btn.style.fontWeight="600"
     btn.style.cursor="pointer"
     btn.style.zIndex="999"
-
     btn.addEventListener("click",exportPDF)
-
     document.body.appendChild(btn)
 }
 
-function loadPDFLibrary(){
-
-    return new Promise((resolve)=>{
-
-        if(window.html2pdf){
-            resolve()
-            return
-        }
-
-        const script=document.createElement("script")
-
-        script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-
-        script.onload=()=>resolve()
-
-        document.body.appendChild(script)
-
-    })
-}
-
 async function exportPDF(){
+    if(!window.html2pdf){ alert("PDF library not loaded!"); return; }
 
-    await loadPDFLibrary()
+    const container = document.createElement("div");
 
-    const container=document.createElement("div")
-
+    // Clone KPI & Analytics
     container.appendChild(document.getElementById("kpi-container").cloneNode(true))
     container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
-    container.appendChild(document.getElementById("stackedChart").cloneNode(true))
-    container.appendChild(document.getElementById("trendChart").cloneNode(true))
-    container.appendChild(document.getElementById("facilityChart").cloneNode(true))
 
-    const opt={
+    // Render chart canvases sebagai gambar
+    const chartIds = ["stackedChart","trendChart","facilityChart"]
+    for(let id of chartIds){
+        const canvas = document.getElementById(id)
+        const imgData = await html2canvas(canvas, { scale: 2, useCORS: true })
+        const img = document.createElement("img")
+        img.src = imgData.toDataURL("image/jpeg",1.0)
+        img.style.width = "100%"
+        img.style.marginTop = "20px"
+        container.appendChild(img)
+    }
+
+    const opt = {
         margin:0.3,
         filename:"helixon-energy-report.pdf",
         image:{type:"jpeg",quality:0.98},
@@ -401,5 +384,3 @@ async function exportPDF(){
 
     html2pdf().set(opt).from(container).save()
 }
-
-loadDashboard()
