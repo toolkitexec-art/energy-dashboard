@@ -10,10 +10,6 @@ const params=new URLSearchParams(window.location.search)
 const facility=params.get("facility")
 const month=params.get("month")
 
-let energyChart
-let trendChart
-let facilityChart
-
 async function buildReport(){
 
 const {data,error}=await supabase
@@ -35,63 +31,37 @@ if(month!=="all"){
 filtered=filtered.filter(d=>d.month===month)
 }
 
-renderCharts(filtered)
+const total=filtered.reduce((s,r)=>s+Number(r.total_emission||0),0)
 
-setTimeout(generatePDF,1500)
+const ctx=document.getElementById("reportChart")
 
-}
-
-function renderCharts(data){
-
-const ctx1=document.getElementById("energyChart")
-
-energyChart=new Chart(ctx1,{
+const chart=new Chart(ctx,{
 type:"bar",
 data:{
-labels:["Emission"],
+labels:["Total Emission"],
 datasets:[{
-data:[data.reduce((s,r)=>s+Number(r.total_emission||0),0)]
+data:[total]
 }]
 }
 })
 
-const ctx2=document.getElementById("trendChart")
-
-trendChart=new Chart(ctx2,{
-type:"line",
-data:{
-labels:["Trend"],
-datasets:[{data:[10]}]
-}
-})
-
-const ctx3=document.getElementById("facilityChart")
-
-facilityChart=new Chart(ctx3,{
-type:"bar",
-data:{
-labels:["Facility"],
-datasets:[{data:[10]}]
-}
-})
+setTimeout(()=>exportPDF(chart),1200)
 
 }
 
-function generatePDF(){
+function exportPDF(chart){
 
 const { jsPDF } = window.jspdf
 
 const pdf=new jsPDF("p","mm","a4")
 
-pdf.setFontSize(18)
+pdf.text("Helixon ESG Report",20,20)
 
-pdf.text("Helixon Energy Intelligence Report",20,20)
-
-const img=energyChart.toBase64Image()
+const img=chart.toBase64Image()
 
 pdf.addImage(img,"PNG",15,40,180,100)
 
-pdf.save("helixon-esg-report.pdf")
+pdf.save("helixon-report.pdf")
 
 }
 
