@@ -112,3 +112,13 @@ canvas{
     box-sizing:border-box;
     transition:background .25s,border .25s,transform .25s;
 }
+
+/* Halaman PDF */
+.page {
+    page-break-after: always;
+    padding: 20px;
+}
+
+.page:last-child {
+    page-break-after: auto;
+}
