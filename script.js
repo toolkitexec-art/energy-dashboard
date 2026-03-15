@@ -378,28 +378,58 @@ function loadPDFLibrary(){
 
     })
 }
-
 async function exportPDF(){
 
     await loadPDFLibrary()
 
     const container=document.createElement("div")
 
-    container.appendChild(document.getElementById("kpi-container").cloneNode(true))
-    container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
-    container.appendChild(document.getElementById("stackedChart").cloneNode(true))
-    container.appendChild(document.getElementById("trendChart").cloneNode(true))
-    container.appendChild(document.getElementById("facilityChart").cloneNode(true))
+    /* KPI dan analytics tetap bisa di-clone */
+    container.appendChild(
+        document.getElementById("kpi-container").cloneNode(true)
+    )
+
+    container.appendChild(
+        document.querySelector(".analytics-grid").cloneNode(true)
+    )
+
+    /* convert chart canvas menjadi image */
+
+    const charts=["stackedChart","trendChart","facilityChart"]
+
+    charts.forEach(id=>{
+
+        const canvas=document.getElementById(id)
+
+        if(!canvas) return
+
+        const img=document.createElement("img")
+
+        img.src=canvas.toDataURL("image/png")
+
+        img.style.width="100%"
+        img.style.marginTop="20px"
+
+        container.appendChild(img)
+
+    })
 
     const opt={
         margin:0.3,
         filename:"helixon-energy-report.pdf",
         image:{type:"jpeg",quality:0.98},
-        html2canvas:{scale:2,useCORS:true},
-        jsPDF:{unit:"in",format:"a4",orientation:"portrait"}
+        html2canvas:{
+            scale:2,
+            useCORS:true,
+            scrollY:0
+        },
+        jsPDF:{
+            unit:"in",
+            format:"a4",
+            orientation:"portrait"
+        }
     }
 
     html2pdf().set(opt).from(container).save()
-}
 
-loadDashboard()
+}
