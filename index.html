@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +8,10 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* =========================
+DASHBOARD STYLE (tetap dari format lama)
+========================= */
+
 /* HEADER */
 .header{
   display:flex;
@@ -16,11 +19,7 @@
   gap:12px;
   margin-bottom:20px;
 }
-
-.header img{
-  width:40px;
-  height:40px;
-}
+.header img{ width:40px; height:40px; }
 
 /* FILTER */
 .filters{
@@ -47,15 +46,63 @@
 
 /* ANALYTICS CARD */
 .analytics-card{
-  padding:20px;
+  padding:22px;
   border-radius:14px;
   background:linear-gradient(135deg,#0f172a,#020617);
   border:1px solid #334155;
   font-size:15px;
+  box-shadow:0 10px 40px rgba(0,0,0,.45);
+  backdrop-filter:blur(10px);
+  transition:all .25s ease;
 }
+.analytics-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 50px rgba(0,0,0,.65);
+  border-color:#3b82f6;
+}
+
+/* CHART TITLES */
+h3{
+  margin-top:40px;
+  margin-bottom:10px;
+  font-weight:500;
+  letter-spacing:0.3px;
+}
+
+/* CHART CONTAINER */
+canvas{
+  background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
+  border:1px solid #334155;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 10px 40px rgba(0,0,0,.45);
+}
+
+/* ENERGY TOTAL */
+#energy-total{
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  background:linear-gradient(90deg,#60a5fa,#22c55e);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* SMOOTH PAGE */
+*{ box-sizing:border-box; transition:background .25s, border .25s, transform .25s; }
+
+/* =========================
+PDF EXPORT LAYOUT
+========================= */
+.page {
+    page-break-after: always;
+    padding: 20px 30px;
+}
+.page:last-child { page-break-after: auto; }
+.page h3 { margin-top:0; margin-bottom:15px; }
+.page .chart-wrapper { display:flex; flex-direction:column; gap:20px; }
 </style>
 </head>
-
 <body>
 
 <!-- HEADER -->
@@ -102,11 +149,11 @@
 <div id="energy-total" style="font-size:24px;margin-bottom:10px;"></div>
 <canvas id="stackedChart"></canvas>
 
-<!-- TREND -->
+<!-- EMISSION TREND -->
 <h3>Emission Trend</h3>
 <canvas id="trendChart"></canvas>
 
-<!-- FACILITY -->
+<!-- FACILITY COMPARISON -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
@@ -117,7 +164,10 @@
 <!-- DASHBOARD SCRIPT -->
 <script type="module" src="script.js"></script>
 
-<!-- EXPORT BUTTON -->
+<!-- EXPORT PDF SCRIPT -->
+<script src="export.js"></script>
+
+<!-- Tombol export di pojok kanan -->
 <button onclick="exportPDF()" style="
     position:fixed;
     top:30px;
@@ -131,9 +181,6 @@
     cursor:pointer;
     z-index:999;
 ">Export PDF</button>
-
-<!-- EXPORT.JS -->
-<script src="export.js"></script>
 
 </body>
 </html>
