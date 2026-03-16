@@ -75,6 +75,35 @@ CENTER HALAMAN UNTUK CHART
     box-sizing:border-box;
     page-break-after: always;
 }
+
+   /* ===============================
+HALAMAN CHART (CENTER CONTENT)
+=============================== */
+.page.chart-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* vertikal center */
+    align-items: center;       /* horizontal center */
+    min-height: 1123px;        /* tinggi A4 */
+    page-break-after: always;
+}
+
+/* pastikan chart dan judul tidak terpisah */
+.page.chart-page h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+/* chart image */
+.page.chart-page img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
+} 
     
 /* PERBAIKI CARD KPI */
 #pdf-content .kpi-card,
