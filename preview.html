@@ -73,18 +73,10 @@ CENTER HALAMAN UNTUK CHART
     justify-content:center; /* center vertikal */
     align-items:center;     /* center horizontal */
     min-height:auto;        /* tinggi A4 */
-    padding: 60px 40px;       /* beri ruang atas-bawah */
+    padding: 100px 40px;       /* beri ruang atas-bawah */
     box-sizing:border-box;
+    page-break-after: always;
 }
-    
- /* wrapper chart */
-.page.chart-page .chart-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}   
     
 /* pastikan chart dan judul tidak terpisah */
 .page.chart-page h3 {
@@ -186,13 +178,11 @@ ${data.analytics}
 
 <div class="page chart-page">
 <h3>Emission Trend</h3>
-<div class="chart-container">
 <img src="${data.charts.trend}">
 </div>
 
 <div class="page chart-page">
 <h3>Facility Comparison</h3>
-<div class="chart-container">
 <img src="${data.charts.facility}">
 </div>
 
