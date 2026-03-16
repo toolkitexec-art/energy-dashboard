@@ -1,7 +1,8 @@
 body{
-    background: radial-gradient(circle at 20% 10%,#1e293b 0%,transparent 40%),
-                radial-gradient(circle at 90% 90%,#1e3a8a 0%,transparent 40%),
-                #020617;
+    background:
+        radial-gradient(circle at 20% 10%,#1e293b 0%,transparent 40%),
+        radial-gradient(circle at 90% 90%,#1e3a8a 0%,transparent 40%),
+        #020617;
     color:#e5e7eb;
     font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,sans-serif;
     margin:40px;
@@ -14,6 +15,7 @@ body{
     gap:12px;
     margin-bottom:20px;
 }
+
 .header img{
     width:40px;
     height:40px;
@@ -25,6 +27,7 @@ body{
     gap:15px;
     margin-bottom:25px;
 }
+
 select{
     background:linear-gradient(145deg,#0f172a,#020617);
     border:1px solid #334155;
@@ -35,6 +38,7 @@ select{
     outline:none;
     transition:all .25s ease;
 }
+
 select:hover{
     border-color:#3b82f6;
 }
@@ -46,18 +50,97 @@ select:hover{
     gap:20px;
     margin-bottom:25px;
 }
+
+/* =========================
+PREMIUM KPI CARD
+========================= */
+
 .kpi-card{
-    padding:22px;
-    border-radius:14px;
-    background:linear-gradient(135deg,#1e293b,#020617);
-    border:1px solid #334155;
+    position:relative;
+    padding:26px;
+    border-radius:16px;
+
+    /* glass panel */
+    background:
+        linear-gradient(145deg,rgba(30,41,59,.65),rgba(2,6,23,.85));
+
+    backdrop-filter:blur(12px);
+
     font-size:15px;
-    box-shadow:0 8px 30px rgba(0,0,0,.35);
-    transition:all .25s ease;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.55),
+        inset 0 0 0 1px rgba(255,255,255,.03);
+
+    overflow:hidden;
+
+    transition:all .3s ease;
 }
+
+/* GRADIENT BORDER EFFECT */
+.kpi-card::before{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    border-radius:16px;
+    padding:1px;
+
+    background:linear-gradient(
+        120deg,
+        #3b82f6,
+        #22c55e,
+        #60a5fa,
+        #3b82f6
+    );
+
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+
+    opacity:.35;
+    transition:.3s;
+}
+
+/* LIGHT REFLECTION */
+.kpi-card::after{
+    content:"";
+    position:absolute;
+    top:-120%;
+    left:-40%;
+    width:60%;
+    height:300%;
+
+    background:linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,.15),
+        transparent
+    );
+
+    transform:rotate(25deg);
+    transition:all .6s ease;
+}
+
+/* HOVER EFFECT */
 .kpi-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 14px 40px rgba(0,0,0,.55);
+    transform:translateY(-5px);
+
+    box-shadow:
+        0 20px 55px rgba(0,0,0,.7),
+        0 0 20px rgba(59,130,246,.35);
+}
+
+.kpi-card:hover::before{
+    opacity:.85;
+}
+
+.kpi-card:hover::after{
+    top:-40%;
+    left:120%;
 }
 
 /* ANALYTICS GRID */
@@ -67,6 +150,7 @@ select:hover{
     gap:20px;
     margin-bottom:30px;
 }
+
 .analytics-card{
     padding:22px;
     border-radius:14px;
@@ -76,6 +160,7 @@ select:hover{
     box-shadow:0 10px 40px rgba(0,0,0,.45);
     transition:all .25s ease;
 }
+
 .analytics-card:hover{
     transform:translateY(-4px);
     box-shadow:0 18px 50px rgba(0,0,0,.65);
@@ -89,6 +174,7 @@ h3{
     font-weight:500;
     letter-spacing:0.3px;
 }
+
 canvas{
     background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
     border:1px solid #334155;
@@ -107,8 +193,8 @@ canvas{
     -webkit-text-fill-color:transparent;
 }
 
-/* SMOOTH TRANSITIONS */
+/* GLOBAL */
 *{
     box-sizing:border-box;
     transition:background .25s,border .25s,transform .25s;
-}
+    }
