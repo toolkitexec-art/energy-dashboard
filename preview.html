@@ -1,117 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
 <title>Helixon Report Preview</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-
 body{
-background:#020617;
-color:#e5e7eb;
-font-family:Inter, sans-serif;
-padding:40px;
+    background:#020617;
+    color:#e5e7eb;
+    font-family:Inter, sans-serif;
+    padding:40px;
 }
 
 #download{
-position:fixed;
-top:30px;
-right:40px;
-padding:10px 16px;
-border-radius:10px;
-border:1px solid #334155;
-background:linear-gradient(135deg,#3b82f6,#1e3a8a);
-color:white;
-font-weight:600;
-cursor:pointer;
-z-index:999;
+    position:fixed;
+    top:30px;
+    right:40px;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid #334155;
+    background:linear-gradient(135deg,#3b82f6,#1e3a8a);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    z-index:999;
 }
 
 .page{
-background:white;
-color:black;
-width:794px;
-margin:auto;
-margin-bottom:40px;
-padding:40px;
-box-sizing:border-box;
+    background:white;
+    color:black;
+    width:794px;
+    margin:auto;
+    margin-bottom:40px;
+    padding:40px;
+    box-sizing:border-box;
 }
 
 /* JANGAN POTONG CHART ANTAR HALAMAN */
-
 .page{
-page-break-after: always;
-break-after: page;
+    page-break-after: always;
+    break-after: page;
 }
-
 .page:last-child{
-page-break-after: auto;
-}
-
-/* CENTER CONTENT DI HALAMAN CHART */
-
-.page{
-  min-height: auto;
+    page-break-after: auto;
 }
 
 /* pastikan chart dan judul tidak terpisah */
-
 .page h3{
-page-break-after: avoid;
-break-after: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
 }
-
 .page img{
-width:100%;
-max-width:100%;
-height:auto;
-
-page-break-inside: avoid;
-break-inside: avoid;
+    width:100%;
+    max-width:100%;
+    height:auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 
 /* PERBAIKI CARD KPI */
-
 #pdf-content .kpi-card,
 #pdf-content .analytics-card{
-background:#f8fafc !important;
-color:#0f172a !important;
-border:1px solid #cbd5e1;
-box-shadow:none;
+    background:#f8fafc !important;
+    color:#0f172a !important;
+    border:1px solid #cbd5e1;
+    box-shadow:none;
 }
 
 #pdf-content .kpi-card h3,
 #pdf-content .analytics-card h3{
-color:#0f172a !important;
+    color:#0f172a !important;
 }
 
 #pdf-content .kpi-card div,
 #pdf-content .analytics-card div{
-color:#0f172a !important;
+    color:#0f172a !important;
 }
-  
+
 .kpi-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:20px;
-margin-bottom:30px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-bottom:30px;
 }
 
 .analytics-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:20px;
-margin-top:20px;
-margin-bottom:30px;
-}  
-  
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+    margin-top:20px;
+    margin-bottom:30px;
+}
+
+/* HANYA UNTUK HALAMAN CHART: CENTER HORIZONTAL */
+.chart-page{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.chart-page h3{
+    text-align:center;
+    margin-bottom:20px;
+}
 </style>
 
 </head>
-
 <body>
 
 <button id="download">Download PDF</button>
@@ -119,19 +115,14 @@ margin-bottom:30px;
 <div id="report"></div>
 
 <script>
-
-const data = JSON.parse(localStorage.getItem("helixon_report"))
-
-const report = document.getElementById("report")
+const data = JSON.parse(localStorage.getItem("helixon_report"));
+const report = document.getElementById("report");
 
 report.innerHTML = `
-
 <div id="pdf-content">
 
 <div class="page">
-
 <h2>Helixon Energy Intelligence Report</h2>
-
 <p>
 Report Date: ${data.date}<br>
 Facility Filter: ${data.facility}<br>
@@ -148,62 +139,31 @@ ${data.analytics}
 
 <h3>Energy Type Comparison</h3>
 <img src="${data.charts.energy}">
-
 </div>
 
-
-<div class="page">
-
+<div class="page chart-page">
 <h3>Emission Trend</h3>
 <img src="${data.charts.trend}">
-
 </div>
 
-
-<div class="page">
-
+<div class="page chart-page">
 <h3>Facility Comparison</h3>
 <img src="${data.charts.facility}">
-
 </div>
 
 </div>
-
-`
+`;
 
 document.getElementById("download").onclick = () => {
-
-html2pdf().set({
-
-margin:[10,10,10,10],
-
-filename:"helixon-energy-report.pdf",
-
-image:{
-type:"jpeg",
-quality:1
-},
-
-html2canvas:{
-scale:2,
-useCORS:true,
-width:794
-},
-
-jsPDF:{
-unit:"px",
-format:[794,1123],
-orientation:"portrait"
-},
-
-pagebreak:{
-mode:["css","legacy"]
-}
-
-}).from(document.getElementById("pdf-content")).save()
-
-}
-
+    html2pdf().set({
+        margin:[10,10,10,10],
+        filename:"helixon-energy-report.pdf",
+        image:{type:"jpeg",quality:1},
+        html2canvas:{scale:2,useCORS:true,width:794},
+        jsPDF:{unit:"px",format:[794,1123],orientation:"portrait"},
+        pagebreak:{mode:["css","legacy"]}
+    }).from(document.getElementById("pdf-content")).save()
+};
 </script>
 
 </body>
