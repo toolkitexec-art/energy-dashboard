@@ -42,8 +42,30 @@ box-sizing:border-box;
 
 .page img{
 width:100%;
+max-width:100%;
+height:auto;
 }
 
+/* PERBAIKI CARD KPI */
+
+#pdf-content .kpi-card,
+#pdf-content .analytics-card{
+background:#f8fafc !important;
+color:#0f172a !important;
+border:1px solid #cbd5e1;
+box-shadow:none;
+}
+
+#pdf-content .kpi-card h3,
+#pdf-content .analytics-card h3{
+color:#0f172a !important;
+}
+
+#pdf-content .kpi-card div,
+#pdf-content .analytics-card div{
+color:#0f172a !important;
+}
+  
 .kpi-grid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
