@@ -1,92 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Helixon Carbon Dashboard</title>
 
 <link rel="stylesheet" href="style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- library export -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
 </head>
 
 <body>
 
+<div class="container">
+
 <!-- HEADER -->
 <div class="header">
-<img src="logo.png">
+
+<img src="logo.png" class="logo">
+
 <h2>Helixon Carbon Dashboard</h2>
+
+<button onclick="exportPDF()" class="export-btn">
+Export PDF
+</button>
+
 </div>
+
 
 <!-- FILTER -->
 <div class="filters">
 
-<select id="facilityFilter">
-<option value="all">All Facilities</option>
+<select>
+<option>All Facilities</option>
 </select>
 
-<select id="energyFilter">
-<option value="all">All Energy Types</option>
+<select>
+<option>All Energy Types</option>
 </select>
 
 </div>
 
-<!-- EXPORT BUTTON -->
-<button onclick="exportPDF()" style="
-position:fixed;
-top:30px;
-right:40px;
-padding:10px 16px;
-border-radius:10px;
-border:1px solid #334155;
-background:linear-gradient(135deg,#3b82f6,#1e3a8a);
-color:white;
-font-weight:600;
-cursor:pointer;
-z-index:999;
-">
-Export PDF
-</button>
 
 <!-- DASHBOARD CONTENT (UNTUK EXPORT) -->
 <div id="dashboard-content">
 
 <!-- KPI -->
-<div id="kpi-container">
+<div class="kpi-container">
 
 <div class="kpi-card">
-<div>Total Usage</div>
-<div class="energy-total">950.00</div>
-</div>
-
-<div class="kpi-card">
-<div>Total Cost</div>
-<div class="energy-total">$200850.00</div>
+<div class="kpi-title">Total Usage</div>
+<div class="kpi-value">950.00</div>
 </div>
 
 <div class="kpi-card">
-<div>Total Emission</div>
-<div class="energy-total">245.00</div>
+<div class="kpi-title">Total Cost</div>
+<div class="kpi-value">$200850.00</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-title">Total Emission</div>
+<div class="kpi-value">245.00</div>
 </div>
 
 </div>
 
-<!-- ENERGY TYPE COMPARISON -->
+
 <h3>Energy Type Comparison</h3>
 <canvas id="energyChart"></canvas>
 
-<!-- EMISSION TREND -->
+
 <h3>Emission Trend</h3>
 <canvas id="emissionChart"></canvas>
 
-<!-- FACILITY COMPARISON -->
+
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
+
 </div>
 
-<!-- SCRIPTS -->
+</div>
+
+
 <script src="script.js"></script>
 <script src="export.js"></script>
 
