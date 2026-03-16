@@ -1,84 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Helixon Carbon Dashboard</title>
-
+<title>Helixon Energy Intelligence</title>
 <link rel="stylesheet" href="style.css">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
 </head>
-
 <body>
 
-<div class="container">
-
+<!-- HEADER -->
 <div class="header">
-<img src="logo.png" class="logo">
-<h2>Helixon Carbon Dashboard</h2>
-
-<button class="export-btn" onclick="exportPDF()">
-Export PDF
-</button>
+    <img src="logo-helixon.png" alt="Helixon Logo">
+    <h1>Helixon Energy Intelligence</h1>
 </div>
 
-
+<!-- FILTER -->
 <div class="filters">
+    <select id="facility-select">
+        <option value="all">All Facilities</option>
+    </select>
 
-<select id="facilityFilter">
-<option>All Facilities</option>
-</select>
-
-<select id="energyFilter">
-<option>All Energy Types</option>
-</select>
-
+    <select id="month-select">
+        <option value="all">All Months</option>
+    </select>
 </div>
 
+<!-- KPI -->
+<div id="kpi-container"></div>
 
-<div id="dashboard-content">
+<!-- ANALYTICS GRID -->
+<div class="analytics-grid">
+    <div class="analytics-card">
+        <div>Industry Benchmark</div>
+        <div id="benchmark-value"></div>
+    </div>
 
-<div class="kpi-container">
+    <div class="analytics-card">
+        <div>Energy Efficiency Score</div>
+        <div id="efficiency-score"></div>
+    </div>
 
-<div class="kpi-card">
-<div>Total Usage</div>
-<div class="kpi-value">950.00</div>
+    <div class="analytics-card">
+        <div>Emission Reduction Potential</div>
+        <div id="reduction-ai"></div>
+    </div>
+
+    <div class="analytics-card">
+        <div>Cost Saving Opportunity</div>
+        <div id="saving-ai"></div>
+    </div>
 </div>
 
-<div class="kpi-card">
-<div>Total Cost</div>
-<div class="kpi-value">$200850.00</div>
-</div>
-
-<div class="kpi-card">
-<div>Total Emission</div>
-<div class="kpi-value">245.00</div>
-</div>
-
-</div>
-
-
+<!-- ENERGY TYPE -->
 <h3>Energy Type Comparison</h3>
-<canvas id="energyChart"></canvas>
+<div id="energy-total" class="energy-total"></div>
+<canvas id="stackedChart"></canvas>
 
+<!-- TREND -->
 <h3>Emission Trend</h3>
-<canvas id="emissionChart"></canvas>
+<canvas id="trendChart"></canvas>
 
+<!-- FACILITY -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
 
-</div>
+<!-- LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-</div>
-
-<script src="script.js"></script>
-<script src="export.js"></script>
+<!-- EXPORT JS -->
+<script src="script.js" type="module"></script>
 
 </body>
 </html>
