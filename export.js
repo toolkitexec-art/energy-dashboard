@@ -2,22 +2,27 @@ async function exportPDF(){
 
 const { jsPDF } = window.jspdf;
 
-const dashboard = document.getElementById("dashboard-content");
-
-const canvas = await html2canvas(dashboard,{
-scale:2,
-useCORS:true
-});
-
-const img = canvas.toDataURL("image/png");
-
 const pdf = new jsPDF("p","mm","a4");
 
-const width = 210;
-const height = canvas.height * width / canvas.width;
+const charts = document.querySelectorAll("canvas");
 
-pdf.addImage(img,"PNG",0,0,width,height);
+let y = 20;
 
-pdf.save("helixon-report.pdf");
+for(let canvas of charts){
+
+const img = canvas.toDataURL("image/png",1.0);
+
+pdf.addImage(img,"PNG",15,y,180,80);
+
+y += 90;
+
+if(y > 250){
+pdf.addPage();
+y = 20;
+}
+
+}
+
+pdf.save("helixon-carbon-report.pdf");
 
 }
