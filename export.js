@@ -1,26 +1,27 @@
-function exportPDF(){
+async function exportPDF(){
 
-const dashboard=document.getElementById("dashboard-content")
+const { jsPDF } = window.jspdf;
 
-if(!dashboard){
-alert("Dashboard tidak ditemukan")
-return
-}
+const dashboard = document.getElementById("dashboard-content");
 
-const data={}
+const canvas = await html2canvas(dashboard,{
+scale:2,
+backgroundColor:"#ffffff"
+});
 
-data.kpi=document.getElementById("kpi-container").innerHTML
+const img = canvas.toDataURL("image/png");
 
-data.energyChart=document.getElementById("energyChart").toDataURL("image/png",1.0)
+const pdf = new jsPDF({
+orientation:"portrait",
+unit:"mm",
+format:"a4"
+});
 
-data.emissionChart=document.getElementById("emissionChart").toDataURL("image/png",1.0)
+const width = 210;
+const height = canvas.height * width / canvas.width;
 
-data.facilityChart=document.getElementById("facilityChart").toDataURL("image/png",1.0)
+pdf.addImage(img,"PNG",0,0,width,height);
 
-data.date=new Date().toLocaleDateString()
-
-localStorage.setItem("helixon_report",JSON.stringify(data))
-
-window.open("preview.html","_blank")
+pdf.save("helixon-carbon-report.pdf");
 
 }
