@@ -237,68 +237,24 @@ async function loadPDFLibrary(){
 }
 
 async function exportPDF(){
-    await loadPDFLibrary()
-    const container=document.createElement("div")
-    container.style.background="#020617"
-    container.style.padding="30px"
-    container.style.color="#e5e7eb"
-    container.style.fontFamily="Inter, sans-serif"
-    
-    // Header info
-    const header=document.createElement("div")
-    const title=document.createElement("h2")
-    title.innerText="Helixon Energy Intelligence Report"
-    title.style.marginBottom="10px"
-    const now=new Date()
-    const dateText=now.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})
-    const facility=facilitySelect.value
-    const month=monthSelect.value
-    const info=document.createElement("div")
-    info.style.fontSize="14px"
-    info.style.opacity="0.8"
-    info.innerHTML=`Report Date: ${dateText}<br>Facility Filter: ${facility}<br>Month Filter: ${month}`
-    header.appendChild(title)
-    header.appendChild(info)
-    container.appendChild(header)
-    
-    // Append KPI (clone DOM)
-    container.appendChild(document.getElementById("kpi-container").cloneNode(true))
-    
-    // Append analytics grid
-    container.appendChild(document.querySelector(".analytics-grid").cloneNode(true))
-    
-    // Append charts as images (Base64) untuk resolusi tinggi
-    if(energyChart){
-        const img=document.createElement("img")
-        img.src=energyChart.toBase64Image()
-        img.style.width="100%"
-        container.appendChild(document.createElement("h3")).innerText="Energy Type Comparison"
-        container.appendChild(img)
+
+    const report = {
+        facility: facilitySelect.value,
+        month: monthSelect.value,
+        date: new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),
+        kpi: document.getElementById("kpi-container").innerHTML,
+        analytics: document.querySelector(".analytics-grid").innerHTML,
+        charts:{
+            energy: energyChart ? energyChart.toBase64Image() : null,
+            trend: trendChart ? trendChart.toBase64Image() : null,
+            facility: facilityChart ? facilityChart.toBase64Image() : null
+        }
     }
-    if(trendChart){
-        const img=document.createElement("img")
-        img.src=trendChart.toBase64Image()
-        img.style.width="100%"
-        container.appendChild(document.createElement("h3")).innerText="Emission Trend"
-        container.appendChild(img)
-    }
-    if(facilityChart){
-        const img=document.createElement("img")
-        img.src=facilityChart.toBase64Image()
-        img.style.width="100%"
-        container.appendChild(document.createElement("h3")).innerText="Facility Comparison"
-        container.appendChild(img)
-    }
-    
-    // Generate PDF
-    html2pdf().set({
-        margin:0.4,
-        filename:"helixon-energy-report.pdf",
-        image:{type:"jpeg",quality:1},
-        html2canvas:{scale:2,useCORS:true},
-        jsPDF:{unit:"in",format:"a4",orientation:"portrait"},
-        pagebreak:{mode:["css","legacy"]}
-    }).from(container).save()
+
+    localStorage.setItem("helixon_report",JSON.stringify(report))
+
+    window.open("preview.html","_blank")
+
 }
 
 loadDashboard()
