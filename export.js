@@ -1,28 +1,15 @@
-async function exportPDF(){
-
-const { jsPDF } = window.jspdf;
-
-const pdf = new jsPDF("p","mm","a4");
+function exportPDF(){
 
 const charts = document.querySelectorAll("canvas");
 
-let y = 20;
+const images = [];
 
-for(let canvas of charts){
+charts.forEach(canvas=>{
+images.push(canvas.toDataURL("image/png",1.0));
+});
 
-const img = canvas.toDataURL("image/png",1.0);
+localStorage.setItem("helixonCharts", JSON.stringify(images));
 
-pdf.addImage(img,"PNG",15,y,180,80);
-
-y += 90;
-
-if(y > 250){
-pdf.addPage();
-y = 20;
-}
-
-}
-
-pdf.save("helixon-carbon-report.pdf");
+window.open("preview.html","_blank");
 
 }
