@@ -40,10 +40,31 @@ padding:40px;
 box-sizing:border-box;
 }
 
+/* JANGAN POTONG CHART ANTAR HALAMAN */
+
+.page{
+page-break-after: always;
+break-after: page;
+}
+
+.page:last-child{
+page-break-after: auto;
+}
+
+/* pastikan chart dan judul tidak terpisah */
+
+.page h3{
+page-break-after: avoid;
+break-after: avoid;
+}
+
 .page img{
 width:100%;
 max-width:100%;
 height:auto;
+
+page-break-inside: avoid;
+break-inside: avoid;
 }
 
 /* PERBAIKI CARD KPI */
