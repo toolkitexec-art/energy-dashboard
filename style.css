@@ -51,67 +51,41 @@ select:hover{
     margin-bottom:25px;
 }
 
-/* =========================
+/* =======================
 PREMIUM KPI CARD
-========================= */
+======================= */
 
 .kpi-card{
     position:relative;
-    padding:26px;
+    padding:24px;
     border-radius:16px;
 
-    /* glass panel */
+    /* GRADIENT BORDER */
+    border:1px solid transparent;
     background:
-        linear-gradient(145deg,rgba(30,41,59,.65),rgba(2,6,23,.85));
+        linear-gradient(#020617,#020617) padding-box,
+        linear-gradient(120deg,#3b82f6,#22c55e,#60a5fa,#3b82f6) border-box;
 
-    backdrop-filter:blur(12px);
+    /* GLASS PANEL */
+    backdrop-filter:blur(10px);
 
     font-size:15px;
 
-    border:1px solid rgba(255,255,255,.06);
-
     box-shadow:
-        0 10px 35px rgba(0,0,0,.55),
-        inset 0 0 0 1px rgba(255,255,255,.03);
+        0 12px 40px rgba(0,0,0,.6);
 
     overflow:hidden;
 
-    transition:all .3s ease;
-}
-
-/* GRADIENT BORDER EFFECT */
-.kpi-card::before{
-    content:"";
-    position:absolute;
-    inset:-1px;
-    border-radius:16px;
-    padding:1px;
-
-    background:linear-gradient(
-        120deg,
-        #3b82f6,
-        #22c55e,
-        #60a5fa,
-        #3b82f6
-    );
-
-    -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-
-    opacity:.35;
-    transition:.3s;
+    transition:all .35s ease;
 }
 
 /* LIGHT REFLECTION */
 .kpi-card::after{
     content:"";
     position:absolute;
-    top:-120%;
+    top:-150%;
     left:-40%;
-    width:60%;
+    width:70%;
     height:300%;
 
     background:linear-gradient(
@@ -122,25 +96,21 @@ PREMIUM KPI CARD
     );
 
     transform:rotate(25deg);
-    transition:all .6s ease;
+    transition:.7s;
 }
 
 /* HOVER EFFECT */
 .kpi-card:hover{
-    transform:translateY(-5px);
+
+    transform:translateY(-6px);
 
     box-shadow:
-        0 20px 55px rgba(0,0,0,.7),
-        0 0 20px rgba(59,130,246,.35);
-}
-
-.kpi-card:hover::before{
-    opacity:.85;
+        0 25px 70px rgba(0,0,0,.8),
+        0 0 25px rgba(59,130,246,.45);
 }
 
 .kpi-card:hover::after{
-    top:-40%;
-    left:120%;
+    left:140%;
 }
 
 /* ANALYTICS GRID */
@@ -197,4 +167,4 @@ canvas{
 *{
     box-sizing:border-box;
     transition:background .25s,border .25s,transform .25s;
-    }
+}
