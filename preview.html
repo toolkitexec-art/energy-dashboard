@@ -150,9 +150,11 @@ CENTER HALAMAN UNTUK CHART
 }
 
 /* FIX KHUSUS ENERGY TYPE COMPARISON */
-#pdf-content img[src*="data:image"] {
-    width: auto !important;
-    max-width: none !important;
+.energy-chart-fix {
+    width: 1200px;          /* resolusi besar = tajam */
+    max-width: none;
+    transform: scale(0.65); /* supaya tetap muat A4 */
+    transform-origin: top left;
 }
 
 /* scale agar tetap muat A4 */
