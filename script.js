@@ -240,6 +240,9 @@ async function loadPDFLibrary(){
 
 async function exportPDF(){
 
+    // ⏳ pastikan chart sudah render
+    await new Promise(r => setTimeout(r, 300));
+
     const report = {
         facility: facilitySelect.value,
         month: monthSelect.value,
@@ -247,19 +250,14 @@ async function exportPDF(){
         kpi: document.getElementById("kpi-container").innerHTML,
         analytics: document.querySelector(".analytics-grid").innerHTML,
         charts:{
-            energy: energyChart 
-            energy: energyChart 
-    ? energyChart.canvas.toDataURL("image/png", 1)
-    : null,    
+            energy: energyChart ? energyChart.toBase64Image("image/png",1) : null,
             trend: trendChart ? trendChart.toBase64Image() : null,
             facility: facilityChart ? facilityChart.toBase64Image() : null
         }
     }
 
     localStorage.setItem("helixon_report",JSON.stringify(report))
-
     window.open("preview.html","_blank")
-
-}
+            }
 
 loadDashboard()
