@@ -140,6 +140,14 @@ CENTER HALAMAN UNTUK CHART
     text-align:center;
     margin-bottom:20px;
 }
+
+/* FIX BLUR CHART IMAGE */
+#pdf-content img {
+    image-rendering: auto;
+    width: 794px !important;     /* paksa sesuai A4 */
+    max-width: 794px !important;
+    height: auto !important;
+}
 </style>
 
 </head>
@@ -194,7 +202,13 @@ document.getElementById("download").onclick = () => {
         margin:[10,10,10,10],
         filename:"helixon-energy-report.pdf",
         image:{type:"png",quality:1},
-        html2canvas:{scale:3,useCORS:true,width:794},
+html2canvas:{
+    scale: 3,
+    dpi: 300,              // 🔥 ini kunci tambahan
+    useCORS: true,
+    width: 794,
+    letterRendering: true  // bantu teks lebih tajam
+},
         jsPDF:{unit:"px",format:[794,1123],orientation:"portrait"},
         pagebreak:{mode:["css","legacy"]}
     }).from(document.getElementById("pdf-content")).save()
