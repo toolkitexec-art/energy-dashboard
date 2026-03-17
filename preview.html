@@ -71,8 +71,13 @@ CENTER HALAMAN UNTUK CHART
 =============================== */
 /* hanya halaman yang hanya memiliki chart */
 .page.chart-page {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;   /* 🔥 center vertikal */
+    align-items:center;       /* 🔥 center horizontal */
+    height:1123px;            /* 🔥 tinggi A4 fix */
     padding:40px;
-    text-align:center;
+    box-sizing:border-box;
     page-break-after: always;
 }
     
