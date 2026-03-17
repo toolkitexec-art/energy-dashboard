@@ -247,7 +247,10 @@ async function exportPDF(){
         kpi: document.getElementById("kpi-container").innerHTML,
         analytics: document.querySelector(".analytics-grid").innerHTML,
         charts:{
-            energy: energyChart ? (energyChart.resize(1400,700), energyChart.toBase64Image("image/png",1)) : null,
+            energy: energyChart 
+            energy: energyChart 
+    ? energyChart.canvas.toDataURL("image/png", 1)
+    : null,    
             trend: trendChart ? trendChart.toBase64Image() : null,
             facility: facilityChart ? facilityChart.toBase64Image() : null
         }
