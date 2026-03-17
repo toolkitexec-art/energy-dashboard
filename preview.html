@@ -148,6 +148,19 @@ CENTER HALAMAN UNTUK CHART
     max-width: 794px !important;
     height: auto !important;
 }
+
+/* FIX KHUSUS ENERGY TYPE COMPARISON */
+#pdf-content img[src*="data:image"] {
+    width: auto !important;
+    max-width: none !important;
+}
+
+/* scale agar tetap muat A4 */
+.energy-chart-fix {
+    transform: scale(0.75);
+    transform-origin: top left;
+}
+    
 </style>
 
 </head>
@@ -181,7 +194,7 @@ ${data.analytics}
 </div>
 
 <h3>Energy Type Comparison</h3>
-<img src="${data.charts.energy}">
+<img class="energy-chart-fix" src="${data.charts.energy}">
 </div>
 
 <div class="page chart-page">
