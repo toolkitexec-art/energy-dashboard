@@ -242,7 +242,23 @@ async function exportPDF(){
 
     // ⏳ pastikan chart sudah render
     await new Promise(r => setTimeout(r, 300));
+    // 🔥 force style terang sebelum export
+if (energyChart) {
+    energyChart.options.plugins.datalabels.color = "#0f172a";
+    energyChart.options.plugins.datalabels.font.weight = "bold";
+    energyChart.options.plugins.datalabels.font.size = 14;
 
+    energyChart.options.scales.y.ticks.color = "#0f172a";
+    energyChart.options.scales.x.ticks.color = "#0f172a";
+
+    energyChart.update("none");
+}
+
+// tunggu render selesai
+await new Promise(r => setTimeout(r, 100));
+
+// ambil image
+const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : null;
     const report = {
         facility: facilitySelect.value,
         month: monthSelect.value,
@@ -250,7 +266,7 @@ async function exportPDF(){
         kpi: document.getElementById("kpi-container").innerHTML,
         analytics: document.querySelector(".analytics-grid").innerHTML,
         charts:{
-            energy: energyChart ? energyChart.toBase64Image("image/png",1) : null,
+            energy: energyImage,
             trend: trendChart ? trendChart.toBase64Image() : null,
             facility: facilityChart ? facilityChart.toBase64Image() : null
         }
