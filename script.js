@@ -16,18 +16,6 @@ const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
-
-async function init(){
-
-    const { data, error } = await supabase.auth.getSession()
-
-    if(error || !data?.session){
-        window.location.href = "login.html"
-        return
-    }
-
-loadDashboard()
-}
     
 async function loadDashboard(){
     const {data,error}=await supabase
@@ -289,5 +277,3 @@ const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : nul
             }
 
 loadDashboard()
-
-init()
