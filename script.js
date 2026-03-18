@@ -303,6 +303,8 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", logout);
     }
 
+    console.log("Logout button found:", logoutBtn);
+
     // 🔹 PANGGIL INIT UNTUK CEK SESSION
     init();
 
