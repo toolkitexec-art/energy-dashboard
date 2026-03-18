@@ -16,7 +16,17 @@ const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
-    
+
+// 🔹 INIT dashboard → cek login dulu
+async function init() {
+    const { data, error } = await supabase.auth.getSession()
+
+    if(error || !data?.session){
+        // belum login → redirect
+        window.location.href = "login.html"
+        return
+    }
+
 async function loadDashboard(){
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
@@ -277,3 +287,12 @@ const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : nul
             }
 
 loadDashboard()
+
+// 🔹 LOGOUT
+window.logout = async function(){
+    await supabase.auth.signOut()
+    window.location.href = "login.html"
+}
+
+// 🔹 PANGGIL INIT
+init()
