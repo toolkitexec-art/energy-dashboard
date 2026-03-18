@@ -8,6 +8,36 @@ body{
     margin:40px;
 }
 
+#logout-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background: linear-gradient(135deg,#3b82f6,#1e3a8a);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 999;
+    font-size: 0.875rem; /* compact */
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+#logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    #logout-btn {
+        top: 12px;
+        right: 12px;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+}
+
 /* HEADER */
 
 .header{
