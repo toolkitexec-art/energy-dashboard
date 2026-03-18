@@ -25,6 +25,9 @@ async function init(){
         window.location.href = "login.html"
         return
     }
+
+loadDashboard()
+}
     
 async function loadDashboard(){
     const {data,error}=await supabase
