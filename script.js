@@ -288,11 +288,17 @@ const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : nul
 
 loadDashboard()
 
-// 🔹 LOGOUT
+// 🔹 LOGOUT FUNCTION
 window.logout = async function(){
-    await supabase.auth.signOut()
-    window.location.href = "login.html"
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
 }
 
-// 🔹 PANGGIL INIT
-init()
+// 🔹 LINK BUTTON KE LOGOUT
+const logoutBtn = document.getElementById("logout-btn");
+if(logoutBtn){
+    logoutBtn.addEventListener("click", logout);
+}
+
+// 🔹 PANGGIL INIT UNTUK CEK SESSION
+init();
