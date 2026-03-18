@@ -17,6 +17,15 @@ const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
 
+async function init(){
+
+    const { data, error } = await supabase.auth.getSession()
+
+    if(error || !data?.session){
+        window.location.href = "login.html"
+        return
+    }
+    
 async function loadDashboard(){
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
@@ -277,3 +286,5 @@ const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : nul
             }
 
 loadDashboard()
+
+init()
