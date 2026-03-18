@@ -128,6 +128,44 @@ CENTER HALAMAN UNTUK CHART
     margin-bottom:30px;
 }
 
+#pdf-content .kpi-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px; /* 🔥 lebih rapat dari 20px */
+margin-bottom:20px;
+}
+
+#pdf-content .analytics-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-top:12px;
+margin-bottom:20px;
+}
+
+#pdf-content .kpi-card{
+min-height:80px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+padding:12px;
+}
+
+#pdf-content .analytics-card{
+min-height:80px;
+padding:12px;
+}
+
+#pdf-content .kpi-card h3{
+font-size:12px;
+margin-bottom:4px;
+}
+
+#pdf-content .kpi-card div{
+font-size:16px;
+font-weight:700;
+}
+
 /* HANYA UNTUK HALAMAN CHART: CENTER HORIZONTAL */
 .chart-page{
     display:flex;
