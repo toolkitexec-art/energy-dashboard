@@ -288,17 +288,22 @@ const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : nul
 
 loadDashboard()
 
-// 🔹 LOGOUT FUNCTION
-window.logout = async function(){
-    await supabase.auth.signOut();
-    window.location.href = "login.html";
-}
+// 🔹 PASTIKAN DOM SIAP
+document.addEventListener("DOMContentLoaded", () => {
 
-// 🔹 LINK BUTTON KE LOGOUT
-const logoutBtn = document.getElementById("logout-btn");
-if(logoutBtn){
-    logoutBtn.addEventListener("click", logout);
-}
+    // 🔹 LOGOUT FUNCTION
+    window.logout = async function(){
+        await supabase.auth.signOut();
+        window.location.href = "login.html";
+    }
 
-// 🔹 PANGGIL INIT UNTUK CEK SESSION
-init();
+    // 🔹 LINK BUTTON KE LOGOUT
+    const logoutBtn = document.getElementById("logout-btn");
+    if(logoutBtn){
+        logoutBtn.addEventListener("click", logout);
+    }
+
+    // 🔹 PANGGIL INIT UNTUK CEK SESSION
+    init();
+
+});
