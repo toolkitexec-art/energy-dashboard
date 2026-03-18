@@ -20,7 +20,7 @@ body{
     font-weight: 600;
     cursor: pointer;
     z-index: 999;
-    font-size: 0.875rem; /* compact */
+    font-size: 0.875rem;
     transition: transform 0.1s, box-shadow 0.1s;
 }
 
