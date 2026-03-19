@@ -5,9 +5,8 @@ const SUPABASE_KEY="sb_publishable_r5rzVpoDYvd3TkrseKi4jw_QnE-Ekvx"
 
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 
-// SAFE ELEMENT (anti null)
-const facilitySelect=document.getElementById("facility-select") || { value:"all", innerHTML:"", addEventListener:()=>{} }
-const monthSelect=document.getElementById("month-select") || { value:"all", innerHTML:"", addEventListener:()=>{} }
+const facilitySelect=document.getElementById("facility-select")
+const monthSelect=document.getElementById("month-select")
 
 let energyChart
 let trendChart
@@ -16,23 +15,15 @@ let facilityChart
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
-async function loadDashboard(){
-    console.log("START LOAD DASHBOARD")
+Chart.defaults.devicePixelRatio = 3;
 
+async function loadDashboard(){
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
         .select("*")
 
-    console.log("DATA:", data)
-    console.log("ERROR:", error)
-
     if(error){
-        console.log("SUPABASE ERROR:", error)
-        return
-    }
-
-    if(!data || data.length===0){
-        console.log("DATA KOSONG")
+        console.log(error)
         return
     }
 
@@ -90,139 +81,199 @@ function safeDivide(a,b){
     return a/b
 }
 
-/* KPI */
+/* =========================
+RENDER KPI
+========================= */
 function renderKPI(data){
-    const el=document.getElementById("kpi-container")
-    if(!el) return
-
     const usage=sum(data,"total_usage")
     const cost=sum(data,"total_cost")
     const emission=sum(data,"total_emission")
+    const kpiGradient="linear-gradient(135deg,#7c2d12,#020617)"
 
-    el.innerHTML=
-    `<div class="kpi-card"><b>Total Usage</b><br>${usage.toFixed(2)}</div>
-     <div class="kpi-card"><b>Total Cost</b><br>$${cost.toFixed(2)}</div>
-     <div class="kpi-card"><b>Total Emission</b><br>${emission.toFixed(2)}</div>`
+    document.getElementById("kpi-container").innerHTML=
+    `<div class="kpi-card" style="background:${kpiGradient}">
+        <b>Total Usage</b><br>${usage.toFixed(2)}
+    </div>
+    <div class="kpi-card" style="background:${kpiGradient}">
+        <b>Total Cost</b><br>$${cost.toFixed(2)}
+    </div>
+    <div class="kpi-card" style="background:${kpiGradient}">
+        <b>Total Emission</b><br>${emission.toFixed(2)}
+    </div>`
 }
 
-/* PANELS */
+/* =========================
+ANALYTICS PANELS
+========================= */
 function renderBenchmark(data){
-    const el=document.getElementById("benchmark-value")
-    if(!el) return
-
     const usage=sum(data,"total_usage")
     const emission=sum(data,"total_emission")
     const intensity=safeDivide(emission,usage)
     const diff=((intensity-INDUSTRY_AVG)/INDUSTRY_AVG)*100
-
-    el.innerHTML=`<b>${intensity.toFixed(3)}</b><br>Diff ${diff.toFixed(1)}%`
+    const el=document.getElementById("benchmark-value")
+    el.innerHTML=
+    `<b>${intensity.toFixed(3)}</b> tCOâ‚‚ / unit<br>
+     Industry Avg: ${INDUSTRY_AVG}<br>
+     Difference: ${diff.toFixed(1)}%`
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
+    el.parentElement.style.border="1px solid #334155"
 }
 
 function renderEfficiency(data){
-    const el=document.getElementById("efficiency-score")
-    if(!el) return
-
     const usage=sum(data,"total_usage")
     const emission=sum(data,"total_emission")
-    let score=100-(safeDivide(emission,usage)*100)
+    const intensity=safeDivide(emission,usage)
+    let score=100-(intensity*100)
     score=Math.min(Math.max(score,0),100)
-
-    el.innerHTML=`<b>${score.toFixed(1)}</b>`
+    const el=document.getElementById("efficiency-score")
+    el.innerHTML=`<b>${score.toFixed(1)} / 100</b>`
+    el.parentElement.style.background="linear-gradient(135deg,#1e3a8a,#020617)"
+    el.parentElement.style.border="1px solid #1d4ed8"
 }
 
 function renderReduction(data){
-    const el=document.getElementById("reduction-ai")
-    if(!el) return
-
     const emission=sum(data,"total_emission")
     const reduction=emission*0.12
-
-    el.innerHTML=`${reduction.toFixed(2)}`
+    const el=document.getElementById("reduction-ai")
+    el.innerHTML=`<b>${reduction.toFixed(2)} tCOâ‚‚</b><br>Potential reduction`
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
+    el.parentElement.style.border="1px solid #22c55e"
 }
 
 function renderSaving(data){
-    const el=document.getElementById("saving-ai")
-    if(!el) return
-
     const emission=sum(data,"total_emission")
-    const saving=(emission*0.12)*CARBON_PRICE
-
-    el.innerHTML=`$${saving.toFixed(2)}`
+    const reduction=emission*0.12
+    const saving=reduction*CARBON_PRICE
+    const el=document.getElementById("saving-ai")
+    el.innerHTML=`<b>$${saving.toFixed(2)}</b><br>Potential cost saving`
+    el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)"
+    el.parentElement.style.border="1px solid #f97316"
 }
 
-/* CHARTS SAFE */
+/* =========================
+CHARTS
+========================= */
 function renderEnergyChart(data){
-    const canvas=document.getElementById("stackedChart")
-    if(!canvas) return
-
-    const ctx=canvas.getContext("2d")
-
     const labels=[...new Set(data.map(d=>d.energy_type_record))]
     const values=labels.map(type=>{
         return data.filter(r=>r.energy_type_record===type)
             .reduce((s,r)=>s+Number(r.total_emission||0),0)
     })
-
+    const total=values.reduce((a,b)=>a+b,0)
+    document.getElementById("energy-total").innerText=total.toFixed(2)
+    const ctx=document.getElementById("stackedChart").getContext("2d")
     if(energyChart) energyChart.destroy()
-
+    const gradient=ctx.createLinearGradient(0,0,0,400)
+    gradient.addColorStop(0,"#60a5fa")
+    gradient.addColorStop(0.5,"#3b82f6")
+    gradient.addColorStop(1,"#1e293b")
     energyChart=new Chart(ctx,{
         type:"bar",
-        data:{labels,datasets:[{data:values}]},
-        options:{plugins:{legend:{display:false}}}
+        data:{labels,datasets:[{data:values,backgroundColor:gradient,borderRadius:6}]},
+        plugins:[ChartDataLabels],
+        options:{plugins:{legend:{display:false},datalabels:{color:"#e5e7eb",anchor:"end",align:"top",font:{weight:"600"},formatter:v=>v.toFixed(2)}},scales:{y:{beginAtZero:true}}}
     })
 }
 
 function renderTrendChart(data){
-    const canvas=document.getElementById("trendChart")
-    if(!canvas) return
-
-    const ctx=canvas.getContext("2d")
-
     const months=[...new Set(data.map(d=>d.month))].sort()
-    const values=months.map(m=>data.filter(r=>r.month===m)
-        .reduce((s,r)=>s+Number(r.total_emission||0),0))
-
+    const values=months.map(m=>data.filter(r=>r.month===m).reduce((s,r)=>s+Number(r.total_emission||0),0))
+    const monthLabels=months.map(m=>new Date(m).toLocaleString("en",{month:"long"}))
+    const ctx=document.getElementById("trendChart").getContext("2d")
     if(trendChart) trendChart.destroy()
-
+    const gradient=ctx.createLinearGradient(0,0,0,400)
+    gradient.addColorStop(0,"rgba(251,146,60,0.9)")
+    gradient.addColorStop(0.5,"rgba(249,115,22,0.7)")
+    gradient.addColorStop(1,"rgba(2,6,23,0.9)")
     trendChart=new Chart(ctx,{
         type:"line",
-        data:{labels:months,datasets:[{data:values}]}
+        data:{labels:monthLabels,datasets:[{data:values,borderColor:"#fb923c",backgroundColor:gradient,fill:true,tension:0.4,borderWidth:3,pointBackgroundColor:"#fb923c",pointBorderColor:"#ffffff",pointRadius:4}]},
+        options:{plugins:{legend:{display:false}}}
     })
 }
 
 function renderFacilityChart(data){
-    const canvas=document.getElementById("facilityChart")
-    if(!canvas) return
-
-    const ctx=canvas.getContext("2d")
-
     const facilities=[...new Set(data.map(d=>d.facility_name))]
-    const values=facilities.map(f=>data.filter(r=>r.facility_name===f)
-        .reduce((s,r)=>s+Number(r.total_emission||0),0))
-
+    const values=facilities.map(f=>data.filter(r=>r.facility_name===f).reduce((s,r)=>s+Number(r.total_emission||0),0))
+    const ctx=document.getElementById("facilityChart").getContext("2d")
     if(facilityChart) facilityChart.destroy()
-
+    const gradient=ctx.createLinearGradient(0,0,0,400)
+    gradient.addColorStop(0,"#fb923c")
+    gradient.addColorStop(1,"#7c2d12")
     facilityChart=new Chart(ctx,{
         type:"bar",
-        data:{labels:facilities,datasets:[{data:values}]}
+        data:{labels:facilities,datasets:[{data:values,backgroundColor:gradient,borderRadius:6}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     })
 }
 
-/* EXPORT SAFE */
+/* =========================
+EXPORT PDF FINAL STABIL
+========================= */
 function createExportButton(){
-    if(document.getElementById("export-btn")) return
-
     const btn=document.createElement("button")
-    btn.id="export-btn"
     btn.innerText="Export PDF"
     btn.style.position="fixed"
-    btn.style.top="20px"
-    btn.style.right="20px"
+    btn.style.top="30px"
+    btn.style.right="40px"
+    btn.style.padding="10px 16px"
+    btn.style.borderRadius="10px"
+    btn.style.border="1px solid #334155"
+    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)"
+    btn.style.color="white"
+    btn.style.fontWeight="600"
+    btn.style.cursor="pointer"
     btn.style.zIndex="999"
-
-    btn.addEventListener("click",()=>alert("Export ready"))
-
+    btn.addEventListener("click",exportPDF)
     document.body.appendChild(btn)
 }
+
+async function loadPDFLibrary(){
+    if(window.html2pdf) return
+    return new Promise(resolve=>{
+        const script=document.createElement("script")
+        script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        script.onload=()=>resolve()
+        document.body.appendChild(script)
+    })
+}
+
+async function exportPDF(){
+
+    // â³ pastikan chart sudah render
+    await new Promise(r => setTimeout(r, 300));
+    // ðŸ”¥ force style terang sebelum export
+if (energyChart) {
+    energyChart.options.plugins.datalabels.color = "#0f172a";
+    energyChart.options.plugins.datalabels.font.weight = "bold";
+    energyChart.options.plugins.datalabels.font.size = 14;
+
+    energyChart.options.scales.y.ticks.color = "#0f172a";
+    energyChart.options.scales.x.ticks.color = "#0f172a";
+
+    energyChart.update("none");
+}
+
+// tunggu render selesai
+await new Promise(r => setTimeout(r, 100));
+
+// ambil image
+const energyImage = energyChart ? energyChart.toBase64Image("image/png",1) : null;
+    const report = {
+        facility: facilitySelect.value,
+        month: monthSelect.value,
+        date: new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),
+        kpi: document.getElementById("kpi-container").innerHTML,
+        analytics: document.querySelector(".analytics-grid").innerHTML,
+        charts:{
+            energy: energyImage,
+            trend: trendChart ? trendChart.toBase64Image() : null,
+            facility: facilityChart ? facilityChart.toBase64Image() : null
+        }
+    }
+
+    localStorage.setItem("helixon_report",JSON.stringify(report))
+    window.open("preview.html","_blank")
+            }
 
 loadDashboard()
