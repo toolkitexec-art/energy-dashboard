@@ -11,16 +11,16 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const { data: { session } } = await supabase.auth.getSession();
 
-  // 🔒 PROTECT DASHBOARD
+  // 🔒 Protect dashboard
   if (!session) {
     window.location.href = "/Login.html";
     return;
   }
 
-  // tampilkan user
+  // tampilkan user email
   if (userSpan) userSpan.innerText = session.user.email;
 
-  // tampilkan tombol
+  // tampilkan tombol logout
   if (btn) {
     btn.style.display = "inline-block";
 
