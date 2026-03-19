@@ -18,12 +18,23 @@ const CARBON_PRICE=85
 Chart.defaults.devicePixelRatio = 3;
 
 async function loadDashboard(){
+    
+    console.log("LOADING DASHBOARD...");
+    console.log("SUPABASE URL:", SUPABASE_URL);
+    
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
         .select("*")
 
     if(error){
         console.log(error)
+        return
+    }
+
+    console.log("DATA DARI SUPABASE:", data)
+
+    if(!data || data.length === 0){
+        console.log("DATA KOSONG - CEK TABLE ATAU RLS")
         return
     }
 
