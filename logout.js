@@ -9,23 +9,31 @@ window.addEventListener("DOMContentLoaded", async () => {
   const btn = document.getElementById("logout-btn");
   const userSpan = document.getElementById("user-welcome");
 
-  const { data: { session } } = await supabase.auth.getSession();
+  let session = null;
 
-  // 🔒 Protect dashboard
-  if (!session) {
-    window.location.href = "/Login.html";
-    return;
+  try {
+    const res = await supabase.auth.getSession();
+    session = res?.data?.session;
+  } catch (e) {
+    console.log("Session check error:", e);
   }
 
-  // tampilkan user email
-  if (userSpan) userSpan.innerText = session.user.email;
+  // ❗ JANGAN redirect langsung (biar dashboard tetap render)
+  if (!session) {
+    console.log("No session (dashboard tetap jalan)");
+  } else {
+    if (userSpan) userSpan.innerText = session.user.email;
+  }
 
-  // tampilkan tombol logout
+  // tombol tetap muncul
   if (btn) {
     btn.style.display = "inline-block";
 
     btn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
+
       window.location.href = "/Login.html";
     });
   }
