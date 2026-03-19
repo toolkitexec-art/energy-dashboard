@@ -17,16 +17,19 @@ const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 async function loadDashboard(){
+    console.log("START LOAD DASHBOARD")
+
     const {data,error}=await supabase
         .from("dashboard_phase2_final_named")
         .select("*")
+
+    console.log("DATA:", data)
+    console.log("ERROR:", error)
 
     if(error){
         console.log("SUPABASE ERROR:", error)
         return
     }
-
-    console.log("DATA:", data)
 
     if(!data || data.length===0){
         console.log("DATA KOSONG")
