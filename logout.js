@@ -1,16 +1,38 @@
-// Logout.js SAFE MODE (tidak ganggu dashboard)
+// Logout.js final Helixon - buat tombol Logout dinamis
+window.addEventListener("load", () => {
+  // Cari header dashboard
+  const header = document.querySelector(".header");
+  if (!header) return;
 
-window.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("logout-btn");
-  const userSpan = document.getElementById("user-welcome");
+  // Cek kalau tombol belum ada
+  if (!document.getElementById("logout-btn")) {
+    const navbar = document.createElement("div");
+    navbar.id = "navbar";
+    navbar.style.marginTop = "5px";
 
-  if (userSpan) userSpan.innerText = "Hello, user";
+    const welcomeSpan = document.createElement("span");
+    welcomeSpan.id = "user-welcome";
+    welcomeSpan.innerText = "Hello, user";
 
-  if (btn) {
-    btn.style.display = "inline-block";
+    const logoutBtn = document.createElement("button");
+    logoutBtn.id = "logout-btn";
+    logoutBtn.innerText = "Logout";
+    logoutBtn.style.background = "red";
+    logoutBtn.style.color = "white";
+    logoutBtn.style.padding = "5px 10px";
+    logoutBtn.style.border = "none";
+    logoutBtn.style.borderRadius = "4px";
+    logoutBtn.style.marginLeft = "10px";
 
-    btn.addEventListener("click", () => {
-      window.location.href = "/Login.html";
+    // Bind klik tombol
+    logoutBtn.addEventListener("click", () => {
+      window.location.href = "Login.html";
     });
+
+    navbar.appendChild(welcomeSpan);
+    navbar.appendChild(logoutBtn);
+
+    // Tambahkan navbar di akhir header
+    header.appendChild(navbar);
   }
 });
