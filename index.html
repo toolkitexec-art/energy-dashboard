@@ -12,16 +12,8 @@
 <div class="header">
     <img src="logo-helixon.png" alt="Helixon Logo">
     <h1>Helixon Energy Intelligence</h1>
-
-   <!-- Navbar Logout -->
-    <div id="navbar" style="margin-top:5px;">
-        <span id="user-welcome"></span>
-        <button id="logout-btn" style="display:none;">
-            Logout
-        </button>
-    </div>
 </div>
-    
+
 <!-- FILTER -->
 <div class="filters">
     <select id="facility-select">
@@ -71,13 +63,16 @@
 <!-- FACILITY -->
 <h3>Facility Comparison</h3>
 <canvas id="facilityChart"></canvas>
-    
-<!-- LIBRARY (sekali saja) -->
+
+<!-- LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- DASHBOARD -->
-<script type="module" src="./js/script.js"></script>
+<!-- DASHBOARD SCRIPT -->
+<script src="script.js" type="module"></script>
+
+<!-- EXPORT PDF -->
+<script src="export.js"></script>
 
 </body>
 </html>
