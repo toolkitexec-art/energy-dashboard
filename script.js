@@ -362,33 +362,48 @@ function renderFacilityChart(data){
     });
 }
 
-function generateAIInsight(data){
+function renderAIInsight(data){
 
-    if(!data || data.length === 0){
-        return "No data available for AI analysis.";
-    }
+    const insight = generateAIInsight(data);
 
-    const totalUsage = sum(data, "total_usage");
-    const totalEmission = sum(data, "total_emission");
-    const totalCost = sum(data, "total_cost");
+    document.getElementById("ai-insight-panel").innerHTML = `
+        <div class="ai-single-card">
 
-    const intensity = totalUsage ? totalEmission / totalUsage : 0;
+            <div class="ai-title">
+                🤖 AI Insight Engine
+            </div>
 
-    const dieselData = data.filter(d => d.energy_type_record === "diesel");
-    const dieselEmission = sum(dieselData, "total_emission");
+            <div class="ai-content">
 
-    const dieselShare = totalEmission ? dieselEmission / totalEmission : 0;
+                <div class="ai-section">
+                    <span class="ai-label">Performance Summary</span>
+                    <p>${insight.summary}</p>
+                </div>
 
-    const prevMonth = getPreviousMonth(data);
-    const trend = calculateTrend(data, prevMonth);
+                <div class="ai-section">
+                    <span class="ai-label">Efficiency Diagnosis</span>
+                    <p>${insight.diagnosis}</p>
+                </div>
 
-    return {
-        summary: buildSummary(totalEmission, intensity, trend),
-        diagnosis: buildDiagnosis(dieselShare, intensity),
-        anomaly: detectAnomaly(data, intensity),
-        cost: buildCostInsight(totalEmission, totalCost),
-        action: buildRecommendation(dieselShare, intensity)
-    };
+                <div class="ai-section">
+                    <span class="ai-label">Anomaly Detection</span>
+                    <p>${insight.anomaly}</p>
+                </div>
+
+                <div class="ai-section">
+                    <span class="ai-label">Cost Impact Insight</span>
+                    <p>${insight.cost}</p>
+                </div>
+
+                <div class="ai-section highlight">
+                    <span class="ai-label">Action Recommendation</span>
+                    <p>${insight.action}</p>
+                </div>
+
+            </div>
+
+        </div>
+    `;
 }
 
 function buildSummary(emission, intensity, trend){
