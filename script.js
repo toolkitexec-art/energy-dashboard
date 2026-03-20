@@ -129,18 +129,18 @@ function generateAIInsight(data){
 
     data = Array.isArray(data) ? data : [];
 
-    const totalUsage = data.reduce((s,r)=>s + Number(r.usage || 0),0);
-    const totalEmission = data.reduce((s,r)=>s + Number(r.emission_result || 0),0);
-    const totalCost = data.reduce((s,r)=>s + Number(r.total_cost || 0),0);
+    const totalUsage = sum(data, "total_usage");
+    const totalEmission = sum(data, "total_emission");
+    const totalCost = sum(data, "total_cost");
 
     return {
         summary: `Emission ${totalEmission.toFixed(2)}`,
         diagnosis: `Usage ${totalUsage.toFixed(2)}`,
-        anomaly: `-`,
+        anomaly: "-",
         cost: `Cost ${totalCost.toFixed(2)}`,
-        action: `Optimize high emission sources`
+        action: "Optimize high emission sources"
     };
-    
+}
 
 /* =========================
 UTILS
