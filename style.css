@@ -161,6 +161,56 @@ canvas{
     box-shadow:0 10px 40px rgba(0,0,0,.45);
 }
 
+.ai-single-card{
+    margin-top: 30px;
+    padding: 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#0b1220,#020617);
+    border: 1px solid #1e293b;
+    color: #e5e7eb;
+}
+
+.ai-title{
+    font-size: 16px;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 12px;
+}
+
+.ai-content{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ai-section{
+    padding: 10px 12px;
+    border-left: 2px solid #334155;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+}
+
+.ai-label{
+    font-size: 11px;
+    font-weight: 700;
+    color: #93c5fd;
+    display: block;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ai-section p{
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #cbd5e1;
+}
+
+.ai-section.highlight{
+    border-left: 2px solid #22c55e;
+    background: rgba(34,197,94,0.06);
+}
 /* ENERGY TOTAL */
 
 .energy-total{
@@ -170,6 +220,7 @@ canvas{
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
 }
+
 
 /* GLOBAL */
 
