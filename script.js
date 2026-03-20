@@ -17,6 +17,25 @@ const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
 
+function initRealtime(){
+    supabase
+        .channel("energy-live")
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "energy_records_phase1"
+            },
+            (payload) => {
+                console.log("REALTIME EVENT:", payload);
+
+                // reload dashboard dari VIEW
+                loadDashboard();
+            }
+        )
+        .subscribe();
+}
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -371,3 +390,4 @@ function createExportButton(){
 INIT
 ========================= */
 loadDashboard();
+initRealtime();
