@@ -122,7 +122,25 @@ function applyFilters(data){
       // 🔥 ADD THIS
     renderAIInsight(filtered);
 }
+// ==========================
+// AI ENGINE
+// ==========================
+function generateAIInsight(data){
 
+    data = Array.isArray(data) ? data : [];
+
+    const totalUsage = data.reduce((s,r)=>s + Number(r.usage || 0),0);
+    const totalEmission = data.reduce((s,r)=>s + Number(r.emission_result || 0),0);
+    const totalCost = data.reduce((s,r)=>s + Number(r.total_cost || 0),0);
+
+    return {
+        summary: `Emission ${totalEmission.toFixed(2)}`,
+        diagnosis: `Usage ${totalUsage.toFixed(2)}`,
+        anomaly: `-`,
+        cost: `Cost ${totalCost.toFixed(2)}`,
+        action: `Optimize high emission sources`
+    };
+    
 
 /* =========================
 UTILS
@@ -361,17 +379,28 @@ function renderFacilityChart(data){
         }
     });
 }
-
 function renderAIInsight(data){
 
-    const insight = generateAIInsight(data);
+    const el = document.getElementById("ai-insight-panel");
+    if(!el) return;
 
-    document.getElementById("ai-insight-panel").innerHTML = `
+    let insight;
+
+    try {
+        insight = generateAIInsight(data || []);
+    } catch (e) {
+        console.log("AI ERROR:", e);
+        insight = null;
+    }
+
+    if(!insight){
+        el.innerHTML = `<div class="ai-single-card">AI Error</div>`;
+        return;
+    }
+
+    el.innerHTML = `
         <div class="ai-single-card">
-
-            <div class="ai-title">
-                🤖 AI Insight Engine
-            </div>
+            <div class="ai-title">🤖 AI Insight Engine</div>
 
             <div class="ai-content">
 
@@ -401,7 +430,6 @@ function renderAIInsight(data){
                 </div>
 
             </div>
-
         </div>
     `;
 }
