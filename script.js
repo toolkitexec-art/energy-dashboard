@@ -91,6 +91,100 @@ function populateFilters(data){
     monthSelect.addEventListener("change",()=>applyFilters(data));
 }
 
+/* =========================
+UTILS
+========================= */
+function sum(data,field){
+    return data.reduce((s,r)=>s+Number(r[field]||0),0);
+}
+
+function safeDivide(a,b){
+    if(!b||b===0) return 0;
+    return a/b;
+}
+/* =========================
+AI ENGINE
+========================= */
+function generateAIInsight(data){
+
+    data = Array.isArray(data) ? data : [];
+
+    const totalUsage = sum(data, "total_usage");
+    const totalEmission = sum(data, "total_emission");
+    const totalCost = sum(data, "total_cost");
+
+    return {
+        summary: `Emission ${totalEmission.toFixed(2)}`,
+        diagnosis: `Usage ${totalUsage.toFixed(2)}`,
+        anomaly: "-",
+        cost: `Cost ${totalCost.toFixed(2)}`,
+        action: "Optimize high emission sources"
+    };
+}
+
+/* =========================
+RENDER AI
+========================= */
+
+function renderAIInsight(data){
+
+    const el = document.getElementById("ai-insight-panel");
+    if(!el) return;
+
+    let insight = {
+        summary: "-",
+        diagnosis: "-",
+        anomaly: "-",
+        cost: "-",
+        action: "-"
+    };
+
+    try {
+        insight = generateAIInsight(data || []) || insight;
+    } catch (e) {
+        console.log("AI ERROR:", e);
+    }
+
+    el.innerHTML = `
+        <div class="ai-single-card">
+
+            <div class="ai-title">
+                🤖 AI Insight Engine
+            </div>
+
+            <div class="ai-content">
+
+                <div class="ai-section">
+                    <span class="ai-label">Performance Summary</span>
+                    <p>${insight.summary}</p>
+                </div>
+
+                <div class="ai-section">
+                    <span class="ai-label">Efficiency Diagnosis</span>
+                    <p>${insight.diagnosis}</p>
+                </div>
+
+                <div class="ai-section">
+                    <span class="ai-label">Anomaly Detection</span>
+                    <p>${insight.anomaly}</p>
+                </div>
+
+                <div class="ai-section">
+                    <span class="ai-label">Cost Impact Insight</span>
+                    <p>${insight.cost}</p>
+                </div>
+
+                <div class="ai-section highlight">
+                    <span class="ai-label">Action Recommendation</span>
+                    <p>${insight.action}</p>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
 
 /* =========================
 APPLY FILTER
@@ -122,38 +216,6 @@ function applyFilters(data){
       // 🔥 ADD THIS
     renderAIInsight(filtered);
 }
-// ==========================
-// AI ENGINE
-// ==========================
-function generateAIInsight(data){
-
-    data = Array.isArray(data) ? data : [];
-
-    const totalUsage = sum(data, "total_usage");
-    const totalEmission = sum(data, "total_emission");
-    const totalCost = sum(data, "total_cost");
-
-    return {
-        summary: `Emission ${totalEmission.toFixed(2)}`,
-        diagnosis: `Usage ${totalUsage.toFixed(2)}`,
-        anomaly: "-",
-        cost: `Cost ${totalCost.toFixed(2)}`,
-        action: "Optimize high emission sources"
-    };
-}
-
-/* =========================
-UTILS
-========================= */
-function sum(data,field){
-    return data.reduce((s,r)=>s+Number(r[field]||0),0);
-}
-
-function safeDivide(a,b){
-    if(!b||b===0) return 0;
-    return a/b;
-}
-
 
 /* =========================
 KPI
