@@ -106,7 +106,9 @@ function safeDivide(a,b){
 AI ENGINE
 ========================= */
 function generateAIInsight(data){
-
+    
+    console.log("AI RUNNING");
+    
     data = Array.isArray(data) ? data : [];
 
     const totalUsage = sum(data, "total_usage");
@@ -127,17 +129,8 @@ RENDER AI
 
 function renderAIInsight(data){
 
-    const el = document.getElementById("ai-insight-panel");
-    if(!el) return;
-
-    let insight = {
-        summary: "-",
-        diagnosis: "-",
-        anomaly: "-",
-        cost: "-",
-        action: "-"
-    };
-
+    console.log("AI DATA:", insight);
+    
     try {
         insight = generateAIInsight(data || []) || insight;
     } catch (e) {
@@ -215,6 +208,9 @@ function applyFilters(data){
       // 🔥 ADD THIS
     renderAIInsight(filtered);
 }
+
+console.log("DATA:", data.length);
+console.log("FILTERED:", filtered.length);
 
 /* =========================
 KPI
