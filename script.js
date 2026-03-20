@@ -118,6 +118,9 @@ function applyFilters(data){
     renderEnergyChart(filtered);
     renderTrendChart(filtered);
     renderFacilityChart(filtered);
+
+      // 🔥 ADD THIS
+    renderAIInsight(filtered);
 }
 
 
@@ -359,6 +362,158 @@ function renderFacilityChart(data){
     });
 }
 
+function generateAIInsight(data){
+
+    if(!data || data.length === 0){
+        return "No data available for AI analysis.";
+    }
+
+    const totalUsage = sum(data, "total_usage");
+    const totalEmission = sum(data, "total_emission");
+    const totalCost = sum(data, "total_cost");
+
+    const intensity = totalUsage ? totalEmission / totalUsage : 0;
+
+    const dieselData = data.filter(d => d.energy_type_record === "diesel");
+    const dieselEmission = sum(dieselData, "total_emission");
+
+    const dieselShare = totalEmission ? dieselEmission / totalEmission : 0;
+
+    const prevMonth = getPreviousMonth(data);
+    const trend = calculateTrend(data, prevMonth);
+
+    return {
+        summary: buildSummary(totalEmission, intensity, trend),
+        diagnosis: buildDiagnosis(dieselShare, intensity),
+        anomaly: detectAnomaly(data, intensity),
+        cost: buildCostInsight(totalEmission, totalCost),
+        action: buildRecommendation(dieselShare, intensity)
+    };
+}
+
+function buildSummary(emission, intensity, trend){
+
+    let direction = "stable";
+
+    if(trend > 5) direction = "increasing";
+    else if(trend < -5) direction = "decreasing";
+
+    return `
+Performance Summary:
+Facility shows ${direction} emission trend.
+Total emission: ${emission.toFixed(2)} tCO2.
+Emission intensity: ${intensity.toFixed(3)} per unit.
+Monthly change: ${trend.toFixed(1)}%.
+    `;
+}
+
+function buildDiagnosis(dieselShare, intensity){
+
+    let level = "moderate";
+
+    if(intensity > 0.5) level = "high inefficiency";
+    if(intensity < 0.2) level = "high efficiency";
+
+    return `
+Efficiency Diagnosis:
+Facility efficiency level: ${level}.
+Diesel dependency: ${(dieselShare*100).toFixed(1)}% of total emission.
+
+Primary driver of emissions:
+${dieselShare > 0.5 ? "Diesel usage dominates emission output." : "Balanced energy mix observed."}
+    `;
+}
+
+function detectAnomaly(data, intensity){
+
+    const values = data.map(d => d.total_emission || 0);
+    const avg = values.reduce((a,b)=>a+b,0) / (values.length || 1);
+
+    const deviation = avg ? (intensity - avg) / avg : 0;
+
+    let status = "normal";
+
+    if(deviation > 0.3) status = "high spike detected";
+    if(deviation < -0.3) status = "below average";
+
+    return `
+Anomaly Detection:
+Status: ${status}.
+Deviation from baseline: ${(deviation*100).toFixed(1)}%.
+    `;
+}
+
+function buildCostInsight(emission, cost){
+
+    const carbonPrice = 85;
+
+    const carbonCost = emission * carbonPrice;
+
+    const gap = cost ? carbonCost - cost : carbonCost;
+
+    return `
+Cost Impact Insight:
+Estimated carbon cost: $${carbonCost.toFixed(2)}.
+Actual cost: $${cost.toFixed(2)}.
+Potential gap impact: $${gap.toFixed(2)}.
+    `;
+}
+
+function buildRecommendation(dieselShare, intensity){
+
+    let actions = [];
+
+    if(dieselShare > 0.4){
+        actions.push("Reduce Diesel usage by 15–25%");
+    }
+
+    if(intensity > 0.4){
+        actions.push("Optimize energy efficiency per unit production");
+    }
+
+    actions.push("Shift load to low-carbon energy sources");
+    actions.push("Implement peak-hour energy control");
+
+    return `
+Action Recommendation:
+${actions.map((a,i)=>`${i+1}. ${a}`).join("\n")}
+
+Expected improvement: 10–20% emission reduction potential.
+    `;
+}
+
+function calculateTrend(data, prevMonthData){
+
+    const current = sum(data, "total_emission");
+    const prev = sum(prevMonthData || [], "total_emission");
+
+    if(!prev) return 0;
+
+    return ((current - prev) / prev) * 100;
+}
+
+function getPreviousMonth(data){
+
+    // simple fallback (optional enhancement)
+    return [];
+}
+
+function renderAIInsight(data){
+
+    const insight = generateAIInsight(data);
+
+    document.getElementById("ai-insight-panel").innerHTML = `
+        <div class="ai-box">
+            <h3>AI Insight</h3>
+
+            <p>${insight.summary}</p>
+            <p>${insight.diagnosis}</p>
+            <p>${insight.anomaly}</p>
+            <p>${insight.cost}</p>
+            <p>${insight.action}</p>
+        </div>
+    `;
+}
 
 /* =========================
 EXPORT
