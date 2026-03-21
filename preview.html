@@ -1,200 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Helixon Report Preview</title>
+// ==========================
+// GET DATA DARI DASHBOARD
+// ==========================
+const raw = localStorage.getItem("helixon_report");
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<style>
-body{
-    background:#020617;
-    color:#e5e7eb;
-    font-family:Inter, sans-serif;
-    padding:40px;
+if(!raw){
+    document.body.innerHTML = "<h2 style='color:white'>No report data</h2>";
+    throw new Error("NO DATA");
 }
 
-#download{
-    position:fixed;
-    top:30px;
-    right:40px;
-    padding:10px 16px;
-    border-radius:10px;
-    border:1px solid #334155;
-    background:linear-gradient(135deg,#3b82f6,#1e3a8a);
-    color:white;
-    font-weight:600;
-    cursor:pointer;
-    z-index:999;
-}
+const data = JSON.parse(raw);
 
-.page{
-    background:white;
-    color:black;
-    width:794px;
-    margin:auto;
-    margin-bottom:40px;
-    padding:40px;
-    box-sizing:border-box;
 
-    page-break-after: always;
-    break-after: page;
-}
-
-#report{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-    
-.page:last-child{
-    page-break-after: auto;
-}
-
-/* pastikan chart dan judul tidak terpisah */
-.page h3{
-    page-break-after: avoid;
-    break-after: avoid;
-    text-align:center;
-    margin-bottom:20px;
-}
-.page img{
-    width:100%;
-    max-width:100%;
-    height:auto;
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-    
-/* ===============================
-CENTER HALAMAN UNTUK CHART
-=============================== */
-/* hanya halaman yang hanya memiliki chart */
-.page.chart-page {
-    padding:40px;   /* 🔥 kasih ruang atas bawah */
-    text-align:center;
-    page-break-after: always;
-}
-    
-/* pastikan chart dan judul tidak terpisah */
-.page.chart-page h3 {
-    text-align: center;
-    margin-top: 120px;
-    margin-bottom: 120px;
-    page-break-after: avoid;
-    break-after: avoid;
-}
-
-/* chart image */
-.page.chart-page img {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    page-break-inside: avoid;
-    break-inside: avoid;
-} 
-    
-/* PERBAIKI CARD KPI */
-#pdf-content .kpi-card,
-#pdf-content .analytics-card{
-    background:#f8fafc !important;
-    color:#0f172a !important;
-    border:1px solid #cbd5e1;
-    box-shadow:none;
-}
-
-#pdf-content .kpi-card h3,
-#pdf-content .analytics-card h3{
-    color:#0f172a !important;
-}
-
-#pdf-content .kpi-card div,
-#pdf-content .analytics-card div{
-    color:#0f172a !important;
-}
-
-.kpi-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-    margin-bottom:30px;
-}
-
-.analytics-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:20px;
-    margin-top:20px;
-    margin-bottom:30px;
-}
-
-#pdf-content .kpi-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:12px; /* 🔥 lebih rapat dari 20px */
-margin-bottom:20px;
-}
-
-#pdf-content .analytics-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-margin-top:12px;
-margin-bottom:20px;
-}
-
-#pdf-content .kpi-card{
-min-height:80px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-padding:12px;
-}
-
-#pdf-content .analytics-card{
-min-height:80px;
-padding:12px;
-}
-
-#pdf-content .kpi-card h3{
-font-size:12px;
-margin-bottom:4px;
-}
-
-#pdf-content .kpi-card div{
-font-size:16px;
-font-weight:700;
-}
-
-/* HANYA UNTUK HALAMAN CHART: CENTER HORIZONTAL */
-.chart-page{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-
-.chart-page h3{
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.page img{
-    width:100%;
-    max-width:100%;
-    height:auto;
-}
-    
-</style>
-
-</head>
-<body>
-
-<button id="download">Download PDF</button>
-
-<div id="report"></div>
-
-<script>
-const data = JSON.parse(localStorage.getItem("helixon_report"));
+// ==========================
+// RENDER KE HALAMAN
+// ==========================
 const report = document.getElementById("report");
 
 report.innerHTML = `
@@ -209,47 +28,55 @@ Month Filter: ${data.month}
 </p>
 
 <div class="kpi-grid">
-${data.kpi}
+${data.kpi || ""}
 </div>
 
 <div class="analytics-grid">
-${data.analytics}
+${data.analytics || ""}
 </div>
 
 <h3>Energy Type Comparison</h3>
-<img src="${data.charts.energy}">
+${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>No chart</p>"}
 </div>
 
 <div class="page chart-page">
 <h3>Emission Trend</h3>
-<img src="${data.charts.trend}">
+${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>No chart</p>"}
 </div>
 
 <div class="page chart-page">
 <h3>Facility Comparison</h3>
-<img src="${data.charts.facility}">
+${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p>"}
 </div>
 
 </div>
 `;
 
+
+// ==========================
+// DOWNLOAD PDF
+// ==========================
 document.getElementById("download").onclick = () => {
+
+    const el = document.getElementById("pdf-content");
+
+    if(!el || el.innerHTML.trim() === ""){
+        alert("PDF content empty");
+        return;
+    }
+
     html2pdf().set({
         margin:[10,10,10,10],
         filename:"helixon-energy-report.pdf",
         image:{type:"png",quality:1},
-html2canvas:{
-    scale: 3,
-    dpi: 300,              // 🔥 ini kunci tambahan
-    useCORS: true,
-    width: 794,
-    letterRendering: true  // bantu teks lebih tajam
-},
+        html2canvas:{
+            scale:3,
+            dpi:300,
+            useCORS:true,
+            width:794,
+            letterRendering:true
+        },
         jsPDF:{unit:"px",format:[794,1123],orientation:"portrait"},
         pagebreak:{mode:["css","legacy"]}
-    }).from(document.getElementById("pdf-content")).save()
+    }).from(el).save();
 };
-</script>
-
-</body>
-</html>
