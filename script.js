@@ -153,7 +153,7 @@ function renderBenchmark(data){
     const el=document.getElementById("benchmark-value");
 
     el.innerHTML=
-    `<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
+    `<b>${intensity.toFixed(3)}</b> tCOâ‚‚ / unit<br>
      Industry Avg: ${INDUSTRY_AVG}<br>
      Difference: ${diff.toFixed(1)}%`;
 
@@ -186,7 +186,7 @@ function renderReduction(data){
 
     const el=document.getElementById("reduction-ai");
 
-    el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`;
+    el.innerHTML=`<b>${reduction.toFixed(2)} tCOâ‚‚</b><br>Potential reduction`;
 
     el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)";
     el.parentElement.style.border="1px solid #22c55e";
@@ -365,70 +365,9 @@ function createExportButton(){
 
     document.body.appendChild(btn);
 }
-async function exportPDF(){
-    
-    const { jsPDF } = window.jspdf;
 
-    const target = document.querySelector(".dashboard-container") || document.body;
 
-    const canvas = await html2canvas(target, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#0f172a"
-    });
-
-    const img = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p","mm","a4");
-
-    const pdfWidth = 210;
-    const pdfHeight = 297;
-
-    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    let position = 0;
-    let heightLeft = imgHeight;
-
-    pdf.addImage(img, "PNG", 0, position, pdfWidth, imgHeight);
-
-    heightLeft -= pdfHeight;
-
-    while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(img, "PNG", 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-    }
-
-    pdf.save("helixon-report.pdf");
-}
 /* =========================
 INIT
 ========================= */
 loadDashboard();
-function fixChartForPrint(){
-
-    const charts = [energyChart, trendChart, facilityChart];
-
-    charts.forEach(chart => {
-        if (!chart) return;
-
-        if (chart.options.plugins?.legend?.labels) {
-            chart.options.plugins.legend.labels.color = "#000";
-        }
-
-        if (chart.options.scales?.x?.ticks) {
-            chart.options.scales.x.ticks.color = "#000";
-        }
-
-        if (chart.options.scales?.y?.ticks) {
-            chart.options.scales.y.ticks.color = "#000";
-        }
-
-        if (chart.options.plugins?.datalabels) {
-            chart.options.plugins.datalabels.color = "#000";
-        }
-
-        chart.update();
-    });
-}
