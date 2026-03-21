@@ -418,7 +418,3 @@ function fixChartForPrint(){
         chart.update();
     });
 }
-
-window.addEventListener("beforeprint", () => {
-    setTimeout(fixChartForPrint, 100);
-});
