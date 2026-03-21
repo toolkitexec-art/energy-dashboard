@@ -365,29 +365,94 @@ function createExportButton(){
 
     document.body.appendChild(btn);
 }
-function exportPDF(){
+async function openPreview(){
+    await new Promise(requestAnimationFrame);
 
-    const report = {
-        facility: facilitySelect.value,
-        month: monthSelect.value,
-        date: new Date().toLocaleDateString(),
+    const target = document.querySelector(".dashboard-container") || document.body;
 
-        kpi: document.getElementById("kpi-container").innerHTML,
-        analytics: document.querySelector(".analytics-grid").innerHTML,
+    const canvas = await html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#0f172a",
+        ignoreElements: (el) => el.id === "pdfPreviewModal"
+    });
 
-        charts:{
-            energy: energyChart ? energyChart.toBase64Image() : "",
-            trend: trendChart ? trendChart.toBase64Image() : "",
-            facility: facilityChart ? facilityChart.toBase64Image() : ""
-        }
-    };
-    console.log("EXPORT DATA:", report);
+    const img = canvas.toDataURL("image/png");
 
-    localStorage.setItem("helixon_report", JSON.stringify(report));
+    const modal = document.createElement("div");
+    modal.id = "pdfPreviewModal";
 
-    window.open("preview.html","_blank");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.background = "rgba(0,0,0,0.85)";
+    modal.style.zIndex = "99999";
+    modal.style.overflow = "auto";
+
+    modal.innerHTML = `
+        <div style="padding:20px;text-align:center">
+            <h3 style="color:white">PDF Preview</h3>
+
+            <img src="${img}" style="width:90%;background:white;border-radius:8px">
+
+            <div style="margin-top:20px">
+                <button onclick="exportPDF()" style="padding:10px 20px;margin-right:10px">
+                    Download PDF
+                </button>
+
+                <button onclick="closePreview()" style="padding:10px 20px">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
 }
+function closePreview(){
+    const el = document.getElementById("pdfPreviewModal");
+    if (el) el.remove();
+}
+async function exportPDF(){
+    await new Promise(requestAnimationFrame);
 
+    const { jsPDF } = window.jspdf;
+
+    const target = document.querySelector(".dashboard-container") || document.body;
+
+    const canvas = await html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#0f172a"
+    });
+
+    const img = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p","mm","a4");
+
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    let position = 0;
+    let heightLeft = imgHeight;
+
+    pdf.addImage(img, "PNG", 0, position, pdfWidth, imgHeight);
+
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(img, "PNG", 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+    }
+
+    pdf.save("helixon-report.pdf");
+}
 /* =========================
 INIT
 ========================= */
