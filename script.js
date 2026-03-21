@@ -365,9 +365,30 @@ function createExportButton(){
 
     document.body.appendChild(btn);
 }
+function exportPDF(){
 
+    const report = {
+        facility: facilitySelect.value,
+        month: monthSelect.value,
+        date: new Date().toLocaleDateString(),
+
+        kpi: document.getElementById("kpi-container").innerHTML,
+        analytics: document.querySelector(".analytics-grid").innerHTML,
+
+        charts:{
+            energy: energyChart ? energyChart.toBase64Image() : "",
+            trend: trendChart ? trendChart.toBase64Image() : "",
+            facility: facilityChart ? facilityChart.toBase64Image() : ""
+        }
+    };
+
+    localStorage.setItem("helixon_report", JSON.stringify(report));
+
+    window.open("preview.html","_blank");
+}
 
 /* =========================
 INIT
 ========================= */
 loadDashboard();
+createExportButton();
