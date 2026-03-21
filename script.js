@@ -381,6 +381,7 @@ function exportPDF(){
             facility: facilityChart ? facilityChart.toBase64Image() : ""
         }
     };
+    console.log("EXPORT DATA:", report);
 
     localStorage.setItem("helixon_report", JSON.stringify(report));
 
