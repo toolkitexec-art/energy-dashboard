@@ -365,59 +365,8 @@ function createExportButton(){
 
     document.body.appendChild(btn);
 }
-async function openPreview(){
-    await new Promise(requestAnimationFrame);
-
-    const target = document.querySelector(".dashboard-container") || document.body;
-
-    const canvas = await html2canvas(target, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#0f172a",
-        ignoreElements: (el) => el.id === "pdfPreviewModal"
-    });
-
-    const img = canvas.toDataURL("image/png");
-
-    const modal = document.createElement("div");
-    modal.id = "pdfPreviewModal";
-
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.background = "rgba(0,0,0,0.85)";
-    modal.style.zIndex = "99999";
-    modal.style.overflow = "auto";
-
-modal.innerHTML = `
-    <div style="padding:20px;text-align:center">
-        <h3 style="color:white">PDF Preview</h3>
-
-        <img src="${img}" style="width:90%;max-width:1100px;background:white;border-radius:8px">
-
-        <div style="margin-top:20px">
-            <button onclick="exportPDF()" style="padding:10px 20px;margin-right:10px">
-                Download PDF
-            </button>
-
-            <button onclick="closePreview()" style="padding:10px 20px">
-                Close
-            </button>
-        </div>
-    </div>
-`;
-
-    document.body.appendChild(modal);
-}
-function closePreview(){
-    const el = document.getElementById("pdfPreviewModal");
-    if (el) el.remove();
-}
 async function exportPDF(){
-    await new Promise(requestAnimationFrame);
-
+    
     const { jsPDF } = window.jspdf;
 
     const target = document.querySelector(".dashboard-container") || document.body;
