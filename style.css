@@ -228,6 +228,17 @@ canvas{
     box-sizing:border-box;
 }
 @media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+svg text,
+    .emission-trend *,
+    .value,
+    .number {
+        color: #000 !important;
+        fill: #000 !important;
+    }
 
     .page:not(:last-child){
         page-break-after: always;
