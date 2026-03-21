@@ -227,14 +227,6 @@ canvas{
 *{
     box-sizing:border-box;
 }
-@media print {
-    body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    svg * {
-        fill: #000 !important;
-    }
 
     .page:not(:last-child){
         page-break-after: always;
