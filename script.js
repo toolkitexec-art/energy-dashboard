@@ -395,7 +395,7 @@ modal.innerHTML = `
     <div style="padding:20px;text-align:center">
         <h3 style="color:white">PDF Preview</h3>
 
-        <img src="${img}" style="width:90%;background:white;border-radius:8px">
+        <img src="${img}" style="width:90%;max-width:1100px;background:white;border-radius:8px">
 
         <div style="margin-top:20px">
             <button onclick="exportPDF()" style="padding:10px 20px;margin-right:10px">
