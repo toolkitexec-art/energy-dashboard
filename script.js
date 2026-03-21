@@ -392,4 +392,33 @@ function exportPDF(){
 INIT
 ========================= */
 loadDashboard();
-createExportButton();
+function fixChartForPrint(){
+
+    const charts = [energyChart, trendChart, facilityChart];
+
+    charts.forEach(chart => {
+        if (!chart) return;
+
+        if (chart.options.plugins?.legend?.labels) {
+            chart.options.plugins.legend.labels.color = "#000";
+        }
+
+        if (chart.options.scales?.x?.ticks) {
+            chart.options.scales.x.ticks.color = "#000";
+        }
+
+        if (chart.options.scales?.y?.ticks) {
+            chart.options.scales.y.ticks.color = "#000";
+        }
+
+        if (chart.options.plugins?.datalabels) {
+            chart.options.plugins.datalabels.color = "#000";
+        }
+
+        chart.update();
+    });
+}
+
+window.addEventListener("beforeprint", () => {
+    setTimeout(fixChartForPrint, 100);
+});
