@@ -1,6 +1,13 @@
-// ==========================
-// GET DATA DARI DASHBOARD
-// ==========================
+<body>
+
+<button id="download">Download PDF</button>
+
+<div id="report"></div>
+
+<script>
+/* =========================
+GET DATA
+========================= */
 const raw = localStorage.getItem("helixon_report");
 
 if(!raw){
@@ -10,10 +17,9 @@ if(!raw){
 
 const data = JSON.parse(raw);
 
-
-// ==========================
-// RENDER KE HALAMAN
-// ==========================
+/* =========================
+RENDER
+========================= */
 const report = document.getElementById("report");
 
 report.innerHTML = `
@@ -21,6 +27,7 @@ report.innerHTML = `
 
 <div class="page">
 <h2>Helixon Energy Intelligence Report</h2>
+
 <p>
 Report Date: ${data.date}<br>
 Facility Filter: ${data.facility}<br>
@@ -52,10 +59,9 @@ ${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p
 </div>
 `;
 
-
-// ==========================
-// DOWNLOAD PDF
-// ==========================
+/* =========================
+DOWNLOAD
+========================= */
 document.getElementById("download").onclick = () => {
 
     const el = document.getElementById("pdf-content");
@@ -80,3 +86,6 @@ document.getElementById("download").onclick = () => {
         pagebreak:{mode:["css","legacy"]}
     }).from(el).save();
 };
+</script>
+
+</body>
