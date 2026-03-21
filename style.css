@@ -232,11 +232,7 @@ canvas{
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-svg text,
-    .emission-trend *,
-    .value,
-    .number {
-        color: #000 !important;
+    svg * {
         fill: #000 !important;
     }
 
