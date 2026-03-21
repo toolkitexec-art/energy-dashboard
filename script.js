@@ -391,23 +391,23 @@ async function openPreview(){
     modal.style.zIndex = "99999";
     modal.style.overflow = "auto";
 
-    modal.innerHTML = `
-        <div style="padding:20px;text-align:center">
-            <h3 style="color:white">PDF Preview</h3>
+modal.innerHTML = `
+    <div style="padding:20px;text-align:center">
+        <h3 style="color:white">PDF Preview</h3>
 
-            <img src="${img}" style="width:90%;background:white;border-radius:8px">
+        <img src="${img}" style="width:90%;background:white;border-radius:8px">
 
-            <div style="margin-top:20px">
-                <button onclick="exportPDF()" style="padding:10px 20px;margin-right:10px">
-                    Download PDF
-                </button>
+        <div style="margin-top:20px">
+            <button onclick="exportPDF()" style="padding:10px 20px;margin-right:10px">
+                Download PDF
+            </button>
 
-                <button onclick="closePreview()" style="padding:10px 20px">
-                    Close
-                </button>
-            </div>
+            <button onclick="closePreview()" style="padding:10px 20px">
+                Close
+            </button>
         </div>
-    `;
+    </div>
+`;
 
     document.body.appendChild(modal);
 }
