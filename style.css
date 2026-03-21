@@ -227,3 +227,10 @@ canvas{
 *{
     box-sizing:border-box;
 }
+@media print {
+
+    .page:not(:last-child){
+        page-break-after: always;
+    }
+
+}
