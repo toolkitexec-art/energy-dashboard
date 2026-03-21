@@ -1,3 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Helixon Report Preview</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{
+    background:#020617;
+    font-family:Inter, sans-serif;
+    padding:40px;
+}
+
+/* BUTTON */
+#download{
+    position:fixed;
+    top:30px;
+    right:40px;
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid #334155;
+    background:linear-gradient(135deg,#3b82f6,#1e3a8a);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    z-index:999;
+}
+
+/* =========================
+PDF CONTAINER (FORCE CLEAN)
+========================= */
+#pdf-content{
+    background:white;
+    color:black;
+}
+
+/* RESET DARK UI */
+#pdf-content *{
+    background:white !important;
+    color:black !important;
+    box-shadow:none !important;
+}
+
+/* PAGE */
+.page{
+    width:794px;
+    margin:auto;
+    margin-bottom:40px;
+    padding:40px;
+    box-sizing:border-box;
+    page-break-after:always;
+}
+
+/* LAST PAGE */
+.page:last-child{
+    page-break-after:auto;
+}
+
+/* HEADER */
+.page h2{
+    margin-bottom:20px;
+}
+
+.page p{
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+/* GRID */
+.kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-bottom:20px;
+}
+
+/* CARD */
+.kpi-card,
+.analytics-card{
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:12px;
+}
+
+/* CHART PAGE */
+.chart-page{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.chart-page h3{
+    margin-bottom:20px;
+    text-align:center;
+}
+
+/* IMAGE */
+.page img{
+    width:100%;
+    max-width:700px;
+    height:auto;
+}
+</style>
+
+</head>
 <body>
 
 <button id="download">Download PDF</button>
@@ -60,7 +175,7 @@ ${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p
 `;
 
 /* =========================
-DOWNLOAD
+DOWNLOAD PDF
 ========================= */
 document.getElementById("download").onclick = () => {
 
@@ -82,10 +197,15 @@ document.getElementById("download").onclick = () => {
             width:794,
             letterRendering:true
         },
-        jsPDF:{unit:"px",format:[794,1123],orientation:"portrait"},
+        jsPDF:{
+            unit:"px",
+            format:[794,1123],
+            orientation:"portrait"
+        },
         pagebreak:{mode:["css","legacy"]}
     }).from(el).save();
 };
 </script>
 
 </body>
+</html>
