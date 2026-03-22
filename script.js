@@ -250,7 +250,9 @@ function renderEnergyChart(data){
         plugins:{
             legend:{display:false},
             datalabels:{
-                color: () => window.isExportMode ? "#000" : "#e5e7eb",
+                color:"#000",
+                textStrokeColor:"#fff",
+                textStrokeWidth:2,
                 anchor:"end",
                 align:"top",
                 font:{weight:"600"},
@@ -260,13 +262,13 @@ function renderEnergyChart(data){
         scales:{
             x:{
                 ticks:{
-                    color: () => window.isExportMode ? "#000" : "#e5e7eb",
+                    color:"#000",
                 }
             },
             y:{
                 beginAtZero:true,
                 ticks:{        
-                    color: () => window.isExportMode ? "#000" : "#e5e7eb",
+                    color:"#000",
                 }            
             }
         }
