@@ -414,7 +414,7 @@ CHARTS (VIEW BASED)
 ========================= */
 function renderEnergyChart(){
 
-    safeDestroy(trendChart);
+    safeDestroy(energyChart);
 const data = DashboardCache.filtered;
 
 const labels = [...new Set(data.map(r => r.energy_type_record))];
@@ -430,8 +430,6 @@ const values = labels.map(type =>
 
     const theme = window.ChartThemeEngine.get();
     
-    const gradient = energyChart?.ctx?.createLinearGradient(0,0,0,400);
-
     if (gradient) {
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(0.5, theme.gradientBase[1]);
@@ -439,7 +437,8 @@ const values = labels.map(type =>
     }
 
         const ctx = document.getElementById("stackedChart").getContext("2d");
-
+        const gradient = ctx.createLinearGradient(0,0,0,400);
+       
         energyChart = new Chart(ctx, {
             type: "bar",
             data: {
@@ -454,7 +453,7 @@ const values = labels.map(type =>
         });
 
         window.ChartThemeEngine.applyToChart(energyChart);
-        return;
+    
     }
 
     energyChart.data.labels = labels;
@@ -507,9 +506,8 @@ function renderTrendChart(){
         });
 
         window.ChartThemeEngine.applyToChart(trendChart);
-        return;
-    }
-
+    
+}
     trendChart.data.labels = labels;
     trendChart.data.datasets[0].data = values;
     trendChart.update();
@@ -517,9 +515,11 @@ function renderTrendChart(){
 
 function renderFacilityChart(){
 
-    safeDestroy(trendChart);
+    safeDestroy(facilityChart);
     const data = DashboardCache.filtered;
+    
     const map = {};
+    
     data.forEach(r=>{
         const key = r.facility_name_display;
         if(!key) return;
@@ -556,7 +556,6 @@ function renderFacilityChart(){
         });
 
         window.ChartThemeEngine.applyToChart(facilityChart);
-        return;
     }
 
     facilityChart.data.labels = facilities;
