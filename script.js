@@ -272,6 +272,8 @@ function renderEnergyChart(data){
         }
     }       
 });
+    
+}
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
