@@ -267,8 +267,9 @@ function renderEnergyChart(data){
                     color: () => window.isExportMode ? "#000" : "#e5e7eb"
                 }
             }
-       });
-}
+        }
+    }       
+});
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
