@@ -8,6 +8,10 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
 
+window.ChartThemeEngine = {
+    mode: "dark"
+}
+
 let energyChart
 let trendChart
 let facilityChart
@@ -91,6 +95,8 @@ function applyFilters(data){
         filtered=filtered.filter(d=>d.month===month);
     }
 
+    lastData = filtered;
+    
     renderKPI(filtered);
     renderBenchmark(filtered);
     renderEfficiency(filtered);
@@ -233,6 +239,11 @@ function renderEnergyChart(data){
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
+    const isExport = mode === "export" || mode === "print";
+
+    const textColor = isExport ? "#000" : "#fff";
+    const numberColor = isExport ? "#000" : "#e5e7eb";
+
     energyChart=new Chart(ctx,{
         type:"bar",
         data:{
@@ -243,23 +254,24 @@ function renderEnergyChart(data){
                 borderRadius:6
             }]
         },
-        plugins:[ChartDataLabels],
         options:{
             plugins:{
                 legend:{display:false},
                 datalabels:{
-                    color:"#e5e7eb",
+                    color:numberColor,
                     anchor:"end",
                     align:"top",
                     font:{weight:"600"},
                     formatter:v=>v.toFixed(2)
                 }
             },
-            scales:{y:{beginAtZero:true}}
+            scales:{
+                x:{ticks:{color:textColor}},
+                y:{beginAtZero:true,ticks:{color:textColor}}
+            }
         }
     });
-}
-
+ }        
 
 function renderTrendChart(data){
 
@@ -366,7 +378,16 @@ function createExportButton(){
     document.body.appendChild(btn);
 }
 
+function setChartTheme(mode){
 
+    window.ChartThemeEngine.mode = mode;
+
+    if(lastData.length === 0) return;
+
+    renderEnergyChart(lastData);
+    renderTrendChart(lastData);
+    renderFacilityChart(lastData);
+}
 /* =========================
 INIT
 ========================= */
