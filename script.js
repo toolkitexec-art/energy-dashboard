@@ -78,7 +78,14 @@ function applyThemeToAllCharts() {
 
 function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
+
     applyThemeToAllCharts();
+
+    requestAnimationFrame(() => {
+        renderEnergyChart();
+        renderTrendChart();
+        renderFacilityChart();
+    });
 }
 
 const INDUSTRY_AVG=0.42
@@ -281,11 +288,11 @@ function applyFilters(){
 
     renderAll(data);
 }
+
 function renderAll(){
 
     if(renderLock) return;
     renderLock = true;
-    let renderLock = false;
 
     const data = DashboardCache.filtered;
 
@@ -298,9 +305,8 @@ function renderAll(){
     renderEnergyChart();
     renderTrendChart();
     renderFacilityChart();
-    
+
     renderLock = false;
-    
 }
 
 /* =========================
@@ -442,7 +448,6 @@ const values = labels.map(type =>
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
-    }
 
         energyChart = new Chart(ctx, {
             type: "bar",
@@ -481,11 +486,9 @@ function renderTrendChart(){
     
     const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
 
-    if (gradient) {
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
-    }
       
         trendChart = new Chart(ctx, {
             type: "line",
@@ -534,10 +537,8 @@ function renderFacilityChart(){
       
     const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
 
-    if (gradient) {
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(1, theme.gradientBase[2]);
-    }
 
         facilityChart = new Chart(ctx, {
             type: "bar",
