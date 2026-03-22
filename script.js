@@ -55,6 +55,7 @@ window.ChartThemeEngine = {
 
         chart.update();
     }
+};
 
 let lastData = [];
 let energyChart;
@@ -292,7 +293,7 @@ function renderEnergyChart(data){
     if(energyChart) energyChart.destroy();
 
     const gradient=ctx.createLinearGradient(0,0,0,400);
-    gradient.addColorStop(0,"#60a5fa");
+    gradient.addColorStop(0, theme.gradientBase[0]);
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
