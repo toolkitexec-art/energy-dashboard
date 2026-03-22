@@ -250,7 +250,7 @@ function renderEnergyChart(data){
         plugins:{
             legend:{display:false},
             datalabels:{
-                color: window.isExportMode ? "#000" : "#e5e7eb",
+                color: "#000",
                 anchor:"end",
                 align:"top",
                 font:{weight:"600"},
