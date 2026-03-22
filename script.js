@@ -250,9 +250,9 @@ function renderEnergyChart(data){
         plugins:{
             legend:{display:false},
             datalabels:{
-                color:"#000",
+                color:"000",
                 textStrokeColor:"#fff",
-                textStrokeWidth:2,
+                textStrokeWidth:3,
                 anchor:"end",
                 align:"top",
                 font:{weight:"600"},
