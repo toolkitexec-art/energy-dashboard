@@ -357,6 +357,35 @@ function renderFacilityChart(data){
 /* =========================
 EXPORT
 ========================= */
+// 1. Fungsi exportPDF → TARUH DI SINI
+async function exportPDF(){
+
+    window.isExportMode = true;
+
+    if(energyChart) energyChart.update();
+    if(trendChart) trendChart.update();
+    if(facilityChart) facilityChart.update();
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const charts = document.querySelectorAll("canvas");
+    const images = [];
+
+    charts.forEach(canvas=>{
+        images.push(canvas.toDataURL("image/png",1.0));
+    });
+
+    localStorage.setItem("helixonCharts", JSON.stringify(images));
+
+    window.isExportMode = false;
+
+    if(energyChart) energyChart.update();
+    if(trendChart) trendChart.update();
+    if(facilityChart) facilityChart.update();
+
+    window.open("preview.html","_blank");
+}
+
 function createExportButton(){
 
     const btn=document.createElement("button");
