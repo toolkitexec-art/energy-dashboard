@@ -62,6 +62,12 @@ let energyChart;
 let trendChart;
 let facilityChart;
 
+function safeDestroy(chart){
+    if(chart){
+        chart.destroy();
+    }
+}
+
 function applyThemeToAllCharts() {
     const engine = window.ChartThemeEngine;
 
@@ -279,6 +285,7 @@ function renderAll(){
 
     if(renderLock) return;
     renderLock = true;
+    let renderLock = false;
 
     const data = DashboardCache.filtered;
 
@@ -468,6 +475,8 @@ function renderTrendChart(){
         new Date(m).toLocaleString("en",{month:"long",year:"numeric"})
     );
 
+    const ctx = document.getElementById("trendChart").getContext("2d");
+
     const theme = window.ChartThemeEngine.get();
     
     const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
@@ -478,8 +487,6 @@ function renderTrendChart(){
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
       
-        const ctx = document.getElementById("trendChart").getContext("2d");
-
         trendChart = new Chart(ctx, {
             type: "line",
             data: {
@@ -521,6 +528,8 @@ function renderFacilityChart(){
     const facilities = sorted.map(d=>d[0]);
     const values = sorted.map(d=>d[1]);
 
+    const ctx = document.getElementById("facilityChart").getContext("2d");
+ 
     const theme = window.ChartThemeEngine.get();
       
     const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
@@ -529,8 +538,6 @@ function renderFacilityChart(){
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
-
-        const ctx = document.getElementById("facilityChart").getContext("2d");
 
         facilityChart = new Chart(ctx, {
             type: "bar",
@@ -594,17 +601,6 @@ function createExportButton(){
     window.open("preview.html", "_blank");
 });
 
-function setChartTheme(mode){
-
-    window.ChartThemeEngine.mode = mode;
-
-    applyThemeToAllCharts();
-
-    requestAnimationFrame(() => {
-        renderEnergyChart();
-        renderTrendChart();
-        renderFacilityChart();
-    });
 }
 
 /* =========================
