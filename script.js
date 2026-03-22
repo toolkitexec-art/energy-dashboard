@@ -366,7 +366,7 @@ async function exportPDF(){
     if(trendChart) trendChart.update();
     if(facilityChart) facilityChart.update();
 
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     const charts = document.querySelectorAll("canvas");
     const images = [];
