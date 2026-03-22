@@ -9,18 +9,57 @@ const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
 
 window.ChartThemeEngine = {
-    mode: "dark"
+    mode: "dark",
+
+    get() {
+        const mode = this.mode;
+        const isExport = mode === "export" || mode === "print";
+
+        return {
+            mode,
+            isExport,
+            textColor: isExport ? "#000" : "#fff",
+            mutedText: isExport ? "#111" : "#e5e7eb",
+            gridColor: isExport ? "#ddd" : "#1f2937"
+        };
+    },
+
+    applyToChart(chart) {
+        const theme = this.get();
+
+        chart.options.scales.x.ticks.color = theme.textColor;
+        chart.options.scales.y.ticks.color = theme.textColor;
+
+        if (chart.options.plugins?.datalabels) {
+            chart.options.plugins.datalabels.color = theme.mutedText;
+        }
+
+        chart.update();
+    }
 };
+
 let lastData = [];
-let energyChart
-let trendChart
-let facilityChart
+let energyChart;
+let trendChart;
+let facilityChart;
+
+function applyThemeToAllCharts() {
+    const engine = window.ChartThemeEngine;
+
+    if (energyChart) engine.applyToChart(energyChart);
+    if (trendChart) engine.applyToChart(trendChart);
+    if (facilityChart) engine.applyToChart(facilityChart);
+}
+
+function setChartTheme(mode){
+    window.ChartThemeEngine.mode = mode;
+    applyThemeToAllCharts();
+}
 
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
-
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -239,12 +278,8 @@ function renderEnergyChart(data){
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
-    const mode = window.ChartThemeEngine.mode;
-    const isExport = mode === "export" || mode === "print";
-
-    const textColor = isExport ? "#000" : "#fff";
-    const numberColor = isExport ? "#000" : "#e5e7eb";
-
+    const theme = window.ChartThemeEngine.get();
+    
     energyChart=new Chart(ctx,{
         type:"bar",
         data:{
@@ -259,7 +294,7 @@ function renderEnergyChart(data){
             plugins:{
                 legend:{display:false},
                 datalabels:{
-                    color:numberColor,
+                    color:theme.mutedText,
                     anchor:"end",
                     align:"top",
                     font:{weight:"600"},
@@ -267,13 +302,12 @@ function renderEnergyChart(data){
                 }
             },
             scales:{
-                x:{ticks:{color:textColor}},
-                y:{beginAtZero:true,ticks:{color:textColor}}
+                x:{ticks:{color:theme.textColor}},
+                y:{beginAtZero:true,ticks:{color:theme.textColor}},
             }
         }
     });
  }        
-
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
@@ -297,26 +331,37 @@ function renderTrendChart(data){
     gradient.addColorStop(0.5,"rgba(249,115,22,0.7)");
     gradient.addColorStop(1,"rgba(2,6,23,0.9)");
 
-    trendChart=new Chart(ctx,{
-        type:"line",
-        data:{
-            labels:monthLabels,
-            datasets:[{
-                data:values,
-                borderColor:"#fb923c",
-                backgroundColor:gradient,
-                fill:true,
-                tension:0.4,
-                borderWidth:3,
-                pointRadius:4
+    const theme = window.ChartThemeEngine.get();
+
+    trendChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                data: values,
+                borderColor: "#fb923c",
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 4
             }]
         },
-        options:{
-            plugins:{legend:{display:false}}
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.textColor }
+                },
+                y: {
+                    ticks: { color: theme.textColor }
+                }
+            }
         }
     });
 }
-
 
 function renderFacilityChart(data){
 
@@ -336,6 +381,8 @@ function renderFacilityChart(data){
     gradient.addColorStop(0,"#fb923c");
     gradient.addColorStop(1,"#7c2d12");
 
+    const theme = window.ChartThemeEngine.get();
+
     facilityChart=new Chart(ctx,{
         type:"bar",
         data:{
@@ -346,13 +393,21 @@ function renderFacilityChart(data){
                 borderRadius:6
             }]
         },
-        options:{
-            plugins:{legend:{display:false}},
-            scales:{y:{beginAtZero:true}}
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.textColor }
+                },
+                y: {
+                    ticks: { color: theme.textColor }
+                }
+            }
         }
     });
 }
-
 
 /* =========================
 EXPORT
