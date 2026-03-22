@@ -154,11 +154,17 @@ h3{
 }
 
 canvas{
-    background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
     border:1px solid #334155;
     border-radius:12px;
     padding:15px;
-    box-shadow:0 10px 40px rgba(0,0,0,.45);
+}
+
+.dark canvas{
+    background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
+}
+
+.light canvas{
+    background:white;
 }
 
 .ai-single-card{
