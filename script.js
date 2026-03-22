@@ -234,33 +234,41 @@ function renderEnergyChart(data){
     gradient.addColorStop(1,"#1e293b");
 
     energyChart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
-            }]
+    type:"bar",
+    data:{
+        labels,
+        datasets:[{
+            data:values,
+            backgroundColor:gradient,
+            borderRadius:6
+        }]
+    },
+    plugins:[ChartDataLabels],
+    options:{
+        plugins:{
+            legend:{display:false},
+            datalabels:{
+                color: () => window.isExportMode ? "#000" : "#e5e7eb",
+                anchor:"end",
+                align:"top",
+                font:{weight:"600"},
+                formatter:v=>v.toFixed(2)
+            }
         },
-        plugins:[ChartDataLabels],
-        options:{
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    color:"#e5e7eb",
-                    anchor:"end",
-                    align:"top",
-                    font:{weight:"600"},
-                    formatter:v=>v.toFixed(2)
+        scales:{
+            x:{
+                ticks:{
+                    color: () => window.isExportMode ? "#000" : "#e5e7eb"
                 }
             },
-            scales:{y:{beginAtZero:true}}
-        }
-    });
+            y:{
+                beginAtZero:true,
+                ticks:{
+                    color: () => window.isExportMode ? "#000" : "#e5e7eb"
+                }
+            }
+       });
 }
-
-
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
