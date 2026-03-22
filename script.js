@@ -414,19 +414,21 @@ CHARTS (VIEW BASED)
 ========================= */
 function renderEnergyChart(){
 
-    const data = DashboardCache.filtered;
-    const labels = [...new Set(data.map(d => d.energy_type_record))];    
-    const values = labels.map(type =>
-        data
-            .filter(r => r.energy_type_record === type)
-            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
-    );
+    safeDestroy(trendChart);
+const data = DashboardCache.filtered;
 
+const labels = [...new Set(data.map(r => r.energy_type_record))];
+
+const values = labels.map(type =>
+    data
+        .filter(r => r.energy_type_record === type)
+        .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+);
+    
     const total = values.reduce((a,b)=>a+b,0);
     document.getElementById("energy-total").innerText = total.toFixed(2);
 
     const theme = window.ChartThemeEngine.get();
-    safeDestroy(trendChart);
     
     const gradient = energyChart?.ctx?.createLinearGradient(0,0,0,400);
 
@@ -462,6 +464,7 @@ function renderEnergyChart(){
 
 function renderTrendChart(){
 
+    safeDestroy(trendChart);
     const data = DashboardCache.filtered;
     const months = [...new Set(data.map(d => d.month))].sort();
     const values = months.map(m =>
@@ -474,7 +477,6 @@ function renderTrendChart(){
     );
 
     const theme = window.ChartThemeEngine.get();
-    safeDestroy(trendChart);
     
     const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
 
@@ -515,6 +517,7 @@ function renderTrendChart(){
 
 function renderFacilityChart(){
 
+    safeDestroy(trendChart);
     const data = DashboardCache.filtered;
     const map = {};
     data.forEach(r=>{
@@ -529,8 +532,7 @@ function renderFacilityChart(){
     const values = sorted.map(d=>d[1]);
 
     const theme = window.ChartThemeEngine.get();
-    safeDestroy(trendChart);
-    
+      
     const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
 
     if (gradient) {
