@@ -10,8 +10,8 @@ const monthSelect=document.getElementById("month-select")
 
 window.ChartThemeEngine = {
     mode: "dark"
-}
-
+};
+let lastData = [];
 let energyChart
 let trendChart
 let facilityChart
@@ -239,6 +239,7 @@ function renderEnergyChart(data){
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
+    const mode = window.ChartThemeEngine.mode;
     const isExport = mode === "export" || mode === "print";
 
     const textColor = isExport ? "#000" : "#fff";
