@@ -1,5 +1,3 @@
-window.isExportMode = false;
-
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
 
 const SUPABASE_URL="https://otzxkvdkpbsyrbiqtbjd.supabase.co"
@@ -235,53 +233,34 @@ function renderEnergyChart(data){
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
-    energyChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-        labels,
-        datasets: [{
-            data: values,
-            backgroundColor: gradient,
-            borderRadius: 6
-        }]
-    },
-
-    plugins: [ChartDataLabels],
-
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        devicePixelRatio: 2,
-
-        plugins: {
-            legend: { display: false },
-
-            datalabels: {
-                color: "#fff",
-                textStrokeColor: "#000",
-                textStrokeWidth: 3,
-                anchor: "end",
-                align: "top",
-                font: { weight: "600" },
-                formatter: v => v.toFixed(2)
-            }
+    energyChart=new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels,
+            datasets:[{
+                data:values,
+                backgroundColor:gradient,
+                borderRadius:6
+            }]
         },
-
-        scales: {
-            x: {
-                ticks: {
-                    color: "#fff"
+        plugins:[ChartDataLabels],
+        options:{
+            plugins:{
+                legend:{display:false},
+                datalabels:{
+                    color:"#e5e7eb",
+                    anchor:"end",
+                    align:"top",
+                    font:{weight:"600"},
+                    formatter:v=>v.toFixed(2)
                 }
             },
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    color: "#fff"
-                }
-            }
+            scales:{y:{beginAtZero:true}}
         }
-    }
-});
+    });
+}
+
+
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
@@ -365,51 +344,6 @@ function renderFacilityChart(data){
 /* =========================
 EXPORT
 ========================= */
-async function exportPDF(){
-
-    // 1. set mode export dulu
-    window.isExportMode = true;
-
-    // 2. update chart
-    if(energyChart) energyChart.update();
-    if(trendChart) trendChart.update();
-    if(facilityChart) facilityChart.update();
-
-    // 3. tunggu render benar-benar selesai
-    await new Promise(r => setTimeout(r, 400));
-
-    // 4. ambil canvas
-    const charts = Array.from(document.querySelectorAll("canvas"))
-        .filter(c => c.width > 0 && c.height > 0);
-
-    const images = [];
-
-    charts.forEach(canvas=>{
-        const scale = 2;
-
-        const tempCanvas = document.createElement("canvas");
-        const tempCtx = tempCanvas.getContext("2d");
-
-        tempCanvas.width = canvas.width * scale;
-        tempCanvas.height = canvas.height * scale;
-
-        tempCtx.scale(scale, scale);
-        tempCtx.drawImage(canvas, 0, 0);
-
-        images.push(tempCanvas.toDataURL("image/png", 1.0));
-    });
-
-    localStorage.setItem("helixonCharts", JSON.stringify(images));
-
-    window.isExportMode = false;
-
-    if(energyChart) energyChart.update();
-    if(trendChart) trendChart.update();
-    if(facilityChart) facilityChart.update();
-
-    window.open("preview.html","_blank");
-}
-
 function createExportButton(){
 
     const btn=document.createElement("button");
@@ -436,4 +370,4 @@ function createExportButton(){
 /* =========================
 INIT
 ========================= */
-loadDashboard();
+loadDashboard(); 
