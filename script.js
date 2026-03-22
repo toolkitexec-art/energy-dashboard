@@ -378,9 +378,10 @@ async function exportPDF(){
     if(trendChart) trendChart.update();
     if(facilityChart) facilityChart.update();
 
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-    const charts = document.querySelectorAll("canvas");
+    await new Promise(r => setTimeout(r, 300));
+    
+    const charts = Array.from(document.querySelectorAll("canvas"))
+        .filter(c => c.width > 0 && c.height > 0);
     const images = [];
 
     charts.forEach(canvas=>{
@@ -388,6 +389,9 @@ async function exportPDF(){
 
     const width = canvas.width;
     const height = canvas.height;
+
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
 
     const tempCanvas = document.createElement("canvas");
     const tempCtx = tempCanvas.getContext("2d");
