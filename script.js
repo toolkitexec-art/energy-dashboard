@@ -57,16 +57,9 @@ window.ChartThemeEngine = {
     }
 };
 
-let lastData = [];
 let energyChart;
 let trendChart;
 let facilityChart;
-
-function safeDestroy(chart){
-    if(chart){
-        chart.destroy();
-    }
-}
 
 function applyThemeToAllCharts() {
     const engine = window.ChartThemeEngine;
@@ -285,11 +278,10 @@ function applyFilters(){
 
 function renderAll(){
 
+    renderAll();
+    
     if(renderLock) return;
     renderLock = true;
-
-    try {
-        const data = DashboardCache.filtered;
 
         renderKPI(data);
         renderBenchmark(data);
@@ -371,7 +363,7 @@ function renderBenchmark(data){
     const el=document.getElementById("benchmark-value");
 
     el.innerHTML=
-    `<b>${intensity.toFixed(3)}</b> tCOâ‚‚ / unit<br>
+    `<b>${intensity.toFixed(3)}</b> tCO₂ / unit<br>
      Industry Avg: ${INDUSTRY_AVG}<br>
      Difference: ${diff.toFixed(1)}%`;
 
@@ -512,8 +504,6 @@ gradient.addColorStop(1, theme.gradientBase[2]);
         window.ChartThemeEngine.applyToChart(trendChart);
     
 }
-    
-
 function renderFacilityChart(){
 
     safeDestroy(facilityChart);
@@ -525,24 +515,24 @@ function renderFacilityChart(){
     const gradient = ctx.createLinearGradient(0,0,0,400);
     const theme = window.ChartThemeEngine.get();
 
-gradient.addColorStop(0, theme.gradientBase[0]);
-gradient.addColorStop(1, theme.gradientBase[2]);
+    gradient.addColorStop(0, theme.gradientBase[0]);
+    gradient.addColorStop(1, theme.gradientBase[2]);
     
-        facilityChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: facilities,
-                datasets: [{
-                    data: values,
-                    backgroundColor: gradient,
-                    borderRadius: 6
-                }]
-            },
-            options: getCommonOptions()
-        });
+    facilityChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: gradient,
+                borderRadius: 6
+            }]
+        },
+        options: getCommonOptions()
+    });
 
-        window.ChartThemeEngine.applyToChart(facilityChart);
-    }
+    window.ChartThemeEngine.applyToChart(facilityChart);
+}    
 
 function getCommonOptions(){
 
