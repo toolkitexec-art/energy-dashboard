@@ -292,12 +292,13 @@ function renderEnergyChart(data){
 
     if(energyChart) energyChart.destroy();
 
+    const theme = window.ChartThemeEngine.get();
+    
     const gradient=ctx.createLinearGradient(0,0,0,400);
     gradient.addColorStop(0, theme.gradientBase[0]);
     gradient.addColorStop(0.5,theme.gradientBase[1]);
     gradient.addColorStop(1,theme.gradientBase[2]);
 
-    const theme = window.ChartThemeEngine.get();
     
     energyChart=new Chart(ctx,{
         type:"bar",
@@ -326,7 +327,10 @@ function renderEnergyChart(data){
             }
         }
     });
- }        
+
+window.ChartThemeEngine.applyToChart(energyChart);
+}
+
 function renderTrendChart(data){
 
     const months = [...new Set(data.map(d => d.month))].sort();
@@ -337,8 +341,8 @@ function renderTrendChart(data){
             .reduce((s, r) => s + Number(r.total_emission || 0), 0)
     );
 
-    const monthLabels = months.map(m =>
-        new Date(m).toLocaleString("en", { month: "long" })
+    const labels = months.map(m =>
+        new Date(m).toLocaleString("en", { month: "long", year: "numeric" })
     );
 
     const ctx = document.getElementById("trendChart").getContext("2d");
@@ -355,7 +359,7 @@ function renderTrendChart(data){
     trendChart = new Chart(ctx, {
         type: "line",
         data: {
-            labels: monthLabels,
+            labels,
             datasets: [{
                 data: values,
                 borderColor: theme.trendLine,
@@ -363,12 +367,20 @@ function renderTrendChart(data){
                 fill: true,
                 tension: 0.4,
                 borderWidth: 3,
-                pointRadius: 4
+                pointRadius: 4,
+                pointBackgroundColor: theme.trendLine
             }]
         },
         options: {
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                datalabels: {
+                    color: theme.mutedText,
+                    align: "top",
+                    anchor: "end",
+                    font: { weight: "600" },
+                    formatter: v => v.toFixed(2)
+                }
             },
             scales: {
                 x: {
@@ -376,23 +388,35 @@ function renderTrendChart(data){
                     grid: { color: theme.gridColor }
                 },
                 y: {
+                    beginAtZero: true,
                     ticks: { color: theme.textColor },
                     grid: { color: theme.gridColor }
                 }
             }
         }
     });
- }
+
+    window.ChartThemeEngine.applyToChart(trendChart);
+}
 
 function renderFacilityChart(data){
 
-    const facilities = [...new Set(data.map(d => d.facility_name_display))];
+    // 1. group + sum
+    const map = {};
 
-    const values = facilities.map(f =>
-        data
-            .filter(r => r.facility_name_display === f)
-            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
-    );
+    data.forEach(r => {
+        const key = r.facility_name_display;
+        if (!key) return;
+
+        map[key] = (map[key] || 0) + Number(r.total_emission || 0);
+    });
+
+    // 2. convert to sorted array (DESC)
+    const sorted = Object.entries(map)
+        .sort((a, b) => b[1] - a[1]);
+
+    const facilities = sorted.map(d => d[0]);
+    const values = sorted.map(d => d[1]);
 
     const ctx = document.getElementById("facilityChart").getContext("2d");
 
@@ -400,6 +424,7 @@ function renderFacilityChart(data){
 
     const theme = window.ChartThemeEngine.get();
 
+    // 3. gradient bar (subtle depth)
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, theme.gradientBase[0]);
     gradient.addColorStop(1, theme.gradientBase[2]);
@@ -410,7 +435,7 @@ function renderFacilityChart(data){
             labels: facilities,
             datasets: [{
                 data: values,
-                backgroundColor: theme.facilityBar,
+                backgroundColor: gradient,
                 borderRadius: 6
             }]
         },
@@ -431,13 +456,16 @@ function renderFacilityChart(data){
                     grid: { color: theme.gridColor }
                 },
                 y: {
+                    beginAtZero: true,
                     ticks: { color: theme.textColor },
                     grid: { color: theme.gridColor }
                 }
             }
         }
     });
- }
+
+    window.ChartThemeEngine.applyToChart(facilityChart);
+}
 
 /* =========================
 EXPORT
