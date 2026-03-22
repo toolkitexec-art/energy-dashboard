@@ -276,59 +276,50 @@ CHARTS (VIEW BASED)
 ========================= */
 function renderEnergyChart(data){
 
-    const labels=[...new Set(data.map(d=>d.energy_type_record))];
+    const labels = [...new Set(data.map(d => d.energy_type_record))];
 
-    const values=labels.map(type=>{
-        return data
-            .filter(r=>r.energy_type_record===type)
-            .reduce((s,r)=>s+Number(r.total_emission||0),0);
-    });
+    const values = labels.map(type =>
+        data
+            .filter(r => r.energy_type_record === type)
+            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+    );
 
-    const total=values.reduce((a,b)=>a+b,0);
-
-    document.getElementById("energy-total").innerText=total.toFixed(2);
-
-    const ctx=document.getElementById("stackedChart").getContext("2d");
-
-    if(energyChart) energyChart.destroy();
+    const total = values.reduce((a,b)=>a+b,0);
+    document.getElementById("energy-total").innerText = total.toFixed(2);
 
     const theme = window.ChartThemeEngine.get();
-    
-    const gradient=ctx.createLinearGradient(0,0,0,400);
-    gradient.addColorStop(0, theme.gradientBase[0]);
-    gradient.addColorStop(0.5,theme.gradientBase[1]);
-    gradient.addColorStop(1,theme.gradientBase[2]);
 
-    
-    energyChart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
-            }]
-        },
-        options:{
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    color:theme.mutedText,
-                    anchor:"end",
-                    align:"top",
-                    font:{weight:"600"},
-                    formatter:v=>v.toFixed(2)
-                }
+    const gradient = energyChart?.ctx?.createLinearGradient(0,0,0,400);
+
+    if (gradient) {
+        gradient.addColorStop(0, theme.gradientBase[0]);
+        gradient.addColorStop(0.5, theme.gradientBase[1]);
+        gradient.addColorStop(1, theme.gradientBase[2]);
+    }
+
+    if (!energyChart) {
+        const ctx = document.getElementById("stackedChart").getContext("2d");
+
+        energyChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: gradient,
+                    borderRadius: 6
+                }]
             },
-            scales:{
-                x:{ticks:{color:theme.textColor}},
-                y:{beginAtZero:true,ticks:{color:theme.textColor}},
-            }
-        }
-    });
+            options: getCommonOptions()
+        });
 
-window.ChartThemeEngine.applyToChart(energyChart);
+        window.ChartThemeEngine.applyToChart(energyChart);
+        return;
+    }
+
+    energyChart.data.labels = labels;
+    energyChart.data.datasets[0].data = values;
+    energyChart.update();
 }
 
 function renderTrendChart(data){
@@ -336,135 +327,122 @@ function renderTrendChart(data){
     const months = [...new Set(data.map(d => d.month))].sort();
 
     const values = months.map(m =>
-        data
-            .filter(r => r.month === m)
-            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
+        data.filter(r => r.month === m)
+            .reduce((s,r)=>s + Number(r.total_emission||0),0)
     );
 
     const labels = months.map(m =>
-        new Date(m).toLocaleString("en", { month: "long", year: "numeric" })
+        new Date(m).toLocaleString("en",{month:"long",year:"numeric"})
     );
-
-    const ctx = document.getElementById("trendChart").getContext("2d");
-
-    if (trendChart) trendChart.destroy();
 
     const theme = window.ChartThemeEngine.get();
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, theme.gradientBase[0]);
-    gradient.addColorStop(0.5, theme.gradientBase[1]);
-    gradient.addColorStop(1, theme.gradientBase[2]);
+    const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
 
-    trendChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [{
-                data: values,
-                borderColor: theme.trendLine,
-                backgroundColor: gradient,
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointRadius: 4,
-                pointBackgroundColor: theme.trendLine
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    color: theme.mutedText,
-                    align: "top",
-                    anchor: "end",
-                    font: { weight: "600" },
-                    formatter: v => v.toFixed(2)
-                }
+    if (gradient) {
+        gradient.addColorStop(0, theme.gradientBase[0]);
+        gradient.addColorStop(0.5, theme.gradientBase[1]);
+        gradient.addColorStop(1, theme.gradientBase[2]);
+    }
+
+    if (!trendChart) {
+        const ctx = document.getElementById("trendChart").getContext("2d");
+
+        trendChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    borderColor: theme.trendLine,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: theme.trendLine
+                }]
             },
-            scales: {
-                x: {
-                    ticks: { color: theme.textColor },
-                    grid: { color: theme.gridColor }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: theme.textColor },
-                    grid: { color: theme.gridColor }
-                }
-            }
-        }
-    });
+            options: getCommonOptions()
+        });
 
-    window.ChartThemeEngine.applyToChart(trendChart);
+        window.ChartThemeEngine.applyToChart(trendChart);
+        return;
+    }
+
+    trendChart.data.labels = labels;
+    trendChart.data.datasets[0].data = values;
+    trendChart.update();
 }
 
 function renderFacilityChart(data){
 
-    // 1. group + sum
     const map = {};
 
-    data.forEach(r => {
+    data.forEach(r=>{
         const key = r.facility_name_display;
-        if (!key) return;
-
-        map[key] = (map[key] || 0) + Number(r.total_emission || 0);
+        if(!key) return;
+        map[key] = (map[key]||0) + Number(r.total_emission||0);
     });
 
-    // 2. convert to sorted array (DESC)
-    const sorted = Object.entries(map)
-        .sort((a, b) => b[1] - a[1]);
+    const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1]);
 
-    const facilities = sorted.map(d => d[0]);
-    const values = sorted.map(d => d[1]);
-
-    const ctx = document.getElementById("facilityChart").getContext("2d");
-
-    if (facilityChart) facilityChart.destroy();
+    const facilities = sorted.map(d=>d[0]);
+    const values = sorted.map(d=>d[1]);
 
     const theme = window.ChartThemeEngine.get();
 
-    // 3. gradient bar (subtle depth)
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, theme.gradientBase[0]);
-    gradient.addColorStop(1, theme.gradientBase[2]);
+    const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
 
-    facilityChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: facilities,
-            datasets: [{
-                data: values,
-                backgroundColor: gradient,
-                borderRadius: 6
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    color: theme.mutedText,
-                    anchor: "end",
-                    align: "top",
-                    font: { weight: "600" },
-                    formatter: v => v.toFixed(2)
-                }
+    if (gradient) {
+        gradient.addColorStop(0, theme.gradientBase[0]);
+        gradient.addColorStop(1, theme.gradientBase[2]);
+    }
+
+    if (!facilityChart) {
+        const ctx = document.getElementById("facilityChart").getContext("2d");
+
+        facilityChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: facilities,
+                datasets: [{
+                    data: values,
+                    backgroundColor: gradient,
+                    borderRadius: 6
+                }]
             },
-            scales: {
-                x: {
-                    ticks: { color: theme.textColor },
-                    grid: { color: theme.gridColor }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: theme.textColor },
-                    grid: { color: theme.gridColor }
-                }
-            }
-        }
-    });
+            options: getCommonOptions()
+        });
 
-    window.ChartThemeEngine.applyToChart(facilityChart);
+        window.ChartThemeEngine.applyToChart(facilityChart);
+        return;
+    }
+
+    facilityChart.data.labels = facilities;
+    facilityChart.data.datasets[0].data = values;
+    facilityChart.update();
+}
+function getCommonOptions(){
+
+    const theme = window.ChartThemeEngine.get();
+
+    return {
+        plugins:{
+            legend:{display:false},
+            datalabels:{
+                color: theme.mutedText,
+                anchor:"end",
+                align:"top",
+                font:{weight:"600"},
+                formatter:v=>v.toFixed(2)
+            }
+        },
+        scales:{
+            x:{ticks:{color:theme.textColor}},
+            y:{beginAtZero:true,ticks:{color:theme.textColor}}
+        }
+    };
 }
 
 /* =========================
