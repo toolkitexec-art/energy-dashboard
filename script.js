@@ -294,19 +294,22 @@ function renderAll(){
     if(renderLock) return;
     renderLock = true;
 
-    const data = DashboardCache.filtered;
+    try {
+        const data = DashboardCache.filtered;
 
-    renderKPI(data);
-    renderBenchmark(data);
-    renderEfficiency(data);
-    renderReduction(data);
-    renderSaving(data);
+        renderKPI(data);
+        renderBenchmark(data);
+        renderEfficiency(data);
+        renderReduction(data);
+        renderSaving(data);
 
-    renderEnergyChart();
-    renderTrendChart();
-    renderFacilityChart();
+        renderEnergyChart();
+        renderTrendChart();
+        renderFacilityChart();
 
-    renderLock = false;
+    } finally {
+        renderLock = false;
+    }
 }
 
 /* =========================
@@ -479,17 +482,15 @@ function renderTrendChart(){
     const labels = months.map(m =>
         new Date(m).toLocaleString("en",{month:"long",year:"numeric"})
     );
+const ctx = document.getElementById("trendChart").getContext("2d");
 
-    const ctx = document.getElementById("trendChart").getContext("2d");
+const gradient = ctx.createLinearGradient(0,0,0,400);
+const theme = window.ChartThemeEngine.get();
 
-    const theme = window.ChartThemeEngine.get();
+gradient.addColorStop(0, theme.gradientBase[0]);
+gradient.addColorStop(0.5, theme.gradientBase[1]);
+gradient.addColorStop(1, theme.gradientBase[2]);
     
-    const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
-
-        gradient.addColorStop(0, theme.gradientBase[0]);
-        gradient.addColorStop(0.5, theme.gradientBase[1]);
-        gradient.addColorStop(1, theme.gradientBase[2]);
-      
         trendChart = new Chart(ctx, {
             type: "line",
             data: {
@@ -532,14 +533,13 @@ function renderFacilityChart(){
     const values = sorted.map(d=>d[1]);
 
     const ctx = document.getElementById("facilityChart").getContext("2d");
- 
+
+    const gradient = ctx.createLinearGradient(0,0,0,400);
     const theme = window.ChartThemeEngine.get();
-      
-    const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
 
-        gradient.addColorStop(0, theme.gradientBase[0]);
-        gradient.addColorStop(1, theme.gradientBase[2]);
-
+gradient.addColorStop(0, theme.gradientBase[0]);
+gradient.addColorStop(1, theme.gradientBase[2]);
+    
         facilityChart = new Chart(ctx, {
             type: "bar",
             data: {
