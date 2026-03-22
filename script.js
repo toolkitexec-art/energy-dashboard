@@ -250,7 +250,7 @@ function renderEnergyChart(data){
         plugins:{
             legend:{display:false},
             datalabels:{
-                color: "#000",
+                color: () => window.isExportMode ? "#000" : "#e5e7eb",
                 anchor:"end",
                 align:"top",
                 font:{weight:"600"},
@@ -260,14 +260,14 @@ function renderEnergyChart(data){
         scales:{
             x:{
                 ticks:{
-                    color: window.isExportMode ? "#000" : "#e5e7eb",
+                    color: () => window.isExportMode ? "#000" : "#e5e7eb",
                 }
             },
             y:{
                 beginAtZero:true,
-                ticks:{
-                    color: window.isExportMode ? "#000" : "#e5e7eb",
-                }
+                ticks:{        
+                    color: () => window.isExportMode ? "#000" : "#e5e7eb",
+                }            
             }
         }
     }       
