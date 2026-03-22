@@ -369,9 +369,6 @@ EXPORT
 
 async function exportPDF(){
 
-    document.body.classList.remove("dark");
-    document.body.classList.add("light");
-
     window.isExportMode = true;
 
     if(energyChart) energyChart.update();
