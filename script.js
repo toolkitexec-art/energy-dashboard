@@ -235,47 +235,53 @@ function renderEnergyChart(data){
     gradient.addColorStop(0.5,"#3b82f6");
     gradient.addColorStop(1,"#1e293b");
 
-    energyChart=new Chart(ctx,{
-    type:"bar",
-    data:{
+    energyChart = new Chart(ctx, {
+    type: "bar",
+    data: {
         labels,
-        datasets:[{
-            data:values,
-            backgroundColor:gradient,
-            borderRadius:6
+        datasets: [{
+            data: values,
+            backgroundColor: gradient,
+            borderRadius: 6
         }]
     },
-    plugins:[ChartDataLabels],
-    options:{
-        plugins:{
-            legend:{display:false},
-            datalabels:{
-                color:"000",
-                textStrokeColor:"#fff",
-                textStrokeWidth:3,
-                anchor:"end",
-                align:"top",
-                font:{weight:"600"},
-                formatter:v=>v.toFixed(2)
+
+    plugins: [ChartDataLabels],
+
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        devicePixelRatio: 2,
+
+        plugins: {
+            legend: { display: false },
+
+            datalabels: {
+                color: "#fff",
+                textStrokeColor: "#000",
+                textStrokeWidth: 3,
+                anchor: "end",
+                align: "top",
+                font: { weight: "600" },
+                formatter: v => v.toFixed(2)
             }
         },
-        scales:{
-            x:{
-                ticks:{
-                    color:"#000",
+
+        scales: {
+            x: {
+                ticks: {
+                    color: "#fff"
                 }
             },
-            y:{
-                beginAtZero:true,
-                ticks:{        
-                    color:"#000",
-                }            
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: "#fff"
+                }
             }
         }
-    }       
+    }
 });
-    
-}
 function renderTrendChart(data){
 
     const months=[...new Set(data.map(d=>d.month))].sort();
@@ -378,9 +384,23 @@ async function exportPDF(){
     const images = [];
 
     charts.forEach(canvas=>{
-        images.push(canvas.toDataURL("image/png",1.0));
-    });
+    const scale = 2;
 
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
+
+    tempCanvas.width = width * scale;
+    tempCanvas.height = height * scale;
+
+    tempCtx.scale(scale, scale);
+    tempCtx.drawImage(canvas, 0, 0);
+
+    images.push(tempCanvas.toDataURL("image/png", 1.0));
+});
+    
     localStorage.setItem("helixonCharts", JSON.stringify(images));
 
     window.isExportMode = false;
