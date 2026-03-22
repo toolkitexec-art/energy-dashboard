@@ -414,8 +414,8 @@ CHARTS (VIEW BASED)
 ========================= */
 function renderEnergyChart(){
 
-    const labels = [...new Set(data.map(d => d.energy_type_record))];
-
+    const data = DashboardCache.filtered;
+    
     const values = labels.map(type =>
         data
             .filter(r => r.energy_type_record === type)
@@ -426,7 +426,8 @@ function renderEnergyChart(){
     document.getElementById("energy-total").innerText = total.toFixed(2);
 
     const theme = window.ChartThemeEngine.get();
-
+    safeDestroy(trendChart);
+    
     const gradient = energyChart?.ctx?.createLinearGradient(0,0,0,400);
 
     if (gradient) {
@@ -434,7 +435,6 @@ function renderEnergyChart(){
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
-    safeDestroy(trendChart);
 
         const ctx = document.getElementById("stackedChart").getContext("2d");
 
@@ -462,8 +462,8 @@ function renderEnergyChart(){
 
 function renderTrendChart(){
 
-    const months = [...new Set(data.map(d => d.month))].sort();
-
+    const data = DashboardCache.filtered;
+    
     const values = months.map(m =>
         data.filter(r => r.month === m)
             .reduce((s,r)=>s + Number(r.total_emission||0),0)
@@ -474,7 +474,8 @@ function renderTrendChart(){
     );
 
     const theme = window.ChartThemeEngine.get();
-
+    safeDestroy(trendChart);
+    
     const gradient = trendChart?.ctx?.createLinearGradient(0,0,0,400);
 
     if (gradient) {
@@ -482,8 +483,7 @@ function renderTrendChart(){
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
-      safeDestroy(trendChart);
-    
+      
         const ctx = document.getElementById("trendChart").getContext("2d");
 
         trendChart = new Chart(ctx, {
@@ -515,8 +515,8 @@ function renderTrendChart(){
 
 function renderFacilityChart(){
 
-    const map = {};
-
+    const data = DashboardCache.filtered;
+    
     data.forEach(r=>{
         const key = r.facility_name_display;
         if(!key) return;
@@ -529,15 +529,14 @@ function renderFacilityChart(){
     const values = sorted.map(d=>d[1]);
 
     const theme = window.ChartThemeEngine.get();
-
+    safeDestroy(trendChart);
+    
     const gradient = facilityChart?.ctx?.createLinearGradient(0,0,0,400);
 
     if (gradient) {
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
-    
-    safeDestroy(trendChart);
 
         const ctx = document.getElementById("facilityChart").getContext("2d");
 
