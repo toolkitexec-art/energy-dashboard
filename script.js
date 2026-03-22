@@ -360,7 +360,11 @@ function renderFacilityChart(data){
 EXPORT
 ========================= */
 // 1. Fungsi exportPDF → TARUH DI SINI
+
 async function exportPDF(){
+
+    document.body.classList.remove("dark");
+    document.body.classList.add("light");
 
     window.isExportMode = true;
 
@@ -385,6 +389,9 @@ async function exportPDF(){
     if(trendChart) trendChart.update();
     if(facilityChart) facilityChart.update();
 
+    document.body.classList.remove("light");
+    document.body.classList.add("dark");
+    
     window.open("preview.html","_blank");
 }
 
