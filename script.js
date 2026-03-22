@@ -294,8 +294,8 @@ function renderEnergyChart(data){
 
     const gradient=ctx.createLinearGradient(0,0,0,400);
     gradient.addColorStop(0, theme.gradientBase[0]);
-    gradient.addColorStop(0.5,"#3b82f6");
-    gradient.addColorStop(1,"#1e293b");
+    gradient.addColorStop(0.5,theme.gradientBase[1]);
+    gradient.addColorStop(1,theme.gradientBase[2]);
 
     const theme = window.ChartThemeEngine.get();
     
