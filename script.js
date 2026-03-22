@@ -80,12 +80,6 @@ function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
 
     applyThemeToAllCharts();
-
-    requestAnimationFrame(() => {
-        renderEnergyChart();
-        renderTrendChart();
-        renderFacilityChart();
-    });
 }
 
 const INDUSTRY_AVG=0.42
@@ -315,6 +309,12 @@ function renderAll(){
 /* =========================
 UTILS
 ========================= */
+function safeDestroy(chart){
+    if(chart){
+        chart.destroy();
+    }
+}
+
 function sum(data,field){
     return data.reduce((s,r)=>s+Number(r[field]||0),0);
 }
@@ -517,21 +517,9 @@ gradient.addColorStop(1, theme.gradientBase[2]);
 function renderFacilityChart(){
 
     safeDestroy(facilityChart);
-    const data = DashboardCache.filtered;
     
-    const map = {};
+    const { labels, values } = DashboardCache.facility;
     
-    data.forEach(r=>{
-        const key = r.facility_name_display;
-        if(!key) return;
-        map[key] = (map[key]||0) + Number(r.total_emission||0);
-    });
-
-    const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1]);
-
-    const facilities = sorted.map(d=>d[0]);
-    const values = sorted.map(d=>d[1]);
-
     const ctx = document.getElementById("facilityChart").getContext("2d");
 
     const gradient = ctx.createLinearGradient(0,0,0,400);
