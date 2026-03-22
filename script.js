@@ -415,7 +415,7 @@ CHARTS (VIEW BASED)
 function renderEnergyChart(){
 
     const data = DashboardCache.filtered;
-    
+    const labels = [...new Set(data.map(d => d.energy_type_record))];    
     const values = labels.map(type =>
         data
             .filter(r => r.energy_type_record === type)
@@ -463,7 +463,7 @@ function renderEnergyChart(){
 function renderTrendChart(){
 
     const data = DashboardCache.filtered;
-    
+    const months = [...new Set(data.map(d => d.month))].sort();
     const values = months.map(m =>
         data.filter(r => r.month === m)
             .reduce((s,r)=>s + Number(r.total_emission||0),0)
@@ -516,7 +516,7 @@ function renderTrendChart(){
 function renderFacilityChart(){
 
     const data = DashboardCache.filtered;
-    
+    const map = {};
     data.forEach(r=>{
         const key = r.facility_name_display;
         if(!key) return;
