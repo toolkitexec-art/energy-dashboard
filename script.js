@@ -79,6 +79,107 @@ const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = 3;
+/* =========================
+STEP 7.1 - CACHE SYSTEM
+========================= */
+const DashboardCache = {
+    raw: [],
+    filtered: [],
+    energy: null,
+    trend: null,
+    facility: null,
+    kpi: null
+};
+
+function buildCache(data){
+    DashboardCache.raw = data;
+    DashboardCache.filtered = data;
+    recomputeDerived(data);
+}
+
+function recomputeDerived(data){
+    DashboardCache.energy = computeEnergy(data);
+    DashboardCache.trend = computeTrend(data);
+    DashboardCache.facility = computeFacility(data);
+    DashboardCache.kpi = computeKPI(data);
+}
+function computeEnergy(data){
+
+    const map = {};
+
+    for(const r of data){
+        const k = r.energy_type_record;
+        if(!k) continue;
+
+        map[k] = (map[k] || 0) + Number(r.total_emission || 0);
+    }
+
+    const labels = Object.keys(map);
+    const values = Object.values(map);
+    const total = values.reduce((a,b)=>a+b,0);
+
+    return { labels, values, total };
+        }
+function computeTrend(data){
+
+    const map = {};
+
+    for(const r of data){
+        const m = r.month;
+        if(!m) continue;
+
+        map[m] = (map[m] || 0) + Number(r.total_emission || 0);
+    }
+
+    const sorted = Object.entries(map)
+        .sort((a,b)=>new Date(a[0]) - new Date(b[0]));
+
+    return {
+        labels: sorted.map(d =>
+            new Date(d[0]).toLocaleString("en",{month:"long",year:"numeric"})
+        ),
+        values: sorted.map(d => d[1])
+    };
+}
+function computeFacility(data){
+
+    const map = {};
+
+    for(const r of data){
+        const f = r.facility_name_display;
+        if (!f || f.trim() === "") continue;
+
+        map[f] = (map[f] || 0) + Number(r.total_emission || 0);
+    }
+
+    const sorted = Object.entries(map)
+        .sort((a,b)=>b[1]-a[1]);
+
+    return {
+        labels: sorted.map(d=>d[0]),
+        values: sorted.map(d=>d[1])
+    };
+   }
+function computeKPI(data){
+
+    let usage = 0;
+    let cost = 0;
+    let emission = 0;
+
+    for(const r of data){
+
+        const u = Number(r.total_usage || 0);
+        const c = Number(r.total_cost || 0);
+        const e = Number(r.total_emission || 0);
+       
+        usage += u;
+        cost += c;
+        emission += e;
+    }
+
+    return { usage, cost, emission };
+    }
+
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -130,41 +231,70 @@ function populateFilters(data){
         monthSelect.innerHTML+=`<option value="${m}">${label}</option>`;
     });
 
-    facilitySelect.addEventListener("change",()=>applyFilters(data));
-    monthSelect.addEventListener("change",()=>applyFilters(data));
-}
+    facilitySelect.addEventListener("change",triggerApplyFilters);
+    monthSelect.addEventListener("change",triggerApplyFilters);
+    }
 
 
 /* =========================
 APPLY FILTER
 ========================= */
-function applyFilters(data){
+let filterTimeout;
 
-    let facility=facilitySelect.value;
-    let month=monthSelect.value;
+function triggerApplyFilters(){
 
-    let filtered=data;
+    clearTimeout(filterTimeout);
 
-    if(facility!=="all"){
-        filtered=filtered.filter(d=>d.facility_name_display===facility);
-    }
-
-    if(month!=="all"){
-        filtered=filtered.filter(d=>d.month===month);
-    }
-
-    lastData = filtered;
-    
-    renderKPI(filtered);
-    renderBenchmark(filtered);
-    renderEfficiency(filtered);
-    renderReduction(filtered);
-    renderSaving(filtered);
-    renderEnergyChart(filtered);
-    renderTrendChart(filtered);
-    renderFacilityChart(filtered);
+    filterTimeout = setTimeout(()=>{
+        applyFilters();
+    }, 80);
 }
 
+function applyFilters(){
+
+    const facility = facilitySelect.value;
+    const month = monthSelect.value;
+
+    let data = DashboardCache.raw;
+
+    if(facility !== "all"){
+        data = data.filter(d =>
+            d.facility_name_display === facility
+        );
+    }
+
+    if(month !== "all"){
+        data = data.filter(d =>
+            d.month === month
+        );
+    }
+
+    DashboardCache.filtered = data;
+
+    recomputeDerived(data);
+
+    renderAll(data);
+}
+function renderAll(){
+
+    if(renderLock) return;
+    renderLock = true;
+
+    const data = DashboardCache.filtered;
+
+    renderKPI(data);
+    renderBenchmark(data);
+    renderEfficiency(data);
+    renderReduction(data);
+    renderSaving(data);
+
+    renderEnergyChart();
+    renderTrendChart();
+    renderFacilityChart();
+    
+    renderLock = false;
+    
+}
 
 /* =========================
 UTILS
@@ -177,7 +307,15 @@ function safeDivide(a,b){
     if(!b||b===0) return 0;
     return a/b;
 }
-
+function waitChartsReady(){
+    return new Promise(resolve => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                resolve();
+            });
+        });
+    });
+}
 
 /* =========================
 KPI
@@ -274,7 +412,7 @@ function renderSaving(data){
 /* =========================
 CHARTS (VIEW BASED)
 ========================= */
-function renderEnergyChart(data){
+function renderEnergyChart(){
 
     const labels = [...new Set(data.map(d => d.energy_type_record))];
 
@@ -296,8 +434,8 @@ function renderEnergyChart(data){
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
+    safeDestroy(trendChart);
 
-    if (!energyChart) {
         const ctx = document.getElementById("stackedChart").getContext("2d");
 
         energyChart = new Chart(ctx, {
@@ -322,7 +460,7 @@ function renderEnergyChart(data){
     energyChart.update();
 }
 
-function renderTrendChart(data){
+function renderTrendChart(){
 
     const months = [...new Set(data.map(d => d.month))].sort();
 
@@ -344,8 +482,8 @@ function renderTrendChart(data){
         gradient.addColorStop(0.5, theme.gradientBase[1]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
-
-    if (!trendChart) {
+      safeDestroy(trendChart);
+    
         const ctx = document.getElementById("trendChart").getContext("2d");
 
         trendChart = new Chart(ctx, {
@@ -375,7 +513,7 @@ function renderTrendChart(data){
     trendChart.update();
 }
 
-function renderFacilityChart(data){
+function renderFacilityChart(){
 
     const map = {};
 
@@ -398,8 +536,9 @@ function renderFacilityChart(data){
         gradient.addColorStop(0, theme.gradientBase[0]);
         gradient.addColorStop(1, theme.gradientBase[2]);
     }
+    
+    safeDestroy(trendChart);
 
-    if (!facilityChart) {
         const ctx = document.getElementById("facilityChart").getContext("2d");
 
         facilityChart = new Chart(ctx, {
@@ -465,21 +604,23 @@ function createExportButton(){
     btn.style.cursor="pointer";
     btn.style.zIndex="999";
 
-    btn.addEventListener("click",exportPDF);
-
-    document.body.appendChild(btn);
-}
+    btn.addEventListener("click", () => {
+    window.open("preview.html", "_blank");
+});
 
 function setChartTheme(mode){
 
     window.ChartThemeEngine.mode = mode;
 
-    if(lastData.length === 0) return;
+    applyThemeToAllCharts();
 
-    renderEnergyChart(lastData);
-    renderTrendChart(lastData);
-    renderFacilityChart(lastData);
+    requestAnimationFrame(() => {
+        renderEnergyChart();
+        renderTrendChart();
+        renderFacilityChart();
+    });
 }
+
 /* =========================
 INIT
 ========================= */
