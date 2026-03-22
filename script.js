@@ -20,9 +20,25 @@ window.ChartThemeEngine = {
             isExport,
             textColor: isExport ? "#000" : "#fff",
             mutedText: isExport ? "#111" : "#e5e7eb",
-            gridColor: isExport ? "#ddd" : "#1f2937"
+            gridColor: isExport ? "#ddd" : "#1f2937",
+       
+            energyBar: isExport ? "#2563eb" : "#60a5fa",
+            trendLine: isExport ? "#f97316" : "#fb923c",
+            facilityBar: isExport ? "#7c2d12" : "#fb923c",
+
+            gradientBase: isExport
+                ? [
+                    "rgba(37,99,235,0.9)",
+                    "rgba(30,58,138,0.7)",
+                    "rgba(255,255,255,0.2)"
+                ]
+                : [
+                    "rgba(59,130,246,0.9)",
+                    "rgba(30,41,59,0.7)",
+                    "rgba(2,6,23,0.9)"
+                ]
         };
-    },
+},
 
     applyToChart(chart) {
         const theme = this.get();
@@ -30,13 +46,15 @@ window.ChartThemeEngine = {
         chart.options.scales.x.ticks.color = theme.textColor;
         chart.options.scales.y.ticks.color = theme.textColor;
 
+        chart.options.scales.x.grid.color = theme.gridColor;
+        chart.options.scales.y.grid.color = theme.gridColor;
+        
         if (chart.options.plugins?.datalabels) {
             chart.options.plugins.datalabels.color = theme.mutedText;
         }
 
         chart.update();
     }
-};
 
 let lastData = [];
 let energyChart;
@@ -310,28 +328,28 @@ function renderEnergyChart(data){
  }        
 function renderTrendChart(data){
 
-    const months=[...new Set(data.map(d=>d.month))].sort();
+    const months = [...new Set(data.map(d => d.month))].sort();
 
-    const values=months.map(m=>
+    const values = months.map(m =>
         data
-        .filter(r=>r.month===m)
-        .reduce((s,r)=>s+Number(r.total_emission||0),0)
+            .filter(r => r.month === m)
+            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
     );
 
-    const monthLabels=months.map(m=>
-        new Date(m).toLocaleString("en",{month:"long"})
+    const monthLabels = months.map(m =>
+        new Date(m).toLocaleString("en", { month: "long" })
     );
 
-    const ctx=document.getElementById("trendChart").getContext("2d");
+    const ctx = document.getElementById("trendChart").getContext("2d");
 
-    if(trendChart) trendChart.destroy();
-
-    const gradient=ctx.createLinearGradient(0,0,0,400);
-    gradient.addColorStop(0,"rgba(251,146,60,0.9)");
-    gradient.addColorStop(0.5,"rgba(249,115,22,0.7)");
-    gradient.addColorStop(1,"rgba(2,6,23,0.9)");
+    if (trendChart) trendChart.destroy();
 
     const theme = window.ChartThemeEngine.get();
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, theme.gradientBase[0]);
+    gradient.addColorStop(0.5, theme.gradientBase[1]);
+    gradient.addColorStop(1, theme.gradientBase[2]);
 
     trendChart = new Chart(ctx, {
         type: "line",
@@ -339,7 +357,7 @@ function renderTrendChart(data){
             labels: monthLabels,
             datasets: [{
                 data: values,
-                borderColor: "#fb923c",
+                borderColor: theme.trendLine,
                 backgroundColor: gradient,
                 fill: true,
                 tension: 0.4,
@@ -353,61 +371,72 @@ function renderTrendChart(data){
             },
             scales: {
                 x: {
-                    ticks: { color: theme.textColor }
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
                 },
                 y: {
-                    ticks: { color: theme.textColor }
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
                 }
             }
         }
     });
-}
+ }
 
 function renderFacilityChart(data){
 
-    const facilities=[...new Set(data.map(d=>d.facility_name_display))];
+    const facilities = [...new Set(data.map(d => d.facility_name_display))];
 
-    const values=facilities.map(f=>
+    const values = facilities.map(f =>
         data
-        .filter(r=>r.facility_name_display===f)
-        .reduce((s,r)=>s+Number(r.total_emission||0),0)
+            .filter(r => r.facility_name_display === f)
+            .reduce((s, r) => s + Number(r.total_emission || 0), 0)
     );
 
-    const ctx=document.getElementById("facilityChart").getContext("2d");
+    const ctx = document.getElementById("facilityChart").getContext("2d");
 
-    if(facilityChart) facilityChart.destroy();
-
-    const gradient=ctx.createLinearGradient(0,0,0,400);
-    gradient.addColorStop(0,"#fb923c");
-    gradient.addColorStop(1,"#7c2d12");
+    if (facilityChart) facilityChart.destroy();
 
     const theme = window.ChartThemeEngine.get();
 
-    facilityChart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:facilities,
-            datasets:[{
-                data:values,
-                backgroundColor:gradient,
-                borderRadius:6
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, theme.gradientBase[0]);
+    gradient.addColorStop(1, theme.gradientBase[2]);
+
+    facilityChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: facilities,
+            datasets: [{
+                data: values,
+                backgroundColor: theme.facilityBar,
+                borderRadius: 6
             }]
         },
         options: {
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                datalabels: {
+                    color: theme.mutedText,
+                    anchor: "end",
+                    align: "top",
+                    font: { weight: "600" },
+                    formatter: v => v.toFixed(2)
+                }
             },
             scales: {
                 x: {
-                    ticks: { color: theme.textColor }
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
                 },
                 y: {
-                    ticks: { color: theme.textColor }
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
                 }
             }
         }
     });
-}
+ }
 
 /* =========================
 EXPORT
