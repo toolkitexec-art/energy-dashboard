@@ -365,43 +365,40 @@ function renderFacilityChart(data){
 /* =========================
 EXPORT
 ========================= */
-// 1. Fungsi exportPDF → TARUH DI SINI
-
 async function exportPDF(){
 
+    // 1. set mode export dulu
     window.isExportMode = true;
 
+    // 2. update chart
     if(energyChart) energyChart.update();
     if(trendChart) trendChart.update();
     if(facilityChart) facilityChart.update();
 
-    await new Promise(r => setTimeout(r, 300));
-    
+    // 3. tunggu render benar-benar selesai
+    await new Promise(r => setTimeout(r, 400));
+
+    // 4. ambil canvas
     const charts = Array.from(document.querySelectorAll("canvas"))
         .filter(c => c.width > 0 && c.height > 0);
+
     const images = [];
 
     charts.forEach(canvas=>{
-    const scale = 2;
+        const scale = 2;
 
-    const width = canvas.width;
-    const height = canvas.height;
+        const tempCanvas = document.createElement("canvas");
+        const tempCtx = tempCanvas.getContext("2d");
 
-    const tempCanvas = document.createElement("canvas");
-    const tempCtx = tempCanvas.getContext("2d");
+        tempCanvas.width = canvas.width * scale;
+        tempCanvas.height = canvas.height * scale;
 
-    const tempCanvas = document.createElement("canvas");
-    const tempCtx = tempCanvas.getContext("2d");
+        tempCtx.scale(scale, scale);
+        tempCtx.drawImage(canvas, 0, 0);
 
-    tempCanvas.width = width * scale;
-    tempCanvas.height = height * scale;
+        images.push(tempCanvas.toDataURL("image/png", 1.0));
+    });
 
-    tempCtx.scale(scale, scale);
-    tempCtx.drawImage(canvas, 0, 0);
-
-    images.push(tempCanvas.toDataURL("image/png", 1.0));
-});
-    
     localStorage.setItem("helixonCharts", JSON.stringify(images));
 
     window.isExportMode = false;
@@ -410,9 +407,6 @@ async function exportPDF(){
     if(trendChart) trendChart.update();
     if(facilityChart) facilityChart.update();
 
-    document.body.classList.remove("light");
-    document.body.classList.add("dark");
-    
     window.open("preview.html","_blank");
 }
 
