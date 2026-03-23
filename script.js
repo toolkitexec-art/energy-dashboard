@@ -540,7 +540,10 @@ function getCommonOptions(){
 
     color: "#fff",
 
-    backgroundColor: "rgba(0,0,0,0.7)", // 🔥 kunci utama
+    backgroundColor: "rgba(0,0,0,0.85)", // 🔥 kunci utama
+    borderColor: "#fff",                 // 🔥 ini pembeda
+    borderWidth: 1,
+   
     borderRadius: 4,
     padding:{
         top:2,
