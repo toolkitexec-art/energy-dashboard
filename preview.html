@@ -119,6 +119,8 @@ PDF CONTAINER (FORCE CLEAN)
     width:100%;
     max-width:700px;
     height:auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges; 
 }
 </style>
 
@@ -133,68 +135,33 @@ PDF CONTAINER (FORCE CLEAN)
 /* =========================
 GET DATA
 ========================= */
-const raw = localStorage.getItem("helixon_report");
+const img = localStorage.getItem("helixon_snapshot");
 
-if(!raw){
-    document.body.innerHTML = "<h2 style='color:white'>No report data</h2>";
-    throw new Error("NO DATA");
+if(!img){
+    document.body.innerHTML = "<h2 style='color:white'>No snapshot data</h2>";
+    throw new Error("NO SNAPSHOT");
 }
 
-const data = JSON.parse(raw);
-
-/* =========================
-RENDER
-========================= */
-const report = document.getElementById("report");
-
-report.innerHTML = `
+document.getElementById("report").innerHTML = `
 <div id="pdf-content">
 
-<div class="page">
-<h2>Helixon Energy Intelligence Report</h2>
+    <div class="page">
+        <h2 style="color:white">Helixon Energy Intelligence Report</h2>
 
-<p>
-Report Date: ${data.date}<br>
-Facility Filter: ${data.facility}<br>
-Month Filter: ${data.month}
-</p>
-
-<div class="kpi-grid">
-${data.kpi || ""}
-</div>
-
-<div class="analytics-grid">
-${data.analytics || ""}
-</div>
-
-<h3>Energy Type Comparison</h3>
-${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>No chart</p>"}
-</div>
-
-<div class="page chart-page">
-<h3>Emission Trend</h3>
-${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>No chart</p>"}
-</div>
-
-<div class="page chart-page">
-<h3>Facility Comparison</h3>
-${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p>"}
-</div>
+        <img src="${img}" style="
+            width:100%;
+            max-width:794px;
+            display:block;
+        ">
+    </div>
 
 </div>
 `;
 
-/* =========================
-DOWNLOAD PDF
-========================= */
+/* DOWNLOAD PDF */
 document.getElementById("download").onclick = () => {
 
     const el = document.getElementById("pdf-content");
-
-    if(!el || el.innerHTML.trim() === ""){
-        alert("PDF content empty");
-        return;
-    }
 
     html2pdf().set({
         margin:[10,10,10,10],
@@ -202,20 +169,15 @@ document.getElementById("download").onclick = () => {
         image:{type:"png",quality:1},
         html2canvas:{
             scale:3,
-            dpi:300,
+            dpi: 300,
             useCORS:true,
-            width:794,
-            letterRendering:true
+            backgroundColor:"#ffffff",
+            letterRendering: true,
+            scrollY: 0
         },
         jsPDF:{
             unit:"px",
-            format:[794,1123],
-            orientation:"portrait"
-        },
-        pagebreak:{mode:["css","legacy"]}
+            format:[794,1123]
+        }
     }).from(el).save();
 };
-</script>
-
-</body>
-</html>
