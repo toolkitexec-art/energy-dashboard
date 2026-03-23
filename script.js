@@ -73,6 +73,7 @@ function applyThemeToAllCharts() {
 function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
 
+    applyThemeToAllCharts();
     if (!DashboardCache.filtered.length) return;
 
     renderEnergyChart();
@@ -211,7 +212,7 @@ async function loadDashboard(){
 
     populateFilters(data);
     buildCache(data);
-    applyFilters(data);
+    applyFilters();
     createExportButton();
 }
 
