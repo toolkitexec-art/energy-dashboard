@@ -634,6 +634,33 @@ document.body.appendChild(btn);
 
 }
 
+function exportPDF(){
+
+    const win = window.open("preview.html", "_blank");
+
+    if(!win){
+        alert("Popup diblok browser. Aktifkan popup untuk site ini.");
+        return;
+    }
+
+    const el = document.getElementById("kpi-container").parentElement;
+
+    html2canvas(el, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: "#020617"
+    }).then(canvas => {
+
+        const img = canvas.toDataURL("image/png", 1.0);
+
+        localStorage.setItem("helixon_snapshot", img);
+
+        setTimeout(() => {
+            win.location.href = "preview.html";
+        }, 50);
+
+    });
+    }
 /* =========================
 INIT
 ========================= */
