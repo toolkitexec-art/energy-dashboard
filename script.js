@@ -473,28 +473,39 @@ gradient.addColorStop(0, theme.gradientBase[0]);
 gradient.addColorStop(0.5, theme.gradientBase[1]);
 gradient.addColorStop(1, theme.gradientBase[2]);
     
-        trendChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    borderColor: theme.trendLine,
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointBackgroundColor: theme.trendLine
-                }]
-            },
-            options: getCommonOptions(),
-            plugins: [ChartDataLabels]
-        });
+trendChart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels,
+        datasets: [{
+            data: values,
+            borderColor: theme.trendLine,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointBackgroundColor: theme.trendLine
+        }]
+    },
+    options: {
+        ...getCommonOptions(),
+        plugins: {
+            ...getCommonOptions().plugins,
+            datalabels: {
+                ...getCommonOptions().plugins.datalabels,
+                anchor: "end",
+                align: "top",
+                offset: 10
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
 
-        window.ChartThemeEngine.applyToChart(trendChart);
-    
+window.ChartThemeEngine.applyToChart(trendChart); 
 }
+
 function renderFacilityChart(){
 
     safeDestroy(facilityChart);
@@ -510,21 +521,32 @@ function renderFacilityChart(){
     gradient.addColorStop(1, theme.gradientBase[2]);
     
     facilityChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels,
-            datasets: [{
-                data: values,
-                backgroundColor: gradient,
-                borderRadius: 6
-            }]
-        },
-        options: getCommonOptions(),
-        plugins: [ChartDataLabels]
-    });
+    type: "bar",
+    data: {
+        labels,
+        datasets: [{
+            data: values,
+            backgroundColor: gradient,
+            borderRadius: 6
+        }]
+    },
+    options: {
+        ...getCommonOptions(),
+        plugins: {
+            ...getCommonOptions().plugins,
+            datalabels: {
+                ...getCommonOptions().plugins.datalabels,
+                anchor: "end",
+                align: "start",
+                offset: -4
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
 
-    window.ChartThemeEngine.applyToChart(facilityChart);
-}    
+window.ChartThemeEngine.applyToChart(facilityChart);
+}        
 
 function getCommonOptions(){
 
