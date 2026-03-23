@@ -435,9 +435,11 @@ function renderEnergyChart(){
     const theme = window.ChartThemeEngine.get();
     
     const canvas = document.getElementById("stackedChart");
-    canvas.height = canvas.height; // reset canvas
-
+    
     const ctx = canvas.getContext("2d");
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     
 energyChart = new Chart(ctx, {
     type: "bar",
@@ -469,6 +471,11 @@ energyChart = new Chart(ctx, {
     },
     options: getCommonOptions(),
     plugins: [ChartDataLabels]
+        
+onComplete: () => {
+energyChart.resize();
+ }
+    
 });
     
 window.ChartThemeEngine.applyToChart(energyChart);
