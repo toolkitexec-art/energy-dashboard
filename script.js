@@ -205,6 +205,7 @@ async function loadDashboard(){
     console.log("VIEW DATA:",data);
 
     populateFilters(data);
+    buildCache(data);
     applyFilters(data);
     createExportButton();
 }
@@ -423,17 +424,9 @@ CHARTS (VIEW BASED)
 function renderEnergyChart(){
 
     safeDestroy(energyChart);
-const data = DashboardCache.filtered;
-
-const labels = [...new Set(data.map(r => r.energy_type_record))];
-
-const values = labels.map(type =>
-    data
-        .filter(r => r.energy_type_record === type)
-        .reduce((s, r) => s + Number(r.total_emission || 0), 0)
-);
     
-    const total = values.reduce((a,b)=>a+b,0);
+    const { labels, values, total } = DashboardCache.energy;
+
     document.getElementById("energy-total").innerText = total.toFixed(2);
 
     const theme = window.ChartThemeEngine.get();
