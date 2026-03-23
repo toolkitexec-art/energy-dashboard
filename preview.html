@@ -145,14 +145,7 @@ const data = JSON.parse(raw);
 RENDER
 ========================= */
 const report = document.getElementById("report");
-report.innerHTML = `
-<h3 style="color:white">DEBUG ACTIVE</h3>
-<p style="color:white">Energy: ${data.charts?.energy ? "OK" : "NULL"}</p>
-<p style="color:white">Trend: ${data.charts?.trend ? "OK" : "NULL"}</p>
-<p style="color:white">Facility: ${data.charts?.facility ? "OK" : "NULL"}</p>
-`;
 
-    
 report.innerHTML = `
 <div id="pdf-content">
 
