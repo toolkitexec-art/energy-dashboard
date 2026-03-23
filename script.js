@@ -78,7 +78,7 @@ function setChartTheme(mode){
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
-Chart.defaults.devicePixelRatio = 3;
+Chart.defaults.devicePixelRatio = window.devicePixelRatio || 2;
 /* =========================
 STEP 7.1 - CACHE SYSTEM
 ========================= */
@@ -278,10 +278,11 @@ function applyFilters(){
 
 function renderAll(){
 
-    renderAll();
-    
     if(renderLock) return;
     renderLock = true;
+
+    try {
+        const data = DashboardCache.filtered;
 
         renderKPI(data);
         renderBenchmark(data);
@@ -396,8 +397,7 @@ function renderReduction(data){
 
     const el=document.getElementById("reduction-ai");
 
-    el.innerHTML=`<b>${reduction.toFixed(2)} tCOâ‚‚</b><br>Potential reduction`;
-
+    el.innerHTML=`<b>${reduction.toFixed(2)} tCO₂</b><br>Potential reduction`;
     el.parentElement.style.background="linear-gradient(135deg,#14532d,#020617)";
     el.parentElement.style.border="1px solid #22c55e";
 }
