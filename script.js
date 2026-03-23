@@ -495,8 +495,8 @@ trendChart = new Chart(ctx, {
             datalabels: {
                 ...getCommonOptions().plugins.datalabels,
                 anchor: "end",
-                align: "top",
-                offset: 15
+                align : "right",
+                offset: 10
             }
         }
     },
