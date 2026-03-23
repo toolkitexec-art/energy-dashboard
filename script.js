@@ -646,7 +646,11 @@ function exportPDF(){
         alert("Popup diblok browser. Aktifkan popup untuk site ini.");
         return;
     }
+     
+    document.body.style.transform = "translateZ(0)";
 
+    setTimeout(() => {
+    
     const el = document.getElementById("kpi-container").parentElement;
 
     html2canvas(el, {
@@ -663,7 +667,7 @@ function exportPDF(){
             win.location.href = "preview.html";
         });
     
-    },300); 
+    },400); 
 }
 /* =========================
 INIT
