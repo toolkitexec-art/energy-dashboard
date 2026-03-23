@@ -247,7 +247,7 @@ function triggerApplyFilters(){
 
     filterTimeout = setTimeout(()=>{
         applyFilters();
-    }, 80);
+    }, 120);
 }
 
 function applyFilters(){
