@@ -227,6 +227,35 @@ canvas{
     -webkit-text-fill-color:transparent;
 }
 
+/* ENERGY TYPE COMPARISON TABLE FIX */
+
+.energy-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.energy-table th {
+    text-align: left;
+    padding: 12px;
+    color: #f3f4f6;
+    background: rgba(30,41,59,0.6);
+    border-bottom: 1px solid rgba(148,163,184,0.2);
+    font-size: 13px;
+}
+
+.energy-table td {
+    padding: 12px;
+    color: #e5e7eb;
+    border-bottom: 1px solid rgba(148,163,184,0.12);
+    font-size: 13px;
+}
+
+.energy-table tr:hover {
+    background: rgba(255,255,255,0.04);
+}
 
 /* GLOBAL */
 
