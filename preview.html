@@ -51,9 +51,8 @@ PDF CONTAINER (FORCE CLEAN)
     margin-bottom:40px;
     padding:40px;
     box-sizing:border-box;
-    display:flex;
-    flex-direction:column;       /* 🔥 */
-    justify-content:center;      /* 🔥 CENTER VERTICAL */
+    flex-direction:column;       /* ðŸ”¥ */
+    justify-content:center;      /* ðŸ”¥ CENTER VERTICAL */
     align-items:center; 
     page-break-inside: avoid;
 }
@@ -119,8 +118,6 @@ PDF CONTAINER (FORCE CLEAN)
     width:100%;
     max-width:700px;
     height:auto;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges; 
 }
 </style>
 
@@ -135,33 +132,68 @@ PDF CONTAINER (FORCE CLEAN)
 /* =========================
 GET DATA
 ========================= */
-const img = localStorage.getItem("helixon_snapshot");
+const raw = localStorage.getItem("helixon_report");
 
-if(!img){
-    document.body.innerHTML = "<h2 style='color:white'>No snapshot data</h2>";
-    throw new Error("NO SNAPSHOT");
+if(!raw){
+    document.body.innerHTML = "<h2 style='color:white'>No report data</h2>";
+    throw new Error("NO DATA");
 }
 
-document.getElementById("report").innerHTML = `
+const data = JSON.parse(raw);
+
+/* =========================
+RENDER
+========================= */
+const report = document.getElementById("report");
+
+report.innerHTML = `
 <div id="pdf-content">
 
-    <div class="page">
-        <h2 style="color:white">Helixon Energy Intelligence Report</h2>
+<div class="page">
+<h2>Helixon Energy Intelligence Report</h2>
 
-        <img src="${img}" style="
-            width:100%;
-            max-width:794px;
-            display:block;
-        ">
-    </div>
+<p>
+Report Date: ${data.date}<br>
+Facility Filter: ${data.facility}<br>
+Month Filter: ${data.month}
+</p>
+
+<div class="kpi-grid">
+${data.kpi || ""}
+</div>
+
+<div class="analytics-grid">
+${data.analytics || ""}
+</div>
+
+<h3>Energy Type Comparison</h3>
+${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>No chart</p>"}
+</div>
+
+<div class="page chart-page">
+<h3>Emission Trend</h3>
+${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>No chart</p>"}
+</div>
+
+<div class="page chart-page">
+<h3>Facility Comparison</h3>
+${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p>"}
+</div>
 
 </div>
 `;
 
-/* DOWNLOAD PDF */
+/* =========================
+DOWNLOAD PDF
+========================= */
 document.getElementById("download").onclick = () => {
 
     const el = document.getElementById("pdf-content");
+
+    if(!el || el.innerHTML.trim() === ""){
+        alert("PDF content empty");
+        return;
+    }
 
     html2pdf().set({
         margin:[10,10,10,10],
@@ -169,15 +201,20 @@ document.getElementById("download").onclick = () => {
         image:{type:"png",quality:1},
         html2canvas:{
             scale:3,
-            dpi: 300,
+            dpi:300,
             useCORS:true,
-            backgroundColor:"#ffffff",
-            letterRendering: true,
-            scrollY: 0
+            width:794,
+            letterRendering:true
         },
         jsPDF:{
             unit:"px",
-            format:[794,1123]
-        }
+            format:[794,1123],
+            orientation:"portrait"
+        },
+        pagebreak:{mode:["css","legacy"]}
     }).from(el).save();
 };
+</script>
+
+</body>
+</html>
