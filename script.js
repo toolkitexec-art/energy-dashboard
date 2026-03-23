@@ -670,11 +670,15 @@ function exportPDF(){
 
         localStorage.setItem("helixon_snapshot", img);
 
-        setTimeout(() => {
-            win.location.href = "preview.html";
+            const win = window.open("preview.html", "_blank");
+
+            if(!win){
+                alert("Popup diblok browser. Aktifkan popup untuk site ini.");
+            }
+
         });
-    
-    },400); 
+
+    }, 400);
 }
 /* =========================
 INIT
