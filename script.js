@@ -76,6 +76,8 @@ const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
 Chart.defaults.devicePixelRatio = window.devicePixelRatio || 2;
+Chart.register(ChartDataLabels);
+
 /* =========================
 STEP 7.1 - CACHE SYSTEM
 ========================= */
