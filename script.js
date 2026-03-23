@@ -534,19 +534,31 @@ function getCommonOptions(){
         plugins:{
             legend:{display:false},
             datalabels:{
-                display: true,
-                clamp: true,        // 🔥 penting
-                clip: false,        // 🔥 penting
-                color: theme.isExport ? "#000" : "#ffffff",
-                textStrokeColor: "#000",
-                textStrokeWidth: 4,
-                anchor:"end",
-                align:"top",
-                offset: 6, 
-                padding:{ top:6 },
-                font:{weight:"700", size:11
-                },
-                formatter:v=>v.toFixed(2)
+    display: true,
+    clamp: true,
+    clip: false,
+
+    color: "#fff",
+
+    backgroundColor: "rgba(0,0,0,0.7)", // 🔥 kunci utama
+    borderRadius: 4,
+    padding:{
+        top:2,
+        bottom:2,
+        left:6,
+        right:6
+    },
+
+    anchor:"end",
+    align:"top",
+    offset: 6,
+
+    font:{
+        weight:"700",
+        size:11
+    },
+
+    formatter:v=>v.toFixed(2)
             }
         },
         scales:{
