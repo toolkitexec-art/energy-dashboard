@@ -179,6 +179,19 @@ function computeKPI(data){
     return { usage, cost, emission };
     }
 
+Chart.defaults.animation = false;
+Chart.defaults.devicePixelRatio = 2;
+
+let filterTimeout;
+
+function triggerApplyFilters(){
+
+    clearTimeout(filterTimeout);
+
+    filterTimeout = setTimeout(()=>{
+        applyFilters();
+    }, 120);
+}
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -239,16 +252,6 @@ function populateFilters(data){
 /* =========================
 APPLY FILTER
 ========================= */
-let filterTimeout;
-
-function triggerApplyFilters(){
-
-    clearTimeout(filterTimeout);
-
-    filterTimeout = setTimeout(()=>{
-        applyFilters();
-    }, 120);
-}
 
 function applyFilters(){
 
