@@ -627,8 +627,9 @@ function createExportButton(){
     btn.style.zIndex="999";
 
     btn.addEventListener("click", () => {
-    window.open("preview.html", "_blank");
-});
+        exportPDF(); // 🔥 INI YANG BENAR
+    });
+    
 document.body.appendChild(btn);
 
 }
