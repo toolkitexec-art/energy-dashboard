@@ -7,6 +7,9 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 
 const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
+
+const INDUSTRY_AVG=0.42
+const CARBON_PRICE=85
 Chart.defaults.devicePixelRatio = 3;
 
 let energyChart
@@ -36,9 +39,6 @@ function onAllChartsReady(){
         exportLocked = false;
     }
 }
-
-const INDUSTRY_AVG=0.42
-const CARBON_PRICE=85
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -298,7 +298,7 @@ function renderEnergyChart(data){
 });
             
 window.energyChart = energyChart;
-energyChart.update('none');
+/*energyChart.update('none');*/
 }    
 
 function renderTrendChart(data){
