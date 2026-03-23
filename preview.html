@@ -28,15 +28,13 @@ body{
     z-index:999;
 }
 
-/* =========================
-PDF CONTAINER (FORCE CLEAN)
-========================= */
+/* STRICT PDF ROOT */
 #pdf-content{
     background:white;
     color:black;
 }
 
-/* RESET DARK UI */
+/* HARD RESET (NO DARK INHERIT) */
 #pdf-content *{
     background:white !important;
     color:black !important;
@@ -45,75 +43,49 @@ PDF CONTAINER (FORCE CLEAN)
 
 /* PAGE */
 .page{
-    min-height:1123px;
     width:794px;
+    min-height:1123px;
     margin:auto;
     margin-bottom:40px;
     padding:40px;
     box-sizing:border-box;
-    flex-direction:column;       /* ðŸ”¥ */
-    justify-content:center;      /* ðŸ”¥ CENTER VERTICAL */
-    align-items:center; 
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
     page-break-inside: avoid;
 }
 
-/* LAST PAGE */
-.page:last-child{
-    page-break-after:auto;
+/* TEXT */
+.page h2, .page h3, .page p{
+    margin:10px 0;
+    text-align:center;
 }
 
-/* HEADER */
-.page h2{
-    margin-bottom:20px;
-}
-
-.page p{
-    margin-bottom:20px;
-    line-height:1.5;
-}
-
-    .page h3{
-    margin-bottom:20px;
-}
-    
 /* GRID */
-.kpi-grid{
+.kpi-grid, .analytics-grid{
+    width:100%;
     display:grid;
-    grid-template-columns:repeat(3,1fr);
     gap:12px;
-    margin-bottom:20px;
+    margin:20px 0;
+}
+
+.kpi-grid{
+    grid-template-columns:repeat(3,1fr);
 }
 
 .analytics-grid{
-    display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-bottom:20px;
 }
 
 /* CARD */
-.kpi-card,
-.analytics-card{
+.kpi-card, .analytics-card{
     border:1px solid #ccc;
     border-radius:8px;
     padding:12px;
 }
 
-/* CHART PAGE */
-.chart-page{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-}
-
-.chart-page h3{
-    margin-bottom:20px;
-    margin-bottom:20px;
-    text-align:center;
-}
-
-/* IMAGE */
+/* CHART */
 .page img{
     width:100%;
     max-width:700px;
@@ -130,78 +102,83 @@ PDF CONTAINER (FORCE CLEAN)
 
 <script>
 /* =========================
-GET DATA
+  SINGLE SOURCE LOCK
 ========================= */
 const raw = localStorage.getItem("helixonCharts");
 
 if(!raw){
-    document.body.innerHTML = "<h2 style='color:white'>No report data</h2>";
+    document.body.innerHTML = "<h2 style='color:white'>NO EXPORT DATA</h2>";
     throw new Error("NO DATA");
 }
 
 const data = JSON.parse(raw);
-    
+
+/* STRICT VALIDATION (NO FALLBACK ASSUMPTION) */
+if(!data.meta || !data.charts){
+    document.body.innerHTML = "<h2 style='color:white'>INVALID EXPORT STRUCTURE</h2>";
+    throw new Error("INVALID STRUCTURE");
+}
+
 /* =========================
-RENDER
+  RENDER ONLY FROM PAYLOAD
 ========================= */
 const report = document.getElementById("report");
 
 report.innerHTML = `
 <div id="pdf-content">
 
-<div class="page">
-<h2>Helixon Energy Intelligence Report</h2>
+    <div class="page">
+        <h2>Helixon Energy Intelligence Report</h2>
 
-<p>
-Report Date: ${data.date}<br>
-Facility Filter: ${data.facility}<br>
-Month Filter: ${data.month}
-</p>
+        <p>
+            Report Date: ${data.meta.date}<br>
+            Facility Filter: ${data.meta.facility}<br>
+            Month Filter: ${data.meta.month}
+        </p>
 
-<div class="kpi-grid">
-${data.kpi || ""}
-</div>
+        <div class="kpi-grid">
+            ${data.kpi}
+        </div>
 
-<div class="analytics-grid">
-${data.analytics || ""}
-</div>
+        <div class="analytics-grid">
+            ${data.analytics}
+        </div>
 
-<h3>Energy Type Comparison</h3>
-${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>No chart</p>"}
-</div>
+        <h3>Energy Type Comparison</h3>
+        ${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>NO CHART DATA</p>"}
+    </div>
 
-<div class="page chart-page">
-<h3>Emission Trend</h3>
-${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>No chart</p>"}
-</div>
+    <div class="page">
+        <h3>Emission Trend</h3>
+        ${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>NO CHART DATA</p>"}
+    </div>
 
-<div class="page chart-page">
-<h3>Facility Comparison</h3>
-${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p>"}
-</div>
+    <div class="page">
+        <h3>Facility Comparison</h3>
+        ${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>NO CHART DATA</p>"}
+    </div>
 
 </div>
 `;
 
 /* =========================
-DOWNLOAD PDF
+  PDF EXPORT (STRICT)
 ========================= */
 document.getElementById("download").onclick = () => {
 
     const el = document.getElementById("pdf-content");
 
-    if(!el || el.innerHTML.trim() === ""){
-        alert("PDF content empty");
+    if(!el){
+        alert("EMPTY EXPORT");
         return;
     }
 
     html2pdf().set({
         margin:[10,10,10,10],
         filename:"helixon-energy-report.pdf",
-        image:{type:"png",quality:1},
+        image:{type:"png", quality:1},
         html2canvas:{
             scale:3,
-            dpi:300,
             useCORS:true,
             width:794,
             letterRendering:true
@@ -214,6 +191,7 @@ document.getElementById("download").onclick = () => {
         pagebreak:{mode:["css","legacy"]}
     }).from(el).save();
 };
+
 </script>
 
 </body>
