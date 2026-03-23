@@ -644,42 +644,48 @@ function createExportButton(){
 document.body.appendChild(btn);
 
 }
-
 function exportPDF(){
 
-    const win = window.open("preview.html", "_blank");
+    const container = document.getElementById("kpi-container");
 
-    if(!win){
-        alert("Popup diblok browser. Aktifkan popup untuk site ini.");
+    if(!container){
+        console.error("kpi-container tidak ditemukan");
         return;
     }
-     
+
+    const el = container.parentElement;
+
+    if(!el){
+        console.error("parent element tidak ditemukan");
+        return;
+    }
+
     document.body.style.transform = "translateZ(0)";
 
     setTimeout(() => {
-    
-    const el = document.getElementById("kpi-container").parentElement;
 
-    html2canvas(el, {
-        scale: 3,
-        useCORS: true,
-        backgroundColor: "#020617"
-    }).then(canvas => {
+        html2canvas(el, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: "#020617",
+            logging: false
+        }).then(canvas => {
 
-        const img = canvas.toDataURL("image/png", 1.0);
+            const img = canvas.toDataURL("image/png", 1.0);
 
-        localStorage.setItem("helixon_snapshot", img);
+            localStorage.setItem("helixon_snapshot", img);
 
             const win = window.open("preview.html", "_blank");
 
             if(!win){
-                alert("Popup diblok browser. Aktifkan popup untuk site ini.");
+                alert("Popup diblok browser.");
             }
 
         });
 
     }, 400);
 }
+
 /* =========================
 INIT
 ========================= */
