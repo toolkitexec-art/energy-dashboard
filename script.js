@@ -16,7 +16,7 @@ let facilityChart
 let chartReady = false;
 let exportLocked = true;
 
-function isSystemReady(){
+/*function isSystemReady(){
     return (
         window.energyChart &&
         window.trendChart &&
@@ -25,7 +25,7 @@ function isSystemReady(){
         exportLocked === false
     );
 }
-
+*/
 function onAllChartsReady(){
     if(energyChart && trendChart && facilityChart){
         window.energyChart = energyChart;
