@@ -57,15 +57,15 @@ async function loadDashboard(){
        DEBUG COUNT (TARUH DI SINI)
     ========================= */
     const debug = document.createElement("div");
-    debug.style.color = "white";
+   
+    /*debug.style.color = "white";
     debug.style.fontSize = "14px";
     debug.innerText = "COUNT: " + data.length;
     
     debug.innerText += "\nFIRST ROW: " + JSON.stringify(data[0]);
 
     document.body.appendChild(debug);
-
-    /* ========================= */
+    */
     
     populateFilters(data);
     applyFilters(data);
