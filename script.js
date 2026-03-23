@@ -657,10 +657,10 @@ function exportPDF(){
 
         setTimeout(() => {
             win.location.href = "preview.html";
-        }, 50);
-
-    });
-    }
+        });
+    
+    },300); 
+}
 /* =========================
 INIT
 ========================= */
