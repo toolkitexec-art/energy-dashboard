@@ -286,11 +286,10 @@ function renderEnergyChart(data){
     },
     plugins:[ChartDataLabels]
 });
-    
-window.energyChart = energyChart;        
+            
+window.energyChart = energyChart;
 energyChart.update('none');
-onAllChartsReady();
-}
+}    
 
 function renderTrendChart(data){
 
@@ -337,7 +336,6 @@ function renderTrendChart(data){
     });
 window.trendChart = trendChart;
 trendChart.update('none');
-onAllChartsReady();
 }
 
 
@@ -378,9 +376,43 @@ function renderFacilityChart(data){
     });
 window.facilityChart = facilityChart;
 facilityChart.update('none');
-onAllChartsReady();
 }
 
+energyChart.update('none');
+trendChart.update('none');
+facilityChart.update('none');
+
+window.energyChart = energyChart;
+window.trendChart = trendChart;
+window.facilityChart = facilityChart;
+
+requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+        onAllChartsReady();
+    });
+});
+
+/* =========================
+  build export
+========================= */
+function buildExportPayload(){
+    return {
+        meta: {
+            date: new Date().toISOString().split("T")[0],
+            facility: document.getElementById("facility-select")?.value || "-",
+            month: document.getElementById("month-select")?.value || "-"
+        },
+
+        kpi: document.getElementById("kpi-container")?.innerHTML || "",
+        analytics: document.getElementById("analytics-container")?.innerHTML || "",
+
+        charts: {
+            energy: window.energyChart?.toBase64Image?.() || null,
+            trend: window.trendChart?.toBase64Image?.() || null,
+            facility: window.facilityChart?.toBase64Image?.() || null
+        }
+    };
+}
 
 /* =========================
 EXPORT
