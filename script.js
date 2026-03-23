@@ -496,7 +496,7 @@ trendChart = new Chart(ctx, {
                 ...getCommonOptions().plugins.datalabels,
                 anchor: "end",
                 align: "top",
-                offset: 10
+                offset: 15
             }
         }
     },
@@ -538,7 +538,7 @@ function renderFacilityChart(){
                 ...getCommonOptions().plugins.datalabels,
                 anchor: "end",
                 align: "start",
-                offset: -4
+                offset: -8
             }
         }
     },
