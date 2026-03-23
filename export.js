@@ -18,5 +18,5 @@ function exportPDF(){
 
         window.open("preview.html", "_blank");
 
-    }, 500); // <<< penting
+    }, 800); // <<< penting
 }
