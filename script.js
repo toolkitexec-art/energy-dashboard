@@ -180,6 +180,7 @@ function computeKPI(data){
     }
 
 Chart.defaults.animation = false;
+Chart.defaults.responsive = false;
 Chart.defaults.devicePixelRatio = 2;
 
 let filterTimeout;
