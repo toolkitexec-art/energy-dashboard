@@ -1,15 +1,18 @@
 function exportPDF(){
 
-const charts = document.querySelectorAll("canvas");
+    const energy = document.getElementById("stackedChart");
+    const trend = document.getElementById("trendChart");
+    const facility = document.getElementById("facilityChart");
 
-const images = [];
+    const data = {
+        charts: {
+            energy: energy ? energy.toDataURL("image/png", 1.0) : null,
+            trend: trend ? trend.toDataURL("image/png", 1.0) : null,
+            facility: facility ? facility.toDataURL("image/png", 1.0) : null
+        }
+    };
 
-charts.forEach(canvas=>{
-images.push(canvas.toDataURL("image/png",1.0));
-});
+    localStorage.setItem("helixonCharts", JSON.stringify(data));
 
-localStorage.setItem("helixonCharts", JSON.stringify(images));
-
-window.open("preview.html","_blank");
-
+    window.open("preview.html", "_blank");
 }
