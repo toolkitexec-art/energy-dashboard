@@ -526,6 +526,8 @@ function getCommonOptions(){
             legend:{display:false},
             datalabels:{
                 color: theme.mutedText,
+                textStrokeColor: theme.isExport ? "#fff" : "#000",
+                textStrokeWidth: 2,
                 anchor:"end",
                 align:"top",
                 font:{weight:"600"},
