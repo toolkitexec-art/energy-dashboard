@@ -243,23 +243,25 @@ function renderEnergyChart(data){
                 borderRadius:6
             }]
         },
-        plugins:[ChartDataLabels],
         options:{
-            plugins:{
-                legend:{display:false},
-                datalabels:{
-                    color:"#e5e7eb",
-                    anchor:"end",
-                    align:"top",
-                    font:{weight:"600"},
-                    formatter:v=>v.toFixed(2)
-                }
-            },
-            scales:{y:{beginAtZero:true}}
-        }
-    });
-}
+        plugins:{
+            legend:{display:false},
+            datalabels:{
+                color:"#e5e7eb",
+                anchor:"end",
+                align:"top",
+                font:{weight:"600"},
+                formatter:v=>v.toFixed(2)
+            }
+        },
+        scales:{y:{beginAtZero:true}}
+    },
+    plugins:[ChartDataLabels]
+});
+        
+window.energyChart = energyChart;        
 
+}
 
 function renderTrendChart(data){
 
