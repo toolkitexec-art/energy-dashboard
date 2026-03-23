@@ -429,7 +429,11 @@ function renderEnergyChart(){
     document.getElementById("energy-total").innerText = total.toFixed(2);
 
     const theme = window.ChartThemeEngine.get();
-    const ctx = document.getElementById("stackedChart").getContext("2d");
+    
+    const canvas = document.getElementById("stackedChart");
+    canvas.height = canvas.height; // reset canvas
+
+    const ctx = canvas.getContext("2d"); // 🔥 pakai canvas, bukan getElement lagi
     const gradient = ctx.createLinearGradient(0,0,0,400);
        
         gradient.addColorStop(0, theme.gradientBase[0]);
@@ -446,7 +450,8 @@ function renderEnergyChart(){
                     borderRadius: 6
                 }]
             },
-            options: getCommonOptions()
+            options: getCommonOptions(),
+            plugins: [ChartDataLabels]
         });
 
         window.ChartThemeEngine.applyToChart(energyChart);
@@ -483,7 +488,8 @@ gradient.addColorStop(1, theme.gradientBase[2]);
                     pointBackgroundColor: theme.trendLine
                 }]
             },
-            options: getCommonOptions()
+            options: getCommonOptions(),
+            plugins: [ChartDataLabels]
         });
 
         window.ChartThemeEngine.applyToChart(trendChart);
@@ -513,7 +519,8 @@ function renderFacilityChart(){
                 borderRadius: 6
             }]
         },
-        options: getCommonOptions()
+        options: getCommonOptions(),
+        plugins: [ChartDataLabels]
     });
 
     window.ChartThemeEngine.applyToChart(facilityChart);
@@ -528,11 +535,15 @@ function getCommonOptions(){
             legend:{display:false},
             datalabels:{
                 display: true,
+                clamp: true,        // 🔥 penting
+                clip: false,        // 🔥 penting
                 color: theme.isExport ? "#000" : theme.mutedText,
                 textStrokeColor: theme.isExport ? "#000" : "#000",
                 textStrokeWidth: 3,
                 anchor:"end",
                 align:"top",
+                offset: 6, 
+                padding:{ top:6 },
                 font:{weight:"700", size:11
                 },
                 formatter:v=>v.toFixed(2)
