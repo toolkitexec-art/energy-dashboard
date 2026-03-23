@@ -73,6 +73,8 @@ function applyThemeToAllCharts() {
 function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
 
+    if (!DashboardCache.filtered.length) return;
+
     renderEnergyChart();
     renderTrendChart();
     renderFacilityChart();
@@ -461,7 +463,7 @@ function renderTrendChart(){
 
     safeDestroy(trendChart);
 
-const { labels, values } = DashboardCache.trend;
+const { labels = [], values = [] } = DashboardCache.trend || {};
     
 const ctx = document.getElementById("trendChart").getContext("2d");
 
@@ -497,7 +499,7 @@ function renderFacilityChart(){
 
     safeDestroy(facilityChart);
     
-    const { labels, values } = DashboardCache.facility;
+    const { labels = [], values = [] } = DashboardCache.facility || {};
     
     const ctx = document.getElementById("facilityChart").getContext("2d");
 
