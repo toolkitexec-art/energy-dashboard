@@ -140,7 +140,11 @@ if(!raw){
 }
 
 const data = JSON.parse(raw);
-alert(JSON.stringify(data.charts));
+alert(
+  "energy: " + (data.charts?.energy ? "OK" : "NULL") + "\n" +
+  "trend: " + (data.charts?.trend ? "OK" : "NULL") + "\n" +
+  "facility: " + (data.charts?.facility ? "OK" : "NULL")
+);
     
 /* =========================
 RENDER
