@@ -1,22 +1,30 @@
 function exportPDF(){
 
-    setTimeout(() => {
+    // HARD GATE: pastikan chart sudah siap
+    if(!window.energyChart || !window.trendChart || !window.facilityChart){
+        console.error("EXPORT BLOCKED: CHART NOT READY");
+        return;
+    }
 
-        const energy = document.getElementById("stackedChart");
-        const trend = document.getElementById("trendChart");
-        const facility = document.getElementById("facilityChart");
+    // optional safety delay untuk canvas flush terakhir
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
 
-        const data = {
-            charts: {
-                energy: energy ? energy.toDataURL("image/png", 1.0) : null,
-                trend: trend ? trend.toDataURL("image/png", 1.0) : null,
-                facility: facility ? facility.toDataURL("image/png", 1.0) : null
+            const payload = buildExportPayload();
+
+            if(!payload || !payload.charts){
+                console.error("EXPORT FAILED: INVALID PAYLOAD");
+                return;
             }
-        };
 
-        localStorage.setItem("helixonCharts", JSON.stringify(data));
+            // SINGLE SOURCE STORAGE
+            localStorage.setItem(
+                "helixonCharts",
+                JSON.stringify(payload)
+            );
 
-        window.open("preview.html", "_blank");
-
-    }, 800); // <<< penting
+            // OPEN STRICT PREVIEW
+            window.open("preview.html", "_blank");
+        });
+    });
 }
