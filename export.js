@@ -1,18 +1,22 @@
 function exportPDF(){
 
-    const energy = document.getElementById("stackedChart");
-    const trend = document.getElementById("trendChart");
-    const facility = document.getElementById("facilityChart");
+    setTimeout(() => {
 
-    const data = {
-        charts: {
-            energy: energy ? energy.toDataURL("image/png", 1.0) : null,
-            trend: trend ? trend.toDataURL("image/png", 1.0) : null,
-            facility: facility ? facility.toDataURL("image/png", 1.0) : null
-        }
-    };
+        const energy = document.getElementById("stackedChart");
+        const trend = document.getElementById("trendChart");
+        const facility = document.getElementById("facilityChart");
 
-    localStorage.setItem("helixonCharts", JSON.stringify(data));
+        const data = {
+            charts: {
+                energy: energy ? energy.toDataURL("image/png", 1.0) : null,
+                trend: trend ? trend.toDataURL("image/png", 1.0) : null,
+                facility: facility ? facility.toDataURL("image/png", 1.0) : null
+            }
+        };
 
-    window.open("preview.html", "_blank");
+        localStorage.setItem("helixonCharts", JSON.stringify(data));
+
+        window.open("preview.html", "_blank");
+
+    }, 500); // <<< penting
 }
