@@ -244,7 +244,9 @@ function renderEnergyChart(data){
             }]
         },
         options:{
-        plugins:{
+        animation: false,
+            
+            plugins:{
             legend:{display:false},
             datalabels:{
                 color:"#e5e7eb",
@@ -301,6 +303,8 @@ function renderTrendChart(data){
             }]
         },
         options:{
+        animation: false,
+            
             plugins:{legend:{display:false}}
         }
     });
@@ -336,6 +340,8 @@ function renderFacilityChart(data){
             }]
         },
         options:{
+        animation: false, 
+            
             plugins:{legend:{display:false}},
             scales:{y:{beginAtZero:true}}
         }
