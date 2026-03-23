@@ -7,15 +7,6 @@ body{
     font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,sans-serif;
     margin:40px;
 }
-/* =========================
-EXPORT SAFE WRAPPER
-========================= */
-
-#dashboard-root{
-    background:#020617;
-    width:100%;
-    min-height:100vh;
-}
 
 /* HEADER */
 
@@ -163,67 +154,13 @@ h3{
 }
 
 canvas{
-    image-rendering: auto;
-}
-    
-.dark canvas{
     background:linear-gradient(135deg,rgba(15,23,42,.7),rgba(2,6,23,.95));
+    border:1px solid #334155;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 10px 40px rgba(0,0,0,.45);
 }
 
-.light canvas{
-    background:white;
-}
-
-.ai-single-card{
-    margin-top: 30px;
-    padding: 18px;
-    border-radius: 14px;
-    background: linear-gradient(135deg,#0b1220,#020617);
-    border: 1px solid #1e293b;
-    color: #e5e7eb;
-}
-
-.ai-title{
-    font-size: 16px;
-    font-weight: 700;
-    color: #60a5fa;
-    margin-bottom: 12px;
-}
-
-.ai-content{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ai-section{
-    padding: 10px 12px;
-    border-left: 2px solid #334155;
-    background: rgba(255,255,255,0.02);
-    border-radius: 8px;
-}
-
-.ai-label{
-    font-size: 11px;
-    font-weight: 700;
-    color: #93c5fd;
-    display: block;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.ai-section p{
-    margin: 0;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #cbd5e1;
-}
-
-.ai-section.highlight{
-    border-left: 2px solid #22c55e;
-    background: rgba(34,197,94,0.06);
-}
 /* ENERGY TOTAL */
 
 .energy-total{
@@ -234,44 +171,8 @@ canvas{
     -webkit-text-fill-color:transparent;
 }
 
-/* ENERGY TYPE COMPARISON TABLE FIX */
-
-.energy-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255,255,255,0.02);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.energy-table th {
-    text-align: left;
-    padding: 12px;
-    color:  #f8fafc;
-    background: rgba(30,41,59,0.6);
-    border-bottom: 1px solid rgba(148,163,184,0.2);
-    font-size: 13px;
-}
-
-.energy-table td {
-    padding: 12px;
-    color: #e5e7eb;
-    border-bottom: 1px solid rgba(148,163,184,0.12);
-    font-size: 13px;
-}
-
-.energy-table tr:hover {
-    background: rgba(255,255,255,0.04);
-}
-
 /* GLOBAL */
 
 *{
     box-sizing:border-box;
-}
-
-    .page:not(:last-child){
-        page-break-after: always;
-    }
-
 }
