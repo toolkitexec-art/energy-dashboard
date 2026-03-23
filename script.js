@@ -62,18 +62,9 @@ let trendChart;
 let facilityChart;
 let renderLock = false; 
 
-function applyThemeToAllCharts() {
-    const engine = window.ChartThemeEngine;
-
-    if (energyChart) engine.applyToChart(energyChart);
-    if (trendChart) engine.applyToChart(trendChart);
-    if (facilityChart) engine.applyToChart(facilityChart);
-}
-
 function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
-
-    applyThemeToAllCharts();
+    
     if (!DashboardCache.filtered.length) return;
 
     renderEnergyChart();
