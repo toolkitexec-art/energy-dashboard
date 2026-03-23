@@ -564,6 +564,7 @@ function createExportButton(){
     btn.addEventListener("click", () => {
     window.open("preview.html", "_blank");
 });
+document.body.appendChild(btn);
 
 }
 
