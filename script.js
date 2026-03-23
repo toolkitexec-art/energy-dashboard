@@ -7,12 +7,24 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 
 const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
+Chart.defaults.devicePixelRatio = 3;
 
 let energyChart
 let trendChart
 let facilityChart
 
 let chartReady = false;
+let exportLocked = true;
+
+function isSystemReady(){
+    return (
+        window.energyChart &&
+        window.trendChart &&
+        window.facilityChart &&
+        chartReady === true &&
+        exportLocked === false
+    );
+}
 
 function onAllChartsReady(){
     if(energyChart && trendChart && facilityChart){
@@ -21,14 +33,12 @@ function onAllChartsReady(){
         window.facilityChart = facilityChart;
 
         chartReady = true;
+        exportLocked = false;
     }
 }
 
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
-
-Chart.defaults.devicePixelRatio = 3;
-
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -382,13 +392,16 @@ energyChart.update('none');
 trendChart.update('none');
 facilityChart.update('none');
 
-window.energyChart = energyChart;
-window.trendChart = trendChart;
-window.facilityChart = facilityChart;
-
 requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-        onAllChartsReady();
+
+        window.energyChart = energyChart;
+        window.trendChart = trendChart;
+        window.facilityChart = facilityChart;
+
+        chartReady = true;
+        exportLocked = false; // unlock export
+
     });
 });
 
