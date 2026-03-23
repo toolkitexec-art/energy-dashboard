@@ -140,11 +140,7 @@ if(!raw){
 }
 
 const data = JSON.parse(raw);
-document.body.innerHTML += `
-<pre style="color:white;white-space:pre-wrap;">
-${JSON.stringify(data, null, 2)}
-</pre>
-`;
+alert(JSON.stringify(data.charts));
     
 /* =========================
 RENDER
