@@ -60,6 +60,7 @@ window.ChartThemeEngine = {
 let energyChart;
 let trendChart;
 let facilityChart;
+let renderLock = false; 
 
 function applyThemeToAllCharts() {
     const engine = window.ChartThemeEngine;
@@ -72,7 +73,9 @@ function applyThemeToAllCharts() {
 function setChartTheme(mode){
     window.ChartThemeEngine.mode = mode;
 
-    applyThemeToAllCharts();
+    renderEnergyChart();
+    renderTrendChart();
+    renderFacilityChart();
 }
 
 const INDUSTRY_AVG=0.42
@@ -425,7 +428,7 @@ function renderEnergyChart(){
 
     safeDestroy(energyChart);
     
-    const { labels, values, total } = DashboardCache.energy;
+    const { labels = [], values = [], total = 0 } = DashboardCache.energy || {};
 
     document.getElementById("energy-total").innerText = total.toFixed(2);
 
@@ -457,16 +460,9 @@ function renderEnergyChart(){
 function renderTrendChart(){
 
     safeDestroy(trendChart);
-    const data = DashboardCache.filtered;
-    const months = [...new Set(data.map(d => d.month))].sort();
-    const values = months.map(m =>
-        data.filter(r => r.month === m)
-            .reduce((s,r)=>s + Number(r.total_emission||0),0)
-    );
 
-    const labels = months.map(m =>
-        new Date(m).toLocaleString("en",{month:"long",year:"numeric"})
-    );
+const { labels, values } = DashboardCache.trend;
+    
 const ctx = document.getElementById("trendChart").getContext("2d");
 
 const gradient = ctx.createLinearGradient(0,0,0,400);
