@@ -298,7 +298,7 @@ function renderEnergyChart(data){
 });
             
 window.energyChart = energyChart;
-/*energyChart.update('none');*/
+energyChart.update('none');
 }    
 
 function renderTrendChart(data){
