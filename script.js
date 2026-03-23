@@ -527,6 +527,7 @@ function getCommonOptions(){
         plugins:{
             legend:{display:false},
             datalabels:{
+                display: true,
                 color: theme.isExport ? "#000" : theme.mutedText,
                 textStrokeColor: theme.isExport ? "#000" : "#000",
                 textStrokeWidth: 3,
