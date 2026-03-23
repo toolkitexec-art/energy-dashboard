@@ -525,12 +525,13 @@ function getCommonOptions(){
         plugins:{
             legend:{display:false},
             datalabels:{
-                color: theme.mutedText,
-                textStrokeColor: theme.isExport ? "#fff" : "#000",
-                textStrokeWidth: 2,
+                color: theme.isExport ? "#000" : theme.mutedText,
+                textStrokeColor: theme.isExport ? "#000" : "#000",
+                textStrokeWidth: 3,
                 anchor:"end",
                 align:"top",
-                font:{weight:"600"},
+                font:{weight:"700", size:11
+                },
                 formatter:v=>v.toFixed(2)
             }
         },
