@@ -689,4 +689,6 @@ function exportPDF(){
 /* =========================
 INIT
 ========================= */
-loadDashboard(); 
+document.addEventListener("DOMContentLoaded", () => {
+    loadDashboard();
+});
