@@ -537,9 +537,9 @@ function getCommonOptions(){
                 display: true,
                 clamp: true,        // 🔥 penting
                 clip: false,        // 🔥 penting
-                color: theme.isExport ? "#000" : theme.mutedText,
-                textStrokeColor: theme.isExport ? "#000" : "#000",
-                textStrokeWidth: 3,
+                color: theme.isExport ? "#000" : "#ffffff",
+                textStrokeColor: "#000",
+                textStrokeWidth: 4,
                 anchor:"end",
                 align:"top",
                 offset: 6, 
