@@ -433,30 +433,43 @@ function renderEnergyChart(){
     const canvas = document.getElementById("stackedChart");
     canvas.height = canvas.height; // reset canvas
 
-    const ctx = canvas.getContext("2d"); // 🔥 pakai canvas, bukan getElement lagi
-    const gradient = ctx.createLinearGradient(0,0,0,400);
-       
-        gradient.addColorStop(0, theme.gradientBase[0]);
-        gradient.addColorStop(0.5, theme.gradientBase[1]);
-        gradient.addColorStop(1, theme.gradientBase[2]);
-
-        energyChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: gradient,
-                    borderRadius: 6
-                }]
-            },
-            options: getCommonOptions(),
-            plugins: [ChartDataLabels]
-        });
-
-        window.ChartThemeEngine.applyToChart(energyChart);
+    const ctx = canvas.getContext("2d");
     
-    }
+energyChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels,
+        datasets: [{
+            data: values,
+            backgroundColor: (context) => {
+                const chart = context.chart;
+                const { ctx, chartArea } = chart;
+
+                if (!chartArea) return theme.gradientBase[1];
+
+                const gradient = ctx.createLinearGradient(
+                    0,
+                    chartArea.bottom,
+                    0,
+                    chartArea.top
+                );
+
+                gradient.addColorStop(0, theme.gradientBase[0]);
+                gradient.addColorStop(0.5, theme.gradientBase[1]);
+                gradient.addColorStop(1, theme.gradientBase[2]);
+
+                return gradient;
+            },
+            borderRadius: 6
+        }]
+    },
+    options: getCommonOptions(),
+    plugins: [ChartDataLabels]
+});
+    
+window.ChartThemeEngine.applyToChart(energyChart);
+    
+}
 
 function renderTrendChart(){
 
