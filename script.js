@@ -12,6 +12,18 @@ let energyChart
 let trendChart
 let facilityChart
 
+let chartReady = false;
+
+function onAllChartsReady(){
+    if(energyChart && trendChart && facilityChart){
+        window.energyChart = energyChart;
+        window.trendChart = trendChart;
+        window.facilityChart = facilityChart;
+
+        chartReady = true;
+    }
+}
+
 const INDUSTRY_AVG=0.42
 const CARBON_PRICE=85
 
@@ -260,9 +272,10 @@ function renderEnergyChart(data){
     },
     plugins:[ChartDataLabels]
 });
-        
+    
 window.energyChart = energyChart;        
 energyChart.update('none');
+onAllChartsReady();
 }
 
 function renderTrendChart(data){
@@ -310,6 +323,7 @@ function renderTrendChart(data){
     });
 window.trendChart = trendChart;
 trendChart.update('none');
+onAllChartsReady();
 }
 
 
@@ -350,6 +364,7 @@ function renderFacilityChart(data){
     });
 window.facilityChart = facilityChart;
 facilityChart.update('none');
+onAllChartsReady();
 }
 
 
