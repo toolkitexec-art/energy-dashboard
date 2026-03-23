@@ -262,7 +262,7 @@ function renderEnergyChart(data){
 });
         
 window.energyChart = energyChart;        
-
+energyChart.update('none');
 }
 
 function renderTrendChart(data){
@@ -308,6 +308,8 @@ function renderTrendChart(data){
             plugins:{legend:{display:false}}
         }
     });
+window.trendChart = trendChart;
+trendChart.update('none');
 }
 
 
@@ -346,6 +348,8 @@ function renderFacilityChart(data){
             scales:{y:{beginAtZero:true}}
         }
     });
+window.facilityChart = facilityChart;
+facilityChart.update('none');
 }
 
 
