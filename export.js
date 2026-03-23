@@ -1,15 +1,34 @@
+let exportLock = false;
+
 function exportPDF(){
 
-const charts = document.querySelectorAll("canvas");
+    if(exportLock) return;
+    exportLock = true;
 
-const images = [];
+    // pastikan chart sudah selesai render
+    requestAnimationFrame(() => {
 
-charts.forEach(canvas=>{
-images.push(canvas.toDataURL("image/png",1.0));
-});
+        setTimeout(() => {
 
-localStorage.setItem("helixonCharts", JSON.stringify(images));
+            const el = document.getElementById("kpi-container").parentElement;
 
-window.open("preview.html","_blank");
+            html2canvas(el, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: "#020617",
+                logging: false,
+                allowTaint: false
+            }).then(canvas => {
 
+                const img = canvas.toDataURL("image/png", 1.0);
+
+                localStorage.setItem("helixon_snapshot", img);
+
+                window.open("preview.html", "_blank");
+
+                exportLock = false;
+            });
+
+        }, 200); // stabilizer delay
+    });
 }
