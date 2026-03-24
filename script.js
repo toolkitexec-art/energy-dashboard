@@ -466,15 +466,13 @@ function createExportButton(){
     btn.style.willChange = "transform";
 
     // ✅ EVENT BENAR
-    btn.addEventListener("click", exportPDF);
-
+    btn.addEventListener("click", window.exportPDF);
+    
     document.body.appendChild(btn);
 }
 
 /* =========================
 INIT
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-    loadDashboard();
-    createExportButton();
-});
+createExportButton();
+loadDashboard();
