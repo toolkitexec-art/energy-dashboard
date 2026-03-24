@@ -70,6 +70,13 @@ window.snapshotElement = function(id){
 
 window.delay = (ms) => new Promise(r => setTimeout(r, ms));
 
+window.lockChartSize = function(chart){
+    if(!chart) return;
+
+    chart.resize();
+    chart.update("none");
+};
+
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
 ========================= */
