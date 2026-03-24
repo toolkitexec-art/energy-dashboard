@@ -389,6 +389,7 @@ window.facilityChart = facilityChart;
 facilityChart.update('none');
 }
 
+/*
 if(energyChart) energyChart.update('none');
 if(trendChart) trendChart.update('none');
 if(facilityChart) facilityChart.update('none');
@@ -405,7 +406,7 @@ requestAnimationFrame(() => {
 
     });
 });
-
+*/
 /* =========================
   build export
 ========================= */
