@@ -409,7 +409,7 @@ requestAnimationFrame(() => {
 /* =========================
   build export
 ========================= */
-function buildExportPayload(){
+window.buildExportPayload = function buildExportPayload(){
     const energyValues =
     window.energyChart?.data?.datasets?.[0]?.data ?? [];
     const energyTotal =
