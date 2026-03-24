@@ -43,11 +43,18 @@ let exportLocked = true;
 /* =========================
    GLOBAL HELPERS
 ========================= */
-
 window.safeChartImage = function(chart){
     if(!chart || !chart.canvas) return null;
-    return chart.canvas.toDataURL("image/png", 1.0);
+
+    const canvas = chart.canvas;
+
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    return canvas.toDataURL("image/png", 1.0);
 };
+
 window.snapshotElement = function(id){
     const el = document.getElementById(id);
     if(!el) return "";
