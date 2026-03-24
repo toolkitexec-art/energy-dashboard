@@ -144,9 +144,18 @@ report.innerHTML = `
             ${data.analytics}
         </div>
 
-        <h3>Energy Type Comparison</h3>
-        ${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>NO CHART DATA</p>"}
+<div class="page">
+    <h3>Energy Type Comparison</h3>
+
+    <div class="kpi-card" style="margin-bottom:15px;">
+        Energy Total: ${data.energyTotal}
     </div>
+
+    ${data.charts.energy 
+        ? `<img src="${data.charts.energy}">` 
+        : "<p>NO CHART DATA</p>"
+    }
+</div> 
 
     <div class="page">
         <h3>Emission Trend</h3>
