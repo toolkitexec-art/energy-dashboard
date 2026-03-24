@@ -9,9 +9,7 @@ function exportPDF(){
     // optional safety delay untuk canvas flush terakhir
     /*requestAnimationFrame(() => {
         requestAnimationFrame(() => { */
-    
-    console.log("EXPORT FUNCTION RUN");
-            
+     
     const payload = buildExportPayload();
 
             // SINGLE SOURCE STORAGE
