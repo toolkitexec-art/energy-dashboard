@@ -113,19 +113,21 @@ if(!raw){
 
 const data = JSON.parse(raw);
 
-const safeChart = (img) => (img && img !== "null") ? img : null;
-
-data.charts.energy = safeChart(data.charts.energy);
-data.charts.trend = safeChart(data.charts.trend);
-data.charts.facility = safeChart(data.charts.facility);
-
-    
-/* STRICT VALIDATION (NO FALLBACK ASSUMPTION) */
+/* STRICT VALIDATION (FIRST, BEFORE ANY ACCESS) */
 if(!data.meta || !data.charts){
     document.body.innerHTML = "<h2 style='color:white'>INVALID EXPORT STRUCTURE</h2>";
     throw new Error("INVALID STRUCTURE");
 }
 
+/* =========================
+   NORMALIZATION (STEP 4)
+========================= */
+const safeChart = (img) => (img && img !== "null") ? img : null;
+
+data.charts.energy = safeChart(data.charts.energy);
+data.charts.trend = safeChart(data.charts.trend);
+data.charts.facility = safeChart(data.charts.facility);
+      
 /* =========================
   RENDER ONLY FROM PAYLOAD
 ========================= */
