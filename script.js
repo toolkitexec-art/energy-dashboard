@@ -474,4 +474,7 @@ function createExportButton(){
 /* =========================
 INIT
 ========================= */
-loadDashboard(); 
+document.addEventListener("DOMContentLoaded", () => {
+    loadDashboard();
+    createExportButton();
+});
