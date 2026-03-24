@@ -462,7 +462,8 @@ function createExportButton(){
 
     btn.style.zIndex = "9999";
     btn.style.pointerEvents = "auto";
-
+    btn.style.isolation = "isolate";
+    
     btn.addEventListener("click", () => {
         console.log("BUTTON CLICKED");
         exportPDF();
