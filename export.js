@@ -4,6 +4,10 @@ window.exportPDF = async function () {
 
         await window.delay(400); // STEP 3: stabilisasi DOM
 
+        lockChartSize(window.energyChart);
+        lockChartSize(window.trendChart);
+        lockChartSize(window.facilityChart);
+  
         const payload = window.buildExportPayload();
 
         localStorage.setItem("helixonCharts", JSON.stringify(payload));
