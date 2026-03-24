@@ -409,6 +409,13 @@ requestAnimationFrame(() => {
   build export
 ========================= */
 function buildExportPayload(){
+    const energyValues =
+    window.energyChart?.data?.datasets?.[0]?.data ?? [];
+    const energyTotal =
+    Array.isArray(energyValues)
+        ? energyValues.reduce((a, b) => a + (Number(b) || 0), 0)
+        : 0;
+    
     return {
         meta: {
             date: new Date().toISOString().split("T")[0],
@@ -418,6 +425,8 @@ function buildExportPayload(){
 
         kpi: document.getElementById("kpi-container")?.innerHTML || "",
         analytics: document.getElementById("analytics-container")?.innerHTML || "",
+
+        energyTotal: energyTotal,
 
         charts: {
             energy: window.energyChart?.toBase64Image?.() || null,
