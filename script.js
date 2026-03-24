@@ -136,12 +136,7 @@ function applyFilters(data){
     renderEnergyChart(filtered);
     renderTrendChart(filtered);
     renderFacilityChart(filtered);
-
-    document.querySelectorAll("canvas").forEach(c=>{
-    c.style.pointerEvents = "none";
-});
-
-
+}
 
 /* =========================
 UTILS
@@ -453,9 +448,10 @@ function createExportButton(){
     btn.id = "export-btn";
 
     btn.innerText = "Export PDF";
+
     btn.style.position = "fixed";
-    btn.style.top = "30px";
-    btn.style.right = "40px";
+    btn.style.top = "20px";
+    btn.style.right = "20px";
     btn.style.padding = "10px 16px";
     btn.style.borderRadius = "10px";
     btn.style.border = "1px solid #334155";
@@ -464,12 +460,18 @@ function createExportButton(){
     btn.style.fontWeight = "600";
     btn.style.cursor = "pointer";
 
-    btn.style.zIndex = "9999";
+    // 🔥 SUPER LAYER FIX
+    btn.style.zIndex = "2147483647"; // MAX INT
     btn.style.pointerEvents = "auto";
-    btn.style.isolation = "isolate";
-    
+
+    // 🔥 FORCE TOP LAYER
+    btn.style.position = "fixed";
+    btn.style.transform = "translateZ(0)";
+    btn.style.willChange = "transform";
+
     btn.addEventListener("click", () => {
         console.log("BUTTON CLICKED");
+        alert("CLICK OK");
         exportPDF();
     });
 
