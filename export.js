@@ -23,4 +23,4 @@ function exportPDF(){
    window.location.href = window.location.origin + "/preview.html";
 }   
     
-    
+window.exportPDF = exportPDF;    
