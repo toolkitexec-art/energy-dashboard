@@ -1,9 +1,22 @@
 window.exportPDF = function () {
+
     alert("EXPORT CALLED");
 
-    const payload = buildExportPayload();
+    try {
+        const payload = buildExportPayload();
 
-    localStorage.setItem("helixonCharts", JSON.stringify(payload));
+        alert("PAYLOAD OK");
 
-    window.location.href = "/preview.html";
+        console.log(payload);
+
+        localStorage.setItem("helixonCharts", JSON.stringify(payload));
+
+        alert("REDIRECT NOW");
+
+        window.location.href = "/preview.html";
+
+    } catch (err) {
+        alert("ERROR: " + err.message);
+        console.error(err);
+    }
 };
