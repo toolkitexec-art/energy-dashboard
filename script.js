@@ -460,16 +460,16 @@ function createExportButton(){
     btn.style.fontWeight = "600";
     btn.style.cursor = "pointer";
 
-    // 🔥 SUPER LAYER FIX
-    btn.style.zIndex = "2147483647"; // MAX INT
+    btn.style.zIndex = "2147483647";
     btn.style.pointerEvents = "auto";
-
-    // 🔥 FORCE TOP LAYER
-    btn.style.position = "fixed";
     btn.style.transform = "translateZ(0)";
     btn.style.willChange = "transform";
 
+    // ✅ EVENT BENAR
     btn.addEventListener("click", exportPDF);
+
+    document.body.appendChild(btn);
+}
 
 /* =========================
 INIT
