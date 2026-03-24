@@ -470,13 +470,15 @@ function createExportButton(){
     btn.style.willChange = "transform";
 
     btn.addEventListener("click", () => {
-        console.log("BUTTON CLICKED");
-        alert("CLICK OK");
-        exportPDF();
-    });
+    console.log("CLICK OK");
 
-    document.body.appendChild(btn);
-}
+    if (typeof window.exportPDF === "function") {
+        window.exportPDF();
+    } else {
+        console.error("exportPDF NOT FOUND");
+        alert("exportPDF tidak ditemukan");
+    }
+});
 
 /* =========================
 INIT
