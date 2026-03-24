@@ -16,7 +16,7 @@ function exportPDF(){
             // SINGLE SOURCE STORAGE
             localStorage.setItem(
                 "helixonCharts",
-                JSON.stringify(payload));
+                JSON.stringify(payload)
 );
     
             // OPEN STRICT PREVIEW
