@@ -1,5 +1,6 @@
 function exportPDF(){
 
+    console.log("EXPORT RUN");
     // HARD GATE: pastikan chart sudah siap
    /* if(!isSystemReady()){
         console.error("SYSTEM NOT READY");
