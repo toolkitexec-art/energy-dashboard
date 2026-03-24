@@ -1,19 +1,12 @@
-window.exportPDF = function () {
+window.exportPDF = async function () {
 
-    alert("EXPORT CALLED");
+    try {
 
-try {
+        await window.delay(400); // STEP 3: stabilisasi DOM
 
         const payload = window.buildExportPayload();
 
-
-        alert("PAYLOAD OK");
-
-        console.log(payload);
-
         localStorage.setItem("helixonCharts", JSON.stringify(payload));
-
-        alert("REDIRECT NOW");
 
         window.location.href = "/preview.html";
 
