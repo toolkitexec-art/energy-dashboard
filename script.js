@@ -29,7 +29,7 @@ let exportLocked = true;
     );
 }
 */
-function onAllChartsReady(){
+/*function onAllChartsReady(){
     if(energyChart && trendChart && facilityChart){
         window.energyChart = energyChart;
         window.trendChart = trendChart;
@@ -39,6 +39,7 @@ function onAllChartsReady(){
         exportLocked = false;
     }
 }
+*/
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -388,9 +389,9 @@ window.facilityChart = facilityChart;
 facilityChart.update('none');
 }
 
-energyChart.update('none');
-trendChart.update('none');
-facilityChart.update('none');
+if(energyChart) energyChart.update('none');
+if(trendChart) trendChart.update('none');
+if(facilityChart) facilityChart.update('none');
 
 requestAnimationFrame(() => {
     requestAnimationFrame(() => {
