@@ -456,8 +456,9 @@ function createExportButton(){
     btn.style.color="white";
     btn.style.fontWeight="600";
     btn.style.cursor="pointer";
-    btn.style.zIndex="999";
-
+    btn.style.zIndex="9999";
+    btn.style.pointerEvents = "auto";
+    
     btn.addEventListener("click",exportPDF);
 
     document.body.appendChild(btn);
