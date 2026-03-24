@@ -136,7 +136,11 @@ function applyFilters(data){
     renderEnergyChart(filtered);
     renderTrendChart(filtered);
     renderFacilityChart(filtered);
-}
+
+    document.querySelectorAll("canvas").forEach(c=>{
+    c.style.pointerEvents = "none";
+});
+
 
 
 /* =========================
