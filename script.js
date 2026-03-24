@@ -469,23 +469,9 @@ function createExportButton(){
     btn.style.transform = "translateZ(0)";
     btn.style.willChange = "transform";
 
-   btn.addEventListener("click", () => {
-    console.log("CLICK OK");
-
-    if (typeof window.exportPDF === "function") {
-        window.exportPDF();
-    } else {
-        alert("EXPORT BELUM SIAP");
-    }
-});
+    btn.addEventListener("click", exportPDF);
 
 /* =========================
 INIT
 ========================= */
 loadDashboard(); 
-
-
-setTimeout(() => {
-    window.exportPDF = exportPDF;
-    window.buildExportPayload = buildExportPayload;
-}, 0);
