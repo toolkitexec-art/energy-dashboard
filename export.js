@@ -22,5 +22,4 @@ function exportPDF(){
             // OPEN STRICT PREVIEW
    window.location.href = window.location.origin + "/preview.html";
 }   
-    
-window.exportPDF = exportPDF;    
+        
