@@ -1,6 +1,18 @@
 btn.addEventListener("click", () => {
-    console.log("BUTTON CLICKED");
-    alert("CLICK OK");
+    try {
+        console.log("STEP 1");
+        alert("CLICK OK");
 
-    window.exportPDF(); // ⬅️ PAKAI INI
+        console.log("STEP 2");
+        console.log("typeof exportPDF:", typeof exportPDF);
+        console.log("typeof window.exportPDF:", typeof window.exportPDF);
+
+        console.log("STEP 3");
+        window.exportPDF();
+
+        console.log("STEP 4");
+    } catch (e) {
+        console.error("CLICK ERROR:", e);
+        alert("ERROR: " + e.message);
+    }
 });
