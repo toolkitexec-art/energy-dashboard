@@ -469,14 +469,13 @@ function createExportButton(){
     btn.style.transform = "translateZ(0)";
     btn.style.willChange = "transform";
 
-    btn.addEventListener("click", () => {
+   btn.addEventListener("click", () => {
     console.log("CLICK OK");
 
     if (typeof window.exportPDF === "function") {
         window.exportPDF();
     } else {
-        console.error("exportPDF NOT FOUND");
-        alert("exportPDF tidak ditemukan");
+        alert("EXPORT BELUM SIAP");
     }
 });
 
