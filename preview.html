@@ -113,6 +113,13 @@ if(!raw){
 
 const data = JSON.parse(raw);
 
+const safeChart = (img) => (img && img !== "null") ? img : null;
+
+data.charts.energy = safeChart(data.charts.energy);
+data.charts.trend = safeChart(data.charts.trend);
+data.charts.facility = safeChart(data.charts.facility);
+
+    
 /* STRICT VALIDATION (NO FALLBACK ASSUMPTION) */
 if(!data.meta || !data.charts){
     document.body.innerHTML = "<h2 style='color:white'>INVALID EXPORT STRUCTURE</h2>";
