@@ -40,6 +40,28 @@ let exportLocked = true;
     }
 }
 */
+/* =========================
+   GLOBAL HELPERS
+========================= */
+
+window.safeChartImage = function(chart){
+    if(!chart || !chart.canvas) return null;
+    return chart.canvas.toDataURL("image/png", 1.0);
+};
+window.snapshotElement = function(id){
+    const el = document.getElementById(id);
+    if(!el) return "";
+    
+    const clone = el.cloneNode(true);
+
+    // force clean serialization (lebih stabil untuk inner component)
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(clone);
+    
+    return el.cloneNode(true).outerHTML;
+};
+
+window.delay = (ms) => new Promise(r => setTimeout(r, ms));
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -424,16 +446,17 @@ window.buildExportPayload = function buildExportPayload(){
             month: document.getElementById("month-select")?.value || "-"
         },
 
-        kpi: document.getElementById("kpi-container")?.innerHTML || "",
-        analytics: document.getElementById("analytics-container")?.innerHTML || "",
-
+        kpi: snapshotElement("kpi-container"),
+        analytics: snapshotElement("analytics-container"),
+        
         energyTotal: energyTotal,
 
         charts: {
-            energy: window.energyChart?.toBase64Image?.() || null,
-            trend: window.trendChart?.toBase64Image?.() || null,
-            facility: window.facilityChart?.toBase64Image?.() || null
-        }
+          energy: safeChartImage(window.energyChart),
+          trend: safeChartImage(window.trendChart),
+          facility: safeChartImage(window.facilityChart)
+      }
+        
     };
 }
 
@@ -466,11 +489,21 @@ function createExportButton(){
     btn.style.willChange = "transform";
 
     // ✅ EVENT BENAR
-    btn.addEventListener("click", window.exportPDF);
-    
-    document.body.appendChild(btn);
-}
+    btn.addEventListener("click", async () => {
 
+    btn.disabled = true;
+
+    await new Promise(r => setTimeout(r, 400));
+
+    window.exportPDF();
+
+    btn.disabled = false;
+});
+
+document.body.appendChild(btn);
+}
+    
+    
 /* =========================
 INIT
 ========================= */
