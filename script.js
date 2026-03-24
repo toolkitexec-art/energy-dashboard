@@ -443,29 +443,33 @@ EXPORT
 ========================= */
 function createExportButton(){
 
-    const btn=document.createElement("button");
+    if(document.getElementById("export-btn")) return;
 
-    btn.innerText="Export PDF";
-    btn.style.position="fixed";
-    btn.style.top="30px";
-    btn.style.right="40px";
-    btn.style.padding="10px 16px";
-    btn.style.borderRadius="10px";
-    btn.style.border="1px solid #334155";
-    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)";
-    btn.style.color="white";
-    btn.style.fontWeight="600";
-    btn.style.cursor="pointer";
-    btn.style.zIndex="9999";
+    const btn = document.createElement("button");
+    btn.id = "export-btn";
+
+    btn.innerText = "Export PDF";
+    btn.style.position = "fixed";
+    btn.style.top = "30px";
+    btn.style.right = "40px";
+    btn.style.padding = "10px 16px";
+    btn.style.borderRadius = "10px";
+    btn.style.border = "1px solid #334155";
+    btn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
+    btn.style.color = "white";
+    btn.style.fontWeight = "600";
+    btn.style.cursor = "pointer";
+
+    btn.style.zIndex = "9999";
     btn.style.pointerEvents = "auto";
-    
-    btn.addEventListener("click",exportPDF);
+
+    btn.addEventListener("click", () => {
+        console.log("BUTTON CLICKED");
+        exportPDF();
+    });
 
     document.body.appendChild(btn);
-
-
 }
-
 
 /* =========================
 INIT
