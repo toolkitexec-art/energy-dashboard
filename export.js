@@ -2,8 +2,10 @@ window.exportPDF = function () {
 
     alert("EXPORT CALLED");
 
+try {
 
         const payload = window.buildExportPayload();
+
 
         alert("PAYLOAD OK");
 
