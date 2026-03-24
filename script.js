@@ -483,3 +483,9 @@ function createExportButton(){
 INIT
 ========================= */
 loadDashboard(); 
+
+
+setTimeout(() => {
+    window.exportPDF = exportPDF;
+    window.buildExportPayload = buildExportPayload;
+}, 0);
