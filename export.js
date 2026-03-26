@@ -1,21 +1,15 @@
-window.exportPDF = async function () {
+function exportPDF(){
 
-    try {
+const charts = document.querySelectorAll("canvas");
 
-        await window.delay(400); // STEP 3: stabilisasi DOM
+const images = [];
 
-        lockChartSize(window.energyChart);
-        lockChartSize(window.trendChart);
-        lockChartSize(window.facilityChart);
-  
-        const payload = window.buildExportPayload();
+charts.forEach(canvas=>{
+images.push(canvas.toDataURL("image/png",1.0));
+});
 
-        localStorage.setItem("helixonCharts", JSON.stringify(payload));
+localStorage.setItem("helixonCharts", JSON.stringify(images));
 
-        window.location.href = "/preview.html";
+window.open("preview.html","_blank");
 
-    } catch (err) {
-        alert("ERROR: " + err.message);
-        console.error(err);
-    }
-};
+}
