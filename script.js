@@ -258,7 +258,7 @@ function renderEnergyChart(data){
                     formatter:v=>v.toFixed(2),
                 
                     textStrokeColor:"#ffffff",
-                    textStrokeWidth:2
+                    textStrokeWidth:1
                 
                 }
             },
