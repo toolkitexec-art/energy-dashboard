@@ -8,74 +8,15 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY)
 const facilitySelect=document.getElementById("facility-select")
 const monthSelect=document.getElementById("month-select")
 
-const INDUSTRY_AVG=0.42
-const CARBON_PRICE=85
-Chart.defaults.devicePixelRatio = 3;
-
 let energyChart
 let trendChart
 let facilityChart
 
-let chartReady = false;
-let exportLocked = true;
+const INDUSTRY_AVG=0.42
+const CARBON_PRICE=85
 
-/*function isSystemReady(){
-    return (
-        window.energyChart &&
-        window.trendChart &&
-        window.facilityChart &&
-        chartReady === true &&
-        exportLocked === false
-    );
-}
-*/
-/*function onAllChartsReady(){
-    if(energyChart && trendChart && facilityChart){
-        window.energyChart = energyChart;
-        window.trendChart = trendChart;
-        window.facilityChart = facilityChart;
+Chart.defaults.devicePixelRatio = 3;
 
-        chartReady = true;
-        exportLocked = false;
-    }
-}
-*/
-/* =========================
-   GLOBAL HELPERS
-========================= */
-window.safeChartImage = function(chart){
-    if(!chart || !chart.canvas) return null;
-
-    const canvas = chart.canvas;
-
-    const ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-
-    return canvas.toDataURL("image/png", 1.0);
-};
-
-window.snapshotElement = function(id){
-    const el = document.getElementById(id);
-    if(!el) return "";
-    
-    const clone = el.cloneNode(true);
-
-    // force clean serialization (lebih stabil untuk inner component)
-    const wrapper = document.createElement("div");
-    wrapper.appendChild(clone);
-    
-    return el.cloneNode(true).outerHTML;
-};
-
-window.delay = (ms) => new Promise(r => setTimeout(r, ms));
-
-window.lockChartSize = function(chart){
-    if(!chart) return;
-
-    chart.resize();
-    chart.update("none");
-};
 
 /* =========================
 LOAD DASHBOARD (VIEW ONLY)
@@ -100,20 +41,6 @@ async function loadDashboard(){
 
     console.log("VIEW DATA:",data);
 
-    /* =========================
-       DEBUG COUNT (TARUH DI SINI)
-    ========================= */
-    const debug = document.createElement("div");
-   
-    /*debug.style.color = "white";
-    debug.style.fontSize = "14px";
-    debug.innerText = "COUNT: " + data.length;
-    
-    debug.innerText += "\nFIRST ROW: " + JSON.stringify(data[0]);
-
-    document.body.appendChild(debug);
-    */
-    
     populateFilters(data);
     applyFilters(data);
     createExportButton();
@@ -173,6 +100,7 @@ function applyFilters(data){
     renderTrendChart(filtered);
     renderFacilityChart(filtered);
 }
+
 
 /* =========================
 UTILS
@@ -315,27 +243,23 @@ function renderEnergyChart(data){
                 borderRadius:6
             }]
         },
+        plugins:[ChartDataLabels],
         options:{
-        animation: false,
-            
             plugins:{
-            legend:{display:false},
-            datalabels:{
-                color:"#e5e7eb",
-                anchor:"end",
-                align:"top",
-                font:{weight:"600"},
-                formatter:v=>v.toFixed(2)
-            }
-        },
-        scales:{y:{beginAtZero:true}}
-    },
-    plugins:[ChartDataLabels]
-});
-            
-window.energyChart = energyChart;
-energyChart.update('none');
-}    
+                legend:{display:false},
+                datalabels:{
+                    color:"#e5e7eb",
+                    anchor:"end",
+                    align:"top",
+                    font:{weight:"600"},
+                    formatter:v=>v.toFixed(2)
+                }
+            },
+            scales:{y:{beginAtZero:true}}
+        }
+    });
+}
+
 
 function renderTrendChart(data){
 
@@ -375,13 +299,9 @@ function renderTrendChart(data){
             }]
         },
         options:{
-        animation: false,
-            
             plugins:{legend:{display:false}}
         }
     });
-window.trendChart = trendChart;
-trendChart.update('none');
 }
 
 
@@ -414,112 +334,40 @@ function renderFacilityChart(data){
             }]
         },
         options:{
-        animation: false, 
-            
             plugins:{legend:{display:false}},
             scales:{y:{beginAtZero:true}}
         }
     });
-window.facilityChart = facilityChart;
-facilityChart.update('none');
 }
 
-/*
-if(energyChart) energyChart.update('none');
-if(trendChart) trendChart.update('none');
-if(facilityChart) facilityChart.update('none');
-
-requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-
-        window.energyChart = energyChart;
-        window.trendChart = trendChart;
-        window.facilityChart = facilityChart;
-
-        chartReady = true;
-        exportLocked = false; // unlock export
-
-    });
-});
-*/
-/* =========================
-  build export
-========================= */
-window.buildExportPayload = function buildExportPayload(){
-    const energyValues =
-    window.energyChart?.data?.datasets?.[0]?.data ?? [];
-    const energyTotal =
-    Array.isArray(energyValues)
-        ? energyValues.reduce((a, b) => a + (Number(b) || 0), 0)
-        : 0;
-    
-    return {
-        meta: {
-            date: new Date().toISOString().split("T")[0],
-            facility: document.getElementById("facility-select")?.value || "-",
-            month: document.getElementById("month-select")?.value || "-"
-        },
-
-        kpi: snapshotElement("kpi-container"),
-        analytics: snapshotElement("analytics-container"),
-        
-        energyTotal: energyTotal,
-
-        charts: {
-          energy: safeChartImage(window.energyChart),
-          trend: safeChartImage(window.trendChart),
-          facility: safeChartImage(window.facilityChart)
-      }
-        
-    };
-}
 
 /* =========================
 EXPORT
 ========================= */
 function createExportButton(){
 
-    if(document.getElementById("export-btn")) return;
+    const btn=document.createElement("button");
 
-    const btn = document.createElement("button");
-    btn.id = "export-btn";
+    btn.innerText="Export PDF";
+    btn.style.position="fixed";
+    btn.style.top="30px";
+    btn.style.right="40px";
+    btn.style.padding="10px 16px";
+    btn.style.borderRadius="10px";
+    btn.style.border="1px solid #334155";
+    btn.style.background="linear-gradient(135deg,#3b82f6,#1e3a8a)";
+    btn.style.color="white";
+    btn.style.fontWeight="600";
+    btn.style.cursor="pointer";
+    btn.style.zIndex="999";
 
-    btn.innerText = "Export PDF";
+    btn.addEventListener("click",exportPDF);
 
-    btn.style.position = "fixed";
-    btn.style.top = "20px";
-    btn.style.right = "20px";
-    btn.style.padding = "10px 16px";
-    btn.style.borderRadius = "10px";
-    btn.style.border = "1px solid #334155";
-    btn.style.background = "linear-gradient(135deg,#3b82f6,#1e3a8a)";
-    btn.style.color = "white";
-    btn.style.fontWeight = "600";
-    btn.style.cursor = "pointer";
-
-    btn.style.zIndex = "2147483647";
-    btn.style.pointerEvents = "auto";
-    btn.style.transform = "translateZ(0)";
-    btn.style.willChange = "transform";
-
-    // ✅ EVENT BENAR
-    btn.addEventListener("click", async () => {
-
-    btn.disabled = true;
-
-    await new Promise(r => setTimeout(r, 400));
-
-    window.exportPDF();
-
-    btn.disabled = false;
-});
-
-document.body.appendChild(btn);
+    document.body.appendChild(btn);
 }
-    
-    
+
+
 /* =========================
 INIT
 ========================= */
-createExportButton();
-loadDashboard();
+loadDashboard(); 
