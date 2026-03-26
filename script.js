@@ -249,7 +249,7 @@ function renderEnergyChart(data){
             plugins:{
                 legend:{display:false},
                 datalabels:{
-                    color:"#111827",
+                    color:"#e5e7eb",
                     anchor:"end",
                     align:"top",
                     font:{weight:"bold",
