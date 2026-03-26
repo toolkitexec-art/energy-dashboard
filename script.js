@@ -253,12 +253,12 @@ function renderEnergyChart(data){
                     anchor:"end",
                     align:"top",
                     font:{weight:"bold",
-                         size:13
+                         size:16
                          },
                     formatter:v=>v.toFixed(2),
                 
                     textStrokeColor:"#ffffff",
-                    textStrokeWidth:3
+                    textStrokeWidth:4
                 
                 }
             },
