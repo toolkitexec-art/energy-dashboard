@@ -248,11 +248,17 @@ function renderEnergyChart(data){
             plugins:{
                 legend:{display:false},
                 datalabels:{
-                    color:"#e5e7eb",
+                    color:"#111827",
                     anchor:"end",
                     align:"top",
-                    font:{weight:"600"},
-                    formatter:v=>v.toFixed(2)
+                    font:{weight:"bold",
+                         size:13
+                         },
+                    formatter:v=>v.toFixed(2),
+                
+                    textStrokeColor:"#ffffff",
+                    textStrokeWidth:3
+                
                 }
             },
             scales:{y:{beginAtZero:true}}
