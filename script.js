@@ -245,6 +245,12 @@ function renderEnergyChart(data){
         },
         plugins:[ChartDataLabels],
         options:{
+
+       responsive:true,
+       maintainAspectRatio:false,
+
+       devicePixelRatio: 2.5, // ← INI KUNCI UTAMA       
+            
             plugins:{
                 legend:{display:false},
                 datalabels:{
