@@ -141,6 +141,9 @@ if(!raw){
 
 const data = JSON.parse(raw);
 
+const chartsRaw = localStorage.getItem("helixonCharts");
+const charts = chartsRaw ? JSON.parse(chartsRaw) : {};
+
 /* =========================
 RENDER
 ========================= */
@@ -167,21 +170,17 @@ ${data.analytics || ""}
 </div>
 
 <h3>Energy Type Comparison</h3>
-${data.charts.energy ? `<img src="${data.charts.energy}">` : "<p>No chart</p>"}
-</div>
+${charts.energy ? `<img src="${charts.energy}">` : "<p>No chart</p>"}
 
 <div class="page chart-page">
 <h3>Emission Trend</h3>
-${data.charts.trend ? `<img src="${data.charts.trend}">` : "<p>No chart</p>"}
+${charts.trend ? `<img src="${charts.trend}">` : "<p>No chart</p>"}
 </div>
 
 <div class="page chart-page">
 <h3>Facility Comparison</h3>
-${data.charts.facility ? `<img src="${data.charts.facility}">` : "<p>No chart</p>"}
+${charts.facility ? `<img src="${charts.facility}">` : "<p>No chart</p>"}
 </div>
-
-</div>
-`;
 
 /* =========================
 DOWNLOAD PDF
