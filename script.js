@@ -224,7 +224,14 @@ function renderEnergyChart(data){
 
     document.getElementById("energy-total").innerText=total.toFixed(2);
 
-    const ctx=document.getElementById("stackedChart").getContext("2d");
+        // 🔥 ===== FIX 1 DI SINI =====
+    const canvas = document.getElementById("stackedChart");
+    canvas.width = 1200;
+    canvas.height = 600;
+
+    const ctx = canvas.getContext("2d");
+    // 🔥 ========================
+
 
     if(energyChart) energyChart.destroy();
 
@@ -246,6 +253,10 @@ function renderEnergyChart(data){
         plugins:[ChartDataLabels],
         options:{
 
+// 🔥 TAMBAHAN WAJIB
+            responsive:false,
+            maintainAspectRatio:false,
+            
             plugins:{
                 legend:{display:false},
                 datalabels:{
@@ -253,7 +264,7 @@ function renderEnergyChart(data){
                     anchor:"end",
                     align:"top",
                     font:{weight:"bold",
-                         size:16
+                         size:18
                          },
                     formatter:v=>v.toFixed(2),
                 
