@@ -194,6 +194,9 @@ document.getElementById("download").onclick = () => {
         return;
     }
 
+    // 🔥 tunggu render image selesai
+    await new Promise(r => setTimeout(r, 400));
+    
     html2pdf().set({
         margin:[10,10,10,10],
         filename:"helixon-energy-report.pdf",
