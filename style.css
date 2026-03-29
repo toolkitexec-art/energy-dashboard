@@ -7,7 +7,13 @@ body{
   max-width:100%;
   width:100%;
 }
-   /* 
+
+.chart-container canvas{
+  width:100% !important;
+  height:100% !important;
+}
+
+/* 
     
     background:
         radial-gradient(circle at 20% 10%,#1e293b 0%,transparent 40%),
@@ -64,7 +70,7 @@ select{
 @media(min-width:900px){
 
 #kpi-container{
-grid-template-columns:repeat(3,1fr);
+grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
 }
 
 }
