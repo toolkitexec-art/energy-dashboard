@@ -368,8 +368,8 @@ function createExportButton(){
 
     btn.innerText="Export PDF";
     btn.style.position="fixed";
-    btn.style.top="30px";
-    btn.style.right="40px";
+    btn.style.top="16px";
+    btn.style.right="16px";
     btn.style.padding="10px 16px";
     btn.style.borderRadius="10px";
     btn.style.border="1px solid #334155";
