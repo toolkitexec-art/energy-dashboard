@@ -389,3 +389,4 @@ function createExportButton(){
 INIT
 ========================= */
 loadDashboard(); 
+createExportButton(); // 🔥 tambah ini
