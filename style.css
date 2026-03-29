@@ -8,6 +8,11 @@ body{
   width:100%;
 }
 
+/* 🔥 TARUH DI SINI */
+.chart-container{
+  height:300px;
+}
+
 .chart-container canvas{
   width:100% !important;
   height:100% !important;
